@@ -1,22 +1,103 @@
 import 'package:flutter/material.dart';
+import 'package:ppue/constants/constants.dart';
+import 'package:ppue/models/PP.model.dart';
 
 class NewPP_S extends StatefulWidget {
-  const NewPP_S({Key? key}) : super(key: key);
+  final PPModel? data;
+
+  const NewPP_S({
+    Key? key,
+    this.data,
+  }) : super(key: key);
 
   @override
   State<NewPP_S> createState() => _NewPP_SState();
 }
 
 class _NewPP_SState extends State<NewPP_S> {
+  PPModel? data;
+
   final _formKey = GlobalKey<FormState>();
-  String? _selectedOrigin;
-  String? _selectedTrauma;
-  String? _selectedClinic;
+  String? _selectedOrigem;
+  String? _selectedCausasExternas;
+  String? _selectedClinica;
   bool _showTransferField = false;
   bool _showTraumaField = false;
-  bool _showClinicField = false;
+  final _clinicaController = TextEditingController();
 
-  final spacingRow = const SizedBox(height: 16);
+  final _sintomasHorarioController = TextEditingController();
+  bool? _sintomasDorToracica;
+  bool? _sintomasDeficitMotor;
+  final _sintomasLocalController = TextEditingController();
+  final _sintomasOutrosController = TextEditingController();
+
+  final _sintomasLocalFocusNode = FocusNode();
+  final _sintomasOutrosFocusNode = FocusNode();
+
+  bool? _selectedGestante = false;
+  final _gestanteBCFController = TextEditingController();
+  final _gestanteIGController = TextEditingController();
+  bool? _gestantePerdasVW;
+  String? _gestanteTipoGestacao;
+  final _gestanteBCFFocusNode = FocusNode();
+  final _gestanteIGFocusNode = FocusNode();
+
+  final _hipoteseDiagnosticoController = TextEditingController();
+  final _enfermeiroResponsavelTransferenciaController = TextEditingController();
+  final _hipoteseDiagnosticoFocusNode = FocusNode();
+  final _enfermeiroResponsavelTransferenciaFocusNode = FocusNode();
+
+  bool _validarClinica(String? value) {
+    return optionsClinica.contains(value);
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    data = widget.data;
+
+    if (data != null) {
+      _selectedOrigem = data!.situacao.origem;
+      _selectedCausasExternas = data!.situacao.trauma;
+      _selectedClinica = data!.situacao.clinica;
+      _clinicaController.text = data!.situacao.clinica;
+      // _showClinica = data!.situacao.clinica;
+
+      _sintomasHorarioController.text = data!.situacao.sintomas.horario;
+      _sintomasDorToracica = data!.situacao.sintomas.dorToracica;
+      _sintomasDeficitMotor = data!.situacao.sintomas.deficitMotor;
+      _sintomasLocalController.text = data!.situacao.sintomas.local ?? '';
+      _sintomasOutrosController.text = data!.situacao.sintomas.outros;
+
+      _gestanteBCFController.text = data!.situacao.gestante.bcf;
+      _gestanteIGController.text = data!.situacao.gestante.ig;
+      _gestantePerdasVW = data!.situacao.gestante.perdasVW;
+      _gestanteTipoGestacao = data!.situacao.gestante.tipoGestacao;
+
+      _hipoteseDiagnosticoController.text = data!.situacao.hipoteseDiagnostico;
+      _enfermeiroResponsavelTransferenciaController.text =
+          data!.situacao.enfermeiroResponsavelTransferencia;
+    }
+  }
+
+  @override
+  void dispose() {
+    _clinicaController.dispose();
+    _sintomasHorarioController.dispose();
+    _sintomasLocalController.dispose();
+    _sintomasOutrosController.dispose();
+    _sintomasLocalFocusNode.dispose();
+    _sintomasOutrosFocusNode.dispose();
+    _gestanteBCFController.dispose();
+    _gestanteIGController.dispose();
+    _gestanteBCFFocusNode.dispose();
+    _gestanteIGFocusNode.dispose();
+    _hipoteseDiagnosticoController.dispose();
+    _hipoteseDiagnosticoFocusNode.dispose();
+    _enfermeiroResponsavelTransferenciaFocusNode.dispose();
+
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -60,31 +141,36 @@ class _NewPP_SState extends State<NewPP_S> {
                     child: Column(children: [
                       spacingRow,
                       DropdownButtonFormField(
-                        decoration: InputDecoration(labelText: 'Origem'),
-                        items: const [
-                          DropdownMenuItem(
-                            value: 'Residência',
-                            child: Text('Residência'),
-                          ),
-                          DropdownMenuItem(
-                            value: 'Via pública',
-                            child: Text('Via pública'),
-                          ),
-                          DropdownMenuItem(
-                            value: 'Transferência',
-                            child: Text('Transferência'),
-                          ),
-                        ],
-                        onChanged: (value) {
-                          setState(() {
-                            _selectedOrigin = value as String?;
-                            _showTransferField = value == 'Transferência';
-                          });
-                        },
+                        value: _selectedOrigem,
+                        decoration: InputDecoration(
+                          labelText: 'Origem',
+                        ),
+                        items: optionsOrigem
+                            .map(
+                              (e) => DropdownMenuItem(
+                                value: e,
+                                child: Text(
+                                  e,
+                                  style: TextStyle(
+                                    color: Colors.black,
+                                  ),
+                                ),
+                              ),
+                            )
+                            .toList(),
+                        onChanged: data != null
+                            ? null
+                            : (value) {
+                                setState(() {
+                                  _selectedOrigem = value as String?;
+                                  _showTransferField = value == 'Transferência';
+                                });
+                              },
                       ),
                       if (_showTransferField) ...[
                         spacingRow,
                         TextFormField(
+                          readOnly: data != null,
                           decoration: InputDecoration(labelText: 'Preencher'),
                         ),
                       ],
@@ -107,60 +193,104 @@ class _NewPP_SState extends State<NewPP_S> {
                       children: [
                         spacingRow,
                         TextFormField(
+                          controller: _sintomasHorarioController,
+                          readOnly: data != null,
                           decoration: InputDecoration(
                               labelText: 'Horário (início dos sintomas)'),
                         ),
                         spacingRow,
                         DropdownButtonFormField(
+                          value: _sintomasDorToracica,
                           decoration:
                               InputDecoration(labelText: 'Dor torácica'),
                           items: const [
                             DropdownMenuItem(
-                              value: 'Sim',
-                              child: Text('Sim'),
+                              value: true,
+                              child: Text(
+                                'Sim',
+                                style: TextStyle(
+                                  color: Colors
+                                      .black, // Set the desired menu item text color
+                                ),
+                              ),
                             ),
                             DropdownMenuItem(
-                              value: 'Não',
-                              child: Text('Não'),
+                              value: false,
+                              child: Text(
+                                'Não',
+                                style: TextStyle(
+                                  color: Colors
+                                      .black, // Set the desired menu item text color
+                                ),
+                              ),
                             ),
                           ],
-                          onChanged: (value) {
-                            setState(() {
-                              _selectedOrigin = value as String?;
-                              _showTransferField = value == 'Transferência';
-                            });
-                          },
+                          onChanged: data != null
+                              ? null
+                              : (value) {
+                                  setState(() {
+                                    _sintomasDorToracica = value as bool?;
+                                  });
+                                },
                         ),
                         spacingRow,
                         DropdownButtonFormField(
+                          value: _sintomasDeficitMotor,
                           decoration:
                               InputDecoration(labelText: 'Déficit motor'),
                           items: const [
                             DropdownMenuItem(
-                              value: 'Sim',
-                              child: Text('Sim'),
+                              value: true,
+                              child: Text(
+                                'Sim',
+                                style: TextStyle(
+                                  color: Colors
+                                      .black, // Set the desired menu item text color
+                                ),
+                              ),
                             ),
                             DropdownMenuItem(
-                              value: 'Não',
-                              child: Text('Não'),
+                              value: false,
+                              child: Text(
+                                'Não',
+                                style: TextStyle(
+                                  color: Colors
+                                      .black, // Set the desired menu item text color
+                                ),
+                              ),
                             ),
                           ],
-                          onChanged: (value) {
-                            setState(() {
-                              _selectedOrigin = value as String?;
-                              _showTransferField = value == 'Transferência';
-                            });
-                          },
+                          onChanged: data != null
+                              ? null
+                              : (value) {
+                                  setState(() {
+                                    _sintomasDeficitMotor = value as bool?;
+                                  });
+                                },
                         ),
                         spacingRow,
+                        if (_sintomasDorToracica == true ||
+                            _sintomasDeficitMotor == true) ...[
+                          TextFormField(
+                              controller: _sintomasLocalController,
+                              focusNode: _sintomasLocalFocusNode,
+                              readOnly: data != null,
+                              decoration: InputDecoration(
+                                  labelText: 'Local (se for o caso)'),
+                              textInputAction: TextInputAction.next,
+                              onFieldSubmitted: (_) {
+                                FocusScope.of(context)
+                                    .requestFocus(_sintomasOutrosFocusNode);
+                              }),
+                          spacingRow,
+                        ],
                         TextFormField(
-                          decoration: InputDecoration(
-                              labelText: 'Local (se for o caso)'),
-                        ),
-                        spacingRow,
-                        TextFormField(
+                          controller: _sintomasOutrosController,
+                          focusNode: _sintomasOutrosFocusNode,
+                          readOnly: data != null,
                           decoration: InputDecoration(
                               labelText: 'Outros (se for o caso)'),
+                          textInputAction: TextInputAction.continueAction,
                         ),
                         spacingRow,
                       ],
@@ -182,43 +312,34 @@ class _NewPP_SState extends State<NewPP_S> {
                         children: [
                           spacingRow,
                           DropdownButtonFormField(
+                            value: _validarClinica(_selectedClinica)
+                                ? _selectedClinica
+                                : 'Outros',
                             decoration: InputDecoration(labelText: 'Selecione'),
-                            items: const [
-                              DropdownMenuItem(
-                                value: 'Abdominal',
-                                child: Text('Abdominal'),
-                              ),
-                              DropdownMenuItem(
-                                value: 'Cardíaco',
-                                child: Text('Cardíaco'),
-                              ),
-                              DropdownMenuItem(
-                                value: 'Metabólico',
-                                child: Text('Metabólico'),
-                              ),
-                              DropdownMenuItem(
-                                value: 'Neurológico',
-                                child: Text('Neurológico'),
-                              ),
-                              DropdownMenuItem(
-                                value: 'Pulmonar/respiratório',
-                                child: Text('Pulmonar/respiratório'),
-                              ),
-                              DropdownMenuItem(
-                                value: 'Outros',
-                                child: Text('Outros'),
-                              ),
-                            ],
-                            onChanged: (value) {
-                              setState(() {
-                                _selectedClinic = value as String?;
-                                _showClinicField = value == 'Outros';
-                              });
-                            },
+                            items: optionsClinica
+                                .map((e) => DropdownMenuItem(
+                                      value: e,
+                                      child: Text(
+                                        e,
+                                        style: TextStyle(
+                                          color: Colors.black,
+                                        ),
+                                      ),
+                                    ))
+                                .toList(),
+                            onChanged: data != null
+                                ? null
+                                : ((value) {
+                                    setState(() {
+                                      _selectedClinica = value as String?;
+                                    });
+                                  }),
                           ),
-                          if (_showClinicField) ...[
+                          if (!_validarClinica(_selectedClinica)) ...[
                             spacingRow,
                             TextFormField(
+                              controller: _clinicaController,
+                              readOnly: data != null,
                               decoration:
                                   InputDecoration(labelText: 'Complemento'),
                             )
@@ -227,7 +348,7 @@ class _NewPP_SState extends State<NewPP_S> {
                         ],
                       )),
                   Text(
-                    'TRAUMA',
+                    'TIPO DE CAUSAS EXTERNAS',
                     textAlign: TextAlign.center,
                     style: TextStyle(fontSize: 16),
                   ),
@@ -242,53 +363,42 @@ class _NewPP_SState extends State<NewPP_S> {
                         children: [
                           spacingRow,
                           DropdownButtonFormField(
-                            decoration:
-                                InputDecoration(labelText: 'Tipo de trauma'),
-                            items: const [
-                              DropdownMenuItem(
-                                value: 'Acidente de trânsito',
-                                child: Text('Acidente de trânsito'),
-                              ),
-                              DropdownMenuItem(
-                                value: 'Agressão',
-                                child: Text('Agressão'),
-                              ),
-                              DropdownMenuItem(
-                                value: 'FAB/FAF',
-                                child: Text('FAB/FAF'),
-                              ),
-                              DropdownMenuItem(
-                                value: 'Intoxicção',
-                                child: Text('Intoxicção'),
-                              ),
-                              DropdownMenuItem(
-                                value: 'Queda',
-                                child: Text('Queda'),
-                              ),
-                              DropdownMenuItem(
-                                value: 'Queimadura',
-                                child: Text('Queimadura'),
-                              ),
-                              DropdownMenuItem(
-                                value: 'Outros',
-                                child: Text('Outros'),
-                              ),
-                            ],
-                            onChanged: (value) {
-                              setState(() {
-                                _selectedTrauma = value as String?;
-                                _showTraumaField =
-                                    value == 'Outros' || value == 'Queimadura';
-                              });
-                            },
+                            value: _selectedCausasExternas,
+                            decoration: InputDecoration(
+                                labelText: 'Tipo de causas externas'),
+                            items: optionsTipoTrauma
+                                .map((e) => DropdownMenuItem(
+                                      value: e,
+                                      child: Text(
+                                        e,
+                                        style: TextStyle(
+                                          color: Colors.black,
+                                        ),
+                                      ),
+                                    ))
+                                .toList(),
+                            onChanged: data != null
+                                ? null
+                                : (value) {
+                                    setState(() {
+                                      _selectedCausasExternas =
+                                          value as String?;
+                                      _showTraumaField = value == 'Outros' ||
+                                          value == 'Queimadura';
+                                    });
+                                  },
                           ),
                           if (_showTraumaField) ...[
                             spacingRow,
                             TextFormField(
+                              readOnly: data != null,
                               decoration: InputDecoration(
-                                  labelText: _selectedTrauma == 'Outros'
+                                  labelText: _selectedCausasExternas == 'Outros'
                                       ? 'Complemento'
                                       : '% de superfície corporal queimada'),
+                              keyboardType: _selectedCausasExternas == 'Outros'
+                                  ? TextInputType.text
+                                  : TextInputType.number,
                             )
                           ],
                           spacingRow,
@@ -304,67 +414,126 @@ class _NewPP_SState extends State<NewPP_S> {
                     thickness: 2,
                     color: Colors.green,
                   ),
-                  Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 16),
-                      child: Column(
-                        children: [
-                          spacingRow,
-                          DropdownButtonFormField(
-                            decoration:
-                                InputDecoration(labelText: 'Tipo de gestação'),
-                            items: const [
-                              DropdownMenuItem(
-                                value: 'Primigesta',
-                                child: Text('Primigesta'),
-                              ),
-                              DropdownMenuItem(
-                                value: 'Multigesta',
-                                child: Text('Multigesta'),
-                              )
-                            ],
-                            onChanged: (value) {
-                              setState(() {
-                                _selectedTrauma = value as String?;
-                                _showTraumaField =
-                                    value == 'Outros' || value == 'Queimadura';
-                              });
-                            },
-                          ),
-                          spacingRow,
-                          DropdownButtonFormField(
-                            decoration: InputDecoration(labelText: 'Perdas VW'),
-                            items: const [
-                              DropdownMenuItem(
-                                value: 'Sim',
-                                child: Text('Sim'),
-                              ),
-                              DropdownMenuItem(
-                                value: 'Não',
-                                child: Text('Não'),
-                              ),
-                            ],
-                            onChanged: (value) {
-                              setState(() {
-                                _selectedOrigin = value as String?;
-                                _showTransferField = value == 'Transferência';
-                              });
-                            },
-                          ),
-                          spacingRow,
-                          TextFormField(
-                            decoration: InputDecoration(
-                                labelText: 'Idade Gestional (IG)'),
-                            keyboardType: TextInputType.number,
-                          ),
-                          spacingRow,
-                          TextFormField(
-                            decoration: InputDecoration(
-                                labelText: 'Batimentos cardíacos fetais (BCF)'),
-                            keyboardType: TextInputType.number,
-                          ),
-                          spacingRow,
-                        ],
-                      )),
+                  Row(children: [
+                    spacingRow,
+                    Expanded(
+                      child: RadioListTile(
+                        title: const Text('Sim'),
+                        value: true,
+                        groupValue: _selectedGestante,
+                        onChanged: (value) {
+                          if (data != null) {
+                            return;
+                          }
+
+                          setState(() {
+                            _selectedGestante = value as bool;
+                          });
+                        },
+                      ),
+                    ),
+                    Expanded(
+                      child: RadioListTile(
+                        title: const Text('Não'),
+                        value: false,
+                        groupValue: _selectedGestante,
+                        onChanged: (value) {
+                          if (data != null) {
+                            return;
+                          }
+                          setState(() {
+                            _selectedGestante = value as bool;
+                          });
+                        },
+                      ),
+                    ),
+                  ]),
+                  if (_selectedGestante == true)
+                    Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 16),
+                        child: Column(
+                          children: [
+                            spacingRow,
+                            DropdownButtonFormField(
+                              value: _gestanteTipoGestacao,
+                              decoration: InputDecoration(
+                                  labelText: 'Tipo de gestação'),
+                              items: optionsGestacao
+                                  .map((e) => DropdownMenuItem(
+                                        value: e,
+                                        child: Text(
+                                          e,
+                                          style: TextStyle(
+                                            color: Colors.black,
+                                          ),
+                                        ),
+                                      ))
+                                  .toList(),
+                              onChanged: data != null
+                                  ? null
+                                  : (value) {
+                                      setState(() {
+                                        _gestanteTipoGestacao =
+                                            value as String?;
+                                      });
+                                    },
+                            ),
+                            spacingRow,
+                            DropdownButtonFormField(
+                              value: _gestantePerdasVW,
+                              decoration:
+                                  InputDecoration(labelText: 'Perdas VW'),
+                              items: const [
+                                DropdownMenuItem(
+                                  value: true,
+                                  child: Text('Sim'),
+                                ),
+                                DropdownMenuItem(
+                                  value: false,
+                                  child: Text('Não'),
+                                ),
+                              ],
+                              onChanged: data != null
+                                  ? null
+                                  : (value) {
+                                      setState(() {
+                                        _gestantePerdasVW = value as bool?;
+                                      });
+                                    },
+                            ),
+                            spacingRow,
+                            TextFormField(
+                              controller: _gestanteIGController,
+                              focusNode: _gestanteIGFocusNode,
+                              readOnly: data != null,
+                              decoration: InputDecoration(
+                                  labelText: 'Idade Gestional (IG)'),
+                              keyboardType: TextInputType.number,
+                              onFieldSubmitted: (_) {
+                                FocusScope.of(context)
+                                    .requestFocus(_gestanteBCFFocusNode);
+                              },
+                              textInputAction: TextInputAction.next,
+                            ),
+                            spacingRow,
+                            TextFormField(
+                              controller: _gestanteBCFController,
+                              focusNode: _gestanteBCFFocusNode,
+                              readOnly: data != null,
+                              decoration: InputDecoration(
+                                  labelText:
+                                      'Batimentos cardíacos fetais (BCF)'),
+                              keyboardType: TextInputType.number,
+                              textInputAction: TextInputAction.next,
+                              onFieldSubmitted: (_) {
+                                FocusScope.of(context).requestFocus(
+                                    _hipoteseDiagnosticoFocusNode);
+                              },
+                            ),
+                            spacingRow,
+                          ],
+                        )),
+                  spacingRow,
                   Text(
                     'HIPÓTESE DE DIAGNÓSTICO MÉDICO',
                     textAlign: TextAlign.center,
@@ -379,7 +548,15 @@ class _NewPP_SState extends State<NewPP_S> {
                   Padding(
                     padding: EdgeInsets.symmetric(horizontal: 16),
                     child: TextFormField(
+                      controller: _hipoteseDiagnosticoController,
+                      focusNode: _hipoteseDiagnosticoFocusNode,
+                      readOnly: data != null,
                       decoration: InputDecoration(labelText: 'Preencher'),
+                      textInputAction: TextInputAction.next,
+                      onFieldSubmitted: (_) {
+                        FocusScope.of(context).requestFocus(
+                            _enfermeiroResponsavelTransferenciaFocusNode);
+                      },
                     ),
                   ),
                   spacingRow,
@@ -397,6 +574,9 @@ class _NewPP_SState extends State<NewPP_S> {
                   Padding(
                     padding: EdgeInsets.symmetric(horizontal: 16),
                     child: TextFormField(
+                      controller: _enfermeiroResponsavelTransferenciaController,
+                      focusNode: _enfermeiroResponsavelTransferenciaFocusNode,
+                      readOnly: data != null,
                       decoration: InputDecoration(labelText: 'Preencher'),
                     ),
                   ),

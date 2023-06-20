@@ -1,26 +1,114 @@
 import 'package:flutter/material.dart';
+import 'package:ppue/constants/constants.dart';
+import 'package:ppue/models/PP.model.dart';
 
 class NewPP_B extends StatefulWidget {
-  const NewPP_B({Key? key}) : super(key: key);
+  final PPModel? data;
+
+  const NewPP_B({Key? key, this.data}) : super(key: key);
 
   @override
   State<NewPP_B> createState() => _NewPP_BState();
 }
 
 class _NewPP_BState extends State<NewPP_B> {
-  final _formKey = GlobalKey<FormState>();
-  String? _selectedAllergies;
-  String? _selectedComorbidity;
-  String? _selectedVices;
-  String? _selectedMedicationsInUse;
-  String? _selectedHospitalizationHistory;
-  String? _selectedPreviousSurgery;
-  String? _selectedInjuries;
-  String? _selectedLaboratoryAlterations;
-  String? _selectedPrecautions;
-  String? _selectedFast;
+  PPModel? data;
 
-  final spacingRow = const SizedBox(height: 16);
+  final _formKey = GlobalKey<FormState>();
+  final _historicaClinicaController = TextEditingController();
+  final _alergiasController = TextEditingController();
+  final _comorbidadesController = TextEditingController();
+  final _viciosController = TextEditingController();
+  final _medicamentosEmUsoController = TextEditingController();
+  final _historicoInternacoesController = TextEditingController();
+  final _cirurgiaPreviaController = TextEditingController();
+  final _lesoesController = TextEditingController();
+  final _alteracoesLaboratoriaisController = TextEditingController();
+  final _jejumController = TextEditingController();
+  final _alergiasFocusNode = FocusNode();
+  final _comorbidadesFocusNode = FocusNode();
+  final _viciosFocusNode = FocusNode();
+  final _medicamentosEmUsoFocusNode = FocusNode();
+  final _historicoInternacoesFocusNode = FocusNode();
+  final _cirurgiaPreviaFocusNode = FocusNode();
+  final _lesoesFocusNode = FocusNode();
+  final _alteracoesLaboratoriaisFocusNode = FocusNode();
+  final _jejumFocusNode = FocusNode();
+
+  bool? _selectedAlergias = false;
+  bool? _selectedComorbidity = false;
+  bool? _selectedVices = false;
+  bool? _selectedMedicationsInUse = false;
+  bool? _selectedHospitalizationHistory = false;
+  bool? _selectedPreviousSurgery = false;
+  bool? _selectedInjuries = false;
+  bool? _selectedLaboratoryAlterations = false;
+  bool? _selectedJejum = false;
+  bool? _selectedPrecaucoes = false;
+  String? _precaucoes;
+
+  @override
+  void initState() {
+    super.initState();
+    data = widget.data;
+    if (data != null) {
+      _historicaClinicaController.text = data!.breveHistorico.historicaClinica;
+      _alergiasController.text = data!.breveHistorico.alergias ?? '';
+      _comorbidadesController.text = data!.breveHistorico.comorbidades!;
+      _viciosController.text = data!.breveHistorico.vicios!;
+      _medicamentosEmUsoController.text =
+          data!.breveHistorico.medicamentoEmUso!;
+      _historicoInternacoesController.text =
+          data!.breveHistorico.historicoInternacoes!;
+      _cirurgiaPreviaController.text = data!.breveHistorico.cirurgiaPrevia!;
+      _lesoesController.text = data!.breveHistorico.lesoes!;
+      _alteracoesLaboratoriaisController.text =
+          data!.breveHistorico.alteracoesLaboratoriais!;
+      _jejumController.text = data!.breveHistorico.jejum!;
+
+      _selectedAlergias = data!.breveHistorico.alergias == null ? false : true;
+      _selectedComorbidity = data!.breveHistorico.comorbidades!.isNotEmpty;
+      _selectedVices = data!.breveHistorico.vicios!.isNotEmpty;
+      _selectedMedicationsInUse =
+          data!.breveHistorico.medicamentoEmUso!.isNotEmpty;
+      _selectedHospitalizationHistory =
+          data!.breveHistorico.historicoInternacoes!.isNotEmpty;
+      _selectedPreviousSurgery =
+          data!.breveHistorico.cirurgiaPrevia!.isNotEmpty;
+      _selectedInjuries = data!.breveHistorico.lesoes!.isNotEmpty;
+      _selectedLaboratoryAlterations =
+          data!.breveHistorico.alteracoesLaboratoriais!.isNotEmpty;
+      _precaucoes = data!.breveHistorico.precaucoes;
+      if (_precaucoes != null) {
+        _selectedPrecaucoes = true;
+      }
+      _selectedJejum = data!.breveHistorico.jejum!.isNotEmpty;
+    }
+  }
+
+  @override
+  void dispose() {
+    _historicaClinicaController.dispose();
+    _alergiasController.dispose();
+    _comorbidadesController.dispose();
+    _viciosController.dispose();
+    _medicamentosEmUsoController.dispose();
+    _historicoInternacoesController.dispose();
+    _cirurgiaPreviaController.dispose();
+    _lesoesController.dispose();
+    _alteracoesLaboratoriaisController.dispose();
+    _jejumController.dispose();
+    _alergiasFocusNode.dispose();
+    _comorbidadesFocusNode.dispose();
+    _viciosFocusNode.dispose();
+    _medicamentosEmUsoFocusNode.dispose();
+    _historicoInternacoesFocusNode.dispose();
+    _cirurgiaPreviaFocusNode.dispose();
+    _lesoesFocusNode.dispose();
+    _alteracoesLaboratoriaisFocusNode.dispose();
+    _jejumFocusNode.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -65,12 +153,13 @@ class _NewPP_BState extends State<NewPP_B> {
                   child: Column(children: [
                     spacingRow,
                     TextFormField(
+                      controller: _historicaClinicaController,
+                      readOnly: data != null,
                       decoration: InputDecoration(
                         labelText: 'Breve descrição história clínica',
                       ),
                       maxLines: null,
-                      keyboardType: TextInputType.multiline,
-                      textInputAction: TextInputAction.newline,
+                      textInputAction: TextInputAction.done,
                     ),
                     spacingRow,
                   ]),
@@ -90,43 +179,53 @@ class _NewPP_BState extends State<NewPP_B> {
                   child: Row(children: [
                     spacingRow,
                     Expanded(
-                      child: RadioListTile<String>(
+                      child: RadioListTile(
                         title: const Text('Sim'),
-                        value: 'Sim',
-                        groupValue: _selectedAllergies,
+                        value: true,
+                        groupValue: _selectedAlergias,
                         onChanged: (value) {
+                          if (data != null) {
+                            return;
+                          }
                           setState(() {
-                            _selectedAllergies = value;
+                            _selectedAlergias = value as bool;
+                            _alergiasFocusNode.requestFocus();
                           });
                         },
                       ),
                     ),
                     Expanded(
-                      child: RadioListTile<String>(
+                      child: RadioListTile(
                         title: const Text('Não'),
-                        value: 'Não',
-                        groupValue: _selectedAllergies,
+                        value: false,
+                        groupValue: _selectedAlergias,
                         onChanged: (value) {
+                          if (data != null) {
+                            return;
+                          }
                           setState(() {
-                            _selectedAllergies = value;
+                            _selectedAlergias = value as bool;
                           });
                         },
                       ),
                     ),
                   ]),
                 ),
-                if (_selectedAllergies == 'Sim')
+                if (_selectedAlergias == true)
                   Padding(
                     padding: EdgeInsets.symmetric(horizontal: 16),
                     child: Column(children: [
                       spacingRow,
                       TextFormField(
+                        controller: _alergiasController,
+                        focusNode: _alergiasFocusNode,
+                        readOnly: data != null,
                         decoration: InputDecoration(
                           labelText: 'Quais alergias',
                         ),
                         maxLines: null,
                         keyboardType: TextInputType.multiline,
-                        textInputAction: TextInputAction.newline,
+                        textInputAction: TextInputAction.done,
                       ),
                       spacingRow,
                     ]),
@@ -146,43 +245,53 @@ class _NewPP_BState extends State<NewPP_B> {
                   child: Row(children: [
                     spacingRow,
                     Expanded(
-                      child: RadioListTile<String>(
+                      child: RadioListTile(
                         title: const Text('Sim'),
-                        value: 'Sim',
+                        value: true,
                         groupValue: _selectedComorbidity,
                         onChanged: (value) {
+                          if (data != null) {
+                            return;
+                          }
                           setState(() {
-                            _selectedComorbidity = value;
+                            _selectedComorbidity = value as bool;
+                            _comorbidadesFocusNode.requestFocus();
                           });
                         },
                       ),
                     ),
                     Expanded(
-                      child: RadioListTile<String>(
+                      child: RadioListTile(
                         title: const Text('Não'),
-                        value: 'Não',
+                        value: false,
                         groupValue: _selectedComorbidity,
                         onChanged: (value) {
+                          if (data != null) {
+                            return;
+                          }
                           setState(() {
-                            _selectedComorbidity = value;
+                            _selectedComorbidity = value as bool;
                           });
                         },
                       ),
                     ),
                   ]),
                 ),
-                if (_selectedComorbidity == 'Sim')
+                if (_selectedComorbidity == true)
                   Padding(
                     padding: EdgeInsets.symmetric(horizontal: 16),
                     child: Column(children: [
                       spacingRow,
                       TextFormField(
+                        controller: _comorbidadesController,
+                        focusNode: _comorbidadesFocusNode,
+                        readOnly: data != null,
                         decoration: InputDecoration(
                           labelText: 'Quais comorbidades',
                         ),
                         maxLines: null,
                         keyboardType: TextInputType.multiline,
-                        textInputAction: TextInputAction.newline,
+                        textInputAction: TextInputAction.done,
                       ),
                       spacingRow,
                     ]),
@@ -202,43 +311,53 @@ class _NewPP_BState extends State<NewPP_B> {
                   child: Row(children: [
                     spacingRow,
                     Expanded(
-                      child: RadioListTile<String>(
+                      child: RadioListTile(
                         title: const Text('Sim'),
-                        value: 'Sim',
+                        value: true,
                         groupValue: _selectedVices,
                         onChanged: (value) {
+                          if (data != null) {
+                            return;
+                          }
                           setState(() {
-                            _selectedVices = value;
+                            _selectedVices = value as bool;
+                            _viciosFocusNode.requestFocus();
                           });
                         },
                       ),
                     ),
                     Expanded(
-                      child: RadioListTile<String>(
+                      child: RadioListTile(
                         title: const Text('Não'),
-                        value: 'Não',
+                        value: false,
                         groupValue: _selectedVices,
                         onChanged: (value) {
+                          if (data != null) {
+                            return;
+                          }
                           setState(() {
-                            _selectedVices = value;
+                            _selectedVices = value as bool;
                           });
                         },
                       ),
                     ),
                   ]),
                 ),
-                if (_selectedVices == 'Sim')
+                if (_selectedVices == true)
                   Padding(
                     padding: EdgeInsets.symmetric(horizontal: 16),
                     child: Column(children: [
                       spacingRow,
                       TextFormField(
+                        controller: _viciosController,
+                        focusNode: _viciosFocusNode,
+                        readOnly: data != null,
                         decoration: InputDecoration(
                           labelText: 'Quais vícios',
                         ),
                         maxLines: null,
                         keyboardType: TextInputType.multiline,
-                        textInputAction: TextInputAction.newline,
+                        textInputAction: TextInputAction.done,
                       ),
                       spacingRow,
                     ]),
@@ -258,43 +377,53 @@ class _NewPP_BState extends State<NewPP_B> {
                   child: Row(children: [
                     spacingRow,
                     Expanded(
-                      child: RadioListTile<String>(
+                      child: RadioListTile(
                         title: const Text('Sim'),
-                        value: 'Sim',
+                        value: true,
                         groupValue: _selectedMedicationsInUse,
                         onChanged: (value) {
+                          if (data != null) {
+                            return;
+                          }
                           setState(() {
-                            _selectedMedicationsInUse = value;
+                            _selectedMedicationsInUse = value as bool;
+                            _medicamentosEmUsoFocusNode.requestFocus();
                           });
                         },
                       ),
                     ),
                     Expanded(
-                      child: RadioListTile<String>(
+                      child: RadioListTile(
                         title: const Text('Não'),
-                        value: 'Não',
+                        value: false,
                         groupValue: _selectedMedicationsInUse,
                         onChanged: (value) {
+                          if (data != null) {
+                            return;
+                          }
                           setState(() {
-                            _selectedMedicationsInUse = value;
+                            _selectedMedicationsInUse = value as bool;
                           });
                         },
                       ),
                     ),
                   ]),
                 ),
-                if (_selectedMedicationsInUse == 'Sim')
+                if (_selectedMedicationsInUse == true)
                   Padding(
                     padding: EdgeInsets.symmetric(horizontal: 16),
                     child: Column(children: [
                       spacingRow,
                       TextFormField(
+                        controller: _medicamentosEmUsoController,
+                        focusNode: _medicamentosEmUsoFocusNode,
+                        readOnly: data != null,
                         decoration: InputDecoration(
                           labelText: 'Quais medicamentos',
                         ),
                         maxLines: null,
                         keyboardType: TextInputType.multiline,
-                        textInputAction: TextInputAction.newline,
+                        textInputAction: TextInputAction.done,
                       ),
                       spacingRow,
                     ]),
@@ -314,43 +443,53 @@ class _NewPP_BState extends State<NewPP_B> {
                   child: Row(children: [
                     spacingRow,
                     Expanded(
-                      child: RadioListTile<String>(
+                      child: RadioListTile(
                         title: const Text('Sim'),
-                        value: 'Sim',
+                        value: true,
                         groupValue: _selectedHospitalizationHistory,
                         onChanged: (value) {
+                          if (data != null) {
+                            return;
+                          }
                           setState(() {
-                            _selectedHospitalizationHistory = value;
+                            _selectedHospitalizationHistory = value as bool;
+                            _historicoInternacoesFocusNode.requestFocus();
                           });
                         },
                       ),
                     ),
                     Expanded(
-                      child: RadioListTile<String>(
+                      child: RadioListTile(
                         title: const Text('Não'),
-                        value: 'Não',
+                        value: false,
                         groupValue: _selectedHospitalizationHistory,
                         onChanged: (value) {
+                          if (data != null) {
+                            return;
+                          }
                           setState(() {
-                            _selectedHospitalizationHistory = value;
+                            _selectedHospitalizationHistory = value as bool;
                           });
                         },
                       ),
                     ),
                   ]),
                 ),
-                if (_selectedHospitalizationHistory == 'Sim')
+                if (_selectedHospitalizationHistory == true)
                   Padding(
                     padding: EdgeInsets.symmetric(horizontal: 16),
                     child: Column(children: [
                       spacingRow,
                       TextFormField(
+                        controller: _historicoInternacoesController,
+                        focusNode: _historicoInternacoesFocusNode,
+                        readOnly: data != null,
                         decoration: InputDecoration(
                           labelText: 'Quais históricos de internações',
                         ),
                         maxLines: null,
                         keyboardType: TextInputType.multiline,
-                        textInputAction: TextInputAction.newline,
+                        textInputAction: TextInputAction.done,
                       ),
                       spacingRow,
                     ]),
@@ -370,43 +509,53 @@ class _NewPP_BState extends State<NewPP_B> {
                   child: Row(children: [
                     spacingRow,
                     Expanded(
-                      child: RadioListTile<String>(
+                      child: RadioListTile(
                         title: const Text('Sim'),
-                        value: 'Sim',
+                        value: true,
                         groupValue: _selectedPreviousSurgery,
                         onChanged: (value) {
+                          if (data != null) {
+                            return;
+                          }
                           setState(() {
-                            _selectedPreviousSurgery = value;
+                            _selectedPreviousSurgery = value as bool;
+                            _cirurgiaPreviaFocusNode.requestFocus();
                           });
                         },
                       ),
                     ),
                     Expanded(
-                      child: RadioListTile<String>(
+                      child: RadioListTile(
                         title: const Text('Não'),
-                        value: 'Não',
+                        value: false,
                         groupValue: _selectedPreviousSurgery,
                         onChanged: (value) {
+                          if (data != null) {
+                            return;
+                          }
                           setState(() {
-                            _selectedPreviousSurgery = value;
+                            _selectedPreviousSurgery = value as bool;
                           });
                         },
                       ),
                     ),
                   ]),
                 ),
-                if (_selectedPreviousSurgery == 'Sim')
+                if (_selectedPreviousSurgery == true)
                   Padding(
                     padding: EdgeInsets.symmetric(horizontal: 16),
                     child: Column(children: [
                       spacingRow,
                       TextFormField(
+                        controller: _cirurgiaPreviaController,
+                        focusNode: _cirurgiaPreviaFocusNode,
+                        readOnly: data != null,
                         decoration: InputDecoration(
                           labelText: 'Quais cirurgias prévias',
                         ),
                         maxLines: null,
                         keyboardType: TextInputType.multiline,
-                        textInputAction: TextInputAction.newline,
+                        textInputAction: TextInputAction.done,
                       ),
                       spacingRow,
                     ]),
@@ -426,43 +575,53 @@ class _NewPP_BState extends State<NewPP_B> {
                   child: Row(children: [
                     spacingRow,
                     Expanded(
-                      child: RadioListTile<String>(
+                      child: RadioListTile(
                         title: const Text('Sim'),
-                        value: 'Sim',
+                        value: true,
                         groupValue: _selectedInjuries,
                         onChanged: (value) {
+                          if (data != null) {
+                            return;
+                          }
                           setState(() {
-                            _selectedInjuries = value;
+                            _selectedInjuries = value as bool;
+                            _lesoesFocusNode.requestFocus();
                           });
                         },
                       ),
                     ),
                     Expanded(
-                      child: RadioListTile<String>(
+                      child: RadioListTile(
                         title: const Text('Não'),
-                        value: 'Não',
+                        value: false,
                         groupValue: _selectedInjuries,
                         onChanged: (value) {
+                          if (data != null) {
+                            return;
+                          }
                           setState(() {
-                            _selectedInjuries = value;
+                            _selectedInjuries = value as bool;
                           });
                         },
                       ),
                     ),
                   ]),
                 ),
-                if (_selectedInjuries == 'Sim')
+                if (_selectedInjuries == true)
                   Padding(
                     padding: EdgeInsets.symmetric(horizontal: 16),
                     child: Column(children: [
                       spacingRow,
                       TextFormField(
+                        controller: _lesoesController,
+                        focusNode: _lesoesFocusNode,
+                        readOnly: data != null,
                         decoration: InputDecoration(
                           labelText: 'Grau e local da lesão',
                         ),
                         maxLines: null,
                         keyboardType: TextInputType.multiline,
-                        textInputAction: TextInputAction.newline,
+                        textInputAction: TextInputAction.done,
                       ),
                       spacingRow,
                     ]),
@@ -482,43 +641,53 @@ class _NewPP_BState extends State<NewPP_B> {
                   child: Row(children: [
                     spacingRow,
                     Expanded(
-                      child: RadioListTile<String>(
+                      child: RadioListTile(
                         title: const Text('Sim'),
-                        value: 'Sim',
+                        value: true,
                         groupValue: _selectedLaboratoryAlterations,
                         onChanged: (value) {
+                          if (data != null) {
+                            return;
+                          }
                           setState(() {
-                            _selectedLaboratoryAlterations = value;
+                            _selectedLaboratoryAlterations = value as bool;
+                            _alteracoesLaboratoriaisFocusNode.requestFocus();
                           });
                         },
                       ),
                     ),
                     Expanded(
-                      child: RadioListTile<String>(
+                      child: RadioListTile(
                         title: const Text('Não'),
-                        value: 'Não',
+                        value: false,
                         groupValue: _selectedLaboratoryAlterations,
                         onChanged: (value) {
+                          if (data != null) {
+                            return;
+                          }
                           setState(() {
-                            _selectedLaboratoryAlterations = value;
+                            _selectedLaboratoryAlterations = value as bool;
                           });
                         },
                       ),
                     ),
                   ]),
                 ),
-                if (_selectedLaboratoryAlterations == 'Sim')
+                if (_selectedLaboratoryAlterations == true)
                   Padding(
                     padding: EdgeInsets.symmetric(horizontal: 16),
                     child: Column(children: [
                       spacingRow,
                       TextFormField(
+                        controller: _alteracoesLaboratoriaisController,
+                        focusNode: _alteracoesLaboratoriaisFocusNode,
+                        readOnly: data != null,
                         decoration: InputDecoration(
                           labelText: 'Quais alterações',
                         ),
                         maxLines: null,
                         keyboardType: TextInputType.multiline,
-                        textInputAction: TextInputAction.newline,
+                        textInputAction: TextInputAction.done,
                       ),
                       spacingRow,
                     ]),
@@ -535,40 +704,68 @@ class _NewPP_BState extends State<NewPP_B> {
                 ),
                 Padding(
                   padding: EdgeInsets.symmetric(horizontal: 16),
-                  child: Column(children: [
+                  child: Row(children: [
                     spacingRow,
-                    RadioListTile<String>(
-                      title: const Text('Gotículas'),
-                      value: 'Gotículas',
-                      groupValue: _selectedPrecautions,
-                      onChanged: (value) {
-                        setState(() {
-                          _selectedPrecautions = value;
-                        });
-                      },
+                    Expanded(
+                      child: RadioListTile(
+                        title: const Text('Sim'),
+                        value: true,
+                        groupValue: _selectedPrecaucoes,
+                        onChanged: (value) {
+                          if (data != null) {
+                            return;
+                          }
+                          setState(() {
+                            _selectedPrecaucoes = value as bool;
+                          });
+                        },
+                      ),
                     ),
-                    RadioListTile<String>(
-                      title: const Text('Aerossóis'),
-                      value: 'Aerossóis',
-                      groupValue: _selectedPrecautions,
-                      onChanged: (value) {
-                        setState(() {
-                          _selectedPrecautions = value;
-                        });
-                      },
-                    ),
-                    RadioListTile<String>(
-                      title: const Text('Contato'),
-                      value: 'Contato',
-                      groupValue: _selectedPrecautions,
-                      onChanged: (value) {
-                        setState(() {
-                          _selectedPrecautions = value;
-                        });
-                      },
+                    Expanded(
+                      child: RadioListTile(
+                        title: const Text('Não'),
+                        value: false,
+                        groupValue: _selectedPrecaucoes,
+                        onChanged: (value) {
+                          if (data != null) {
+                            return;
+                          }
+                          setState(() {
+                            _selectedPrecaucoes = value as bool;
+                          });
+                        },
+                      ),
                     ),
                   ]),
                 ),
+                if (_selectedPrecaucoes == true)
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 16),
+                    child: Column(children: [
+                      spacingRow,
+                      DropdownButtonFormField(
+                        value: _precaucoes,
+                        decoration: InputDecoration(labelText: 'Precauções'),
+                        items: optionsPrecaucoes
+                            .map((e) => DropdownMenuItem(
+                                  value: e,
+                                  child: Text(e,
+                                      style: TextStyle(
+                                        color: Colors.black,
+                                      )),
+                                ))
+                            .toList(),
+                        onChanged: data != null
+                            ? null
+                            : (value) {
+                                setState(() {
+                                  _precaucoes = value as String;
+                                });
+                              },
+                      ),
+                      spacingRow,
+                    ]),
+                  ),
                 Text(
                   'JEJUM',
                   textAlign: TextAlign.center,
@@ -584,43 +781,51 @@ class _NewPP_BState extends State<NewPP_B> {
                   child: Row(children: [
                     spacingRow,
                     Expanded(
-                      child: RadioListTile<String>(
+                      child: RadioListTile(
                         title: const Text('Sim'),
-                        value: 'Sim',
-                        groupValue: _selectedFast,
+                        value: true,
+                        groupValue: _selectedJejum,
                         onChanged: (value) {
+                          if (data != null) {
+                            return;
+                          }
                           setState(() {
-                            _selectedFast = value;
+                            _selectedJejum = value as bool;
+                            _jejumFocusNode.requestFocus();
                           });
                         },
                       ),
                     ),
                     Expanded(
-                      child: RadioListTile<String>(
+                      child: RadioListTile(
                         title: const Text('Não'),
-                        value: 'Não',
-                        groupValue: _selectedFast,
+                        value: false,
+                        groupValue: _selectedJejum,
                         onChanged: (value) {
+                          if (data != null) {
+                            return;
+                          }
                           setState(() {
-                            _selectedFast = value;
+                            _selectedJejum = value as bool;
                           });
                         },
                       ),
                     ),
                   ]),
                 ),
-                if (_selectedFast == 'Sim')
+                if (_selectedJejum == true)
                   Padding(
                     padding: EdgeInsets.symmetric(horizontal: 16),
                     child: Column(children: [
                       spacingRow,
                       TextFormField(
+                        controller: _jejumController,
+                        focusNode: _jejumFocusNode,
+                        readOnly: data != null,
                         decoration: InputDecoration(
                           labelText: 'Tempo de jejum',
                         ),
-                        maxLines: null,
-                        keyboardType: TextInputType.multiline,
-                        textInputAction: TextInputAction.newline,
+                        textInputAction: TextInputAction.done,
                       ),
                       spacingRow,
                     ]),

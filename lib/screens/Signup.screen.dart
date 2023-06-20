@@ -1,8 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
+import 'package:ppue/constants/constants.dart';
+import 'package:ppue/screens/Signin.screen.dart';
 import 'package:ppue/utils/inputMask/cpf.mask.dart';
 import 'package:ppue/utils/validation/cpf.validation.dart';
 import 'package:ppue/utils/validation/email.validation.dart';
+import 'package:ppue/widgets/CustomPageContainer.widget.dart';
+import 'package:ppue/widgets/CustomScaffold.widget.dart';
+import 'package:ppue/widgets/GradientButton.widget.dart';
 
 class SignupScreen extends StatefulWidget {
   const SignupScreen({Key? key}) : super(key: key);
@@ -17,7 +22,11 @@ class _SignupScreenState extends State<SignupScreen> {
   final _cpfController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
-  final _confirmPasswordController = TextEditingController();
+  final _passwordConfirmController = TextEditingController();
+
+  final FocusNode _emailFocusNode = FocusNode();
+  final FocusNode _passwordFocusNode = FocusNode();
+  final FocusNode _passwordConfirmFocusNode = FocusNode();
 
   bool _passwordVisible = false;
   bool _passwordConfirmVisible = false;
@@ -25,13 +34,21 @@ class _SignupScreenState extends State<SignupScreen> {
   final MaskTextInputFormatter _cpfFormatter = CPFMask.maskFormatter();
 
   @override
+  void dispose() {
+    _emailFocusNode.dispose();
+    _passwordFocusNode.dispose();
+
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return CustomScaffold(
       appBar: AppBar(
-        title: Text('PPEU'),
+        title: Text('Criar conta'),
         centerTitle: true,
       ),
-      body: LayoutBuilder(
+      body: CustomPageContainer(child: LayoutBuilder(
         builder: (BuildContext context, BoxConstraints constraints) {
           return constraints.maxHeight >= MediaQuery.of(context).size.height
               ? SingleChildScrollView(
@@ -39,145 +56,161 @@ class _SignupScreenState extends State<SignupScreen> {
                 )
               : buildForm();
         },
-      ),
+      )),
     );
   }
 
   Widget buildForm() {
-    return Form(
-      key: _formKey,
+    return Padding(
+      padding: EdgeInsets.all(16),
       child: Column(
         children: [
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: 16),
-            child: TextFormField(
-              controller: _nameController,
-              decoration: InputDecoration(labelText: 'Nome'),
-              validator: (value) => value!.isEmpty ? 'Campo obrigatório' : null,
-            ),
-          ),
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: 16),
-            child: TextFormField(
-              controller: _cpfController,
-              inputFormatters: [_cpfFormatter],
-              decoration: InputDecoration(labelText: 'CPF'),
-              validator: (value) {
-                if (value!.isEmpty) {
-                  return 'Campo obrigatório';
-                } else if (!validateCPF(value)) {
-                  return 'CPF inválido';
-                }
-                return null;
-              },
-            ),
-          ),
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: 16),
-            child: TextFormField(
-              controller: _emailController,
-              decoration: InputDecoration(labelText: 'E-mail'),
-              validator: (value) {
-                if (value!.isEmpty) {
-                  return 'Campo obrigatório';
-                } else if (!validateEmail(value)) {
-                  return 'E-mail inválido';
-                }
-                return null;
-              },
-            ),
-          ),
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: 16),
-            child: TextFormField(
-              controller: _confirmPasswordController,
-              validator: (value) => value!.isEmpty
-                  ? 'Campo obrigatório'
-                  : value != _passwordController.text
-                      ? 'As senhas não coincidem'
-                      : null,
-              obscureText: !_passwordVisible,
-              decoration: InputDecoration(
-                labelText: 'Crie uma senha',
-                suffixIcon: IconButton(
-                  icon: Icon(
-                    _passwordVisible ? Icons.visibility : Icons.visibility_off,
-                  ),
-                  onPressed: () {
-                    setState(() {
-                      _passwordVisible = !_passwordVisible;
-                    });
-                  },
-                ),
-              ),
-            ),
-          ),
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: 16),
-            child: TextFormField(
-              controller: _confirmPasswordController,
-              obscureText: !_passwordConfirmVisible,
-              validator: (value) => value!.isEmpty
-                  ? 'Campo obrigatório'
-                  : value != _passwordController.text
-                      ? 'As senhas não coincidem'
-                      : null,
-              decoration: InputDecoration(
-                labelText: 'Confirme sua senha',
-                suffixIcon: IconButton(
-                  icon: Icon(
-                    _passwordConfirmVisible
-                        ? Icons.visibility
-                        : Icons.visibility_off,
-                  ),
-                  onPressed: () {
-                    setState(() {
-                      _passwordConfirmVisible = !_passwordConfirmVisible;
-                    });
-                  },
-                ),
-              ),
-            ),
-          ),
-          SizedBox(height: 16),
           Expanded(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    child: Text('Confirmar cadastro'),
-                    onPressed: () {
-                      if (_formKey.currentState!.validate()) {}
-                    },
-                  ),
-                ),
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    child: Text('Utilize uma conta Google'),
-                    onPressed: () {},
-                  ),
-                ),
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      primary: Colors.transparent,
-                      elevation: 0,
+            child: SingleChildScrollView(
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  children: [
+                    spacingRow,
+                    TextFormField(
+                      controller: _nameController,
+                      decoration: InputDecoration(labelText: 'Nome'),
+                      validator: (value) =>
+                          value!.isEmpty ? 'Campo obrigatório' : null,
+                      textInputAction: TextInputAction.next,
                     ),
-                    child: Text(
-                      'Já possui uma conta? Faça login!',
-                      style: TextStyle(
-                        color: Colors.grey,
+                    spacingRow,
+                    TextFormField(
+                      controller: _cpfController,
+                      inputFormatters: [_cpfFormatter],
+                      decoration: InputDecoration(labelText: 'CPF'),
+                      keyboardType: TextInputType.number,
+                      validator: (value) {
+                        if (value!.isEmpty) {
+                          return 'Campo obrigatório';
+                        } else if (!validateCPF(value)) {
+                          return 'CPF inválido';
+                        }
+                        return null;
+                      },
+                      textInputAction: TextInputAction.next,
+                    ),
+                    spacingRow,
+                    TextFormField(
+                      focusNode: _emailFocusNode,
+                      decoration: InputDecoration(labelText: 'E-mail'),
+                      validator: (value) {
+                        if (value!.isEmpty) {
+                          return 'Campo obrigatório';
+                        } else if (!validateEmail(value)) {
+                          return 'E-mail inválido';
+                        }
+                        return null;
+                      },
+                      textInputAction: TextInputAction.next,
+                      onEditingComplete: () {
+                        FocusScope.of(context).requestFocus(_passwordFocusNode);
+                      },
+                    ),
+                    spacingRow,
+                    TextFormField(
+                      controller: _passwordController,
+                      focusNode: _passwordFocusNode,
+                      validator: (value) => value!.isEmpty
+                          ? 'Campo obrigatório'
+                          : value != _passwordConfirmController.text
+                              ? 'As senhas não coincidem'
+                              : null,
+                      obscureText: !_passwordVisible,
+                      decoration: InputDecoration(
+                        labelText: 'Crie uma senha',
+                        suffixIcon: IconButton(
+                          icon: Icon(
+                            _passwordVisible
+                                ? Icons.visibility
+                                : Icons.visibility_off,
+                          ),
+                          onPressed: () {
+                            setState(() {
+                              _passwordVisible = !_passwordVisible;
+                            });
+                          },
+                        ),
                       ),
+                      textInputAction: TextInputAction.next,
+                      onEditingComplete: () => FocusScope.of(context)
+                          .requestFocus(_passwordConfirmFocusNode),
                     ),
-                    onPressed: () {},
-                  ),
+                    spacingRow,
+                    TextFormField(
+                      controller: _passwordConfirmController,
+                      focusNode: _passwordConfirmFocusNode,
+                      obscureText: !_passwordConfirmVisible,
+                      validator: (value) => value!.isEmpty
+                          ? 'Campo obrigatório'
+                          : value != _passwordController.text
+                              ? 'As senhas não coincidem'
+                              : null,
+                      decoration: InputDecoration(
+                        labelText: 'Confirme sua senha',
+                        suffixIcon: IconButton(
+                          icon: Icon(
+                            _passwordConfirmVisible
+                                ? Icons.visibility
+                                : Icons.visibility_off,
+                          ),
+                          onPressed: () {
+                            setState(() {
+                              _passwordConfirmVisible =
+                                  !_passwordConfirmVisible;
+                            });
+                          },
+                        ),
+                      ),
+                      textInputAction: TextInputAction.done,
+                    ),
+                  ],
                 ),
-              ],
+              ),
             ),
+          ),
+          Column(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              SizedBox(
+                width: double.infinity,
+                child: GradientButton(
+                  text: 'Confirmar cadastro',
+                  onPressed: () {
+                    if (_formKey.currentState!.validate()) {}
+                    Navigator.popAndPushNamed(context, '/singin');
+                  },
+                ),
+              ),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    primary: Colors.transparent,
+                    elevation: 0,
+                  ),
+                  child: Text(
+                    'Já possui uma conta? Faça login!',
+                    style: TextStyle(
+                      color: Colors.grey,
+                    ),
+                  ),
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => SigninScreen(),
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ],
           ),
         ],
       ),

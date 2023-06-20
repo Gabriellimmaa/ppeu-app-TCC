@@ -1,5 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:ppue/constants/constants.dart';
+import 'package:ppue/providers/UserProvider.provider.dart';
 import 'package:ppue/screens/Home.screen.dart';
+import 'package:ppue/widgets/CustomPageContainer.widget.dart';
+import 'package:ppue/widgets/CustomScaffold.widget.dart';
+import 'package:ppue/widgets/GradientButton.widget.dart';
+import 'package:provider/provider.dart';
 
 class SelectUserScreen extends StatefulWidget {
   const SelectUserScreen({Key? key}) : super(key: key);
@@ -11,68 +17,97 @@ class SelectUserScreen extends StatefulWidget {
 class _SelectUserScreenState extends State<SelectUserScreen> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    final userProvider = Provider.of<UserProvider>(context, listen: false);
+
+    return CustomScaffold(
         appBar: AppBar(
           title: Text('PPEU'),
-          centerTitle: true,
+          actions: [
+            IconButton(
+              icon: Icon(Icons.logout),
+              onPressed: () {
+                userProvider.logout();
+                Navigator.pushNamedAndRemoveUntil(
+                    context, '/welcome', (route) => false);
+              },
+            ),
+          ],
         ),
         body: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text('IMAGEM'),
-            Column(
-              children: [
-                Text('Estabelecimento de saúde'),
-                DropdownButton(
-                    value: 'mobileHu',
-                    items: const [
-                      DropdownMenuItem(
-                        value: 'mobileHu',
-                        child: Text('Hospitalar - HU Londrina'),
-                      ),
-                      DropdownMenuItem(
-                        value: 'hospitalHzn',
-                        child: Text('Hospitalar - HZN'),
-                      ),
-                      DropdownMenuItem(
-                        value: 'hospitalIscal',
-                        child: Text('Hospitalar - ISCAL'),
-                      ),
-                      DropdownMenuItem(
-                        value: 'samuLondrina',
-                        child: Text('Móvel - SAMU/Londrina'),
-                      )
-                    ],
-                    onChanged: (value) {}),
-              ],
+            Center(
+              child: Image.asset('assets/images/logo2.png',
+                  height: 200, width: 200),
             ),
-            Padding(
-                padding: EdgeInsets.symmetric(horizontal: 16),
-                child: Column(
+            spacingRow,
+            Expanded(
+                child: CustomPageContainer(
+              child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
-                    SizedBox(
-                      width: double.infinity,
-                      child: ElevatedButton(
-                        onPressed: () {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => HomeScreen()));
-                        },
-                        child: Text('Logar como unidade móvel'),
-                      ),
+                    Column(
+                      children: [
+                        Text('Estabelecimento de saúde'),
+                        DropdownButton(
+                            value: 'mobileHu',
+                            items: const [
+                              DropdownMenuItem(
+                                value: 'mobileHu',
+                                child: Text('Hospitalar - HU Londrina'),
+                              ),
+                              DropdownMenuItem(
+                                value: 'hospitalHzn',
+                                child: Text('Hospitalar - HZN'),
+                              ),
+                              DropdownMenuItem(
+                                value: 'hospitalIscal',
+                                child: Text('Hospitalar - ISCAL'),
+                              ),
+                              DropdownMenuItem(
+                                value: 'samuLondrina',
+                                child: Text('Móvel - SAMU/Londrina'),
+                              )
+                            ],
+                            onChanged: (value) {}),
+                      ],
                     ),
-                    SizedBox(
-                      width: double.infinity,
-                      child: ElevatedButton(
-                        onPressed: () {
-                          Navigator.pushNamed(context, '/login');
-                        },
-                        child: Text('Logar como unidade hospitalar'),
-                      ),
-                    )
-                  ],
-                ))
+                    Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 16),
+                        child: Column(
+                          children: [
+                            SizedBox(
+                              width: double.infinity,
+                              child: GradientButton(
+                                onPressed: () {
+                                  userProvider.setType(1);
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) => HomeScreen()));
+                                },
+                                text: 'Logar como unidade móvel',
+                              ),
+                            ),
+                            spacingRow,
+                            SizedBox(
+                              width: double.infinity,
+                              child: GradientButton(
+                                onPressed: () {
+                                  userProvider.setType(2);
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) => HomeScreen()));
+                                },
+                                // child: Text('Logar como unidade hospitalar'),
+                                text: 'Logar como unidade hospitalar',
+                              ),
+                            )
+                          ],
+                        ))
+                  ]),
+            ))
           ],
         ));
   }

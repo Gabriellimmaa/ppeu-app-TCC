@@ -1,88 +1,97 @@
 import 'package:flutter/material.dart';
-import 'package:ppue/screens/Login.screen.dart';
+import 'package:ppue/constants/constants.dart';
+import 'package:ppue/screens/Signin.screen.dart';
 import 'package:ppue/screens/Signup.screen.dart';
+import 'package:ppue/widgets/CustomPageContainer.widget.dart';
+import 'package:ppue/widgets/CustomScaffold.widget.dart';
+import 'package:ppue/widgets/GradientButton.widget.dart';
 
-class HomePage extends StatefulWidget {
-  const HomePage({Key? key}) : super(key: key);
+class WelcomeScreen extends StatefulWidget {
+  const WelcomeScreen({Key? key}) : super(key: key);
 
   @override
-  State<HomePage> createState() => _HomePageState();
+  State<WelcomeScreen> createState() => _WelcomeScreenState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _WelcomeScreenState extends State<WelcomeScreen> {
   var counter = 0;
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return CustomScaffold(
       appBar: AppBar(
         title: Text('PPEU'),
         centerTitle: true,
       ),
-      body: Center(
-        child: Column(children: [
-          Expanded(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: const [
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 16),
-                  child: Text(
-                    'Bem-vindo profissional de saúde!',
-                    style: TextStyle(
-                      fontSize: 24,
+      body:
+          Column(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+        Center(
+          child:
+              Image.asset('assets/images/logo2.png', height: 200, width: 200),
+        ),
+        spacingRow,
+        Expanded(
+            child: CustomPageContainer(
+                child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 16),
+              child: Text(
+                'Bem-vindo profissional de saúde!',
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 24,
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ),
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 16),
+              child: Text(
+                'Para iniciar, faça login caso já tenha uma conta ou inicie um novo cadastro de usuário',
+                textAlign: TextAlign.center,
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(16),
+              child: Row(
+                children: [
+                  Expanded(
+                    flex: 1,
+                    child: GradientButton(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => SignupScreen(),
+                          ),
+                        );
+                      },
+                      text: 'Novo cadastro',
                     ),
-                    textAlign: TextAlign.center,
                   ),
-                ),
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 16),
-                  child: Text(
-                    'Para iniciar, faça login caso já tenha uma conta ou inicie um novo cadastro de usuário',
-                    textAlign: TextAlign.center,
+                  SizedBox(width: 16),
+                  Expanded(
+                    flex: 1,
+                    child: GradientButton(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => SigninScreen(),
+                          ),
+                        );
+                      },
+                      text: 'Login',
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(16),
-            child: Row(
-              children: [
-                Expanded(
-                  flex: 1,
-                  child: ElevatedButton(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => SignupScreen(),
-                        ),
-                      );
-                    },
-                    child: Text('Novo cadastro'),
-                  ),
-                ),
-                SizedBox(width: 16),
-                Expanded(
-                  flex: 1,
-                  child: ElevatedButton(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => LoginScreen(),
-                        ),
-                      );
-                    },
-                    child: Text('Login'),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ]),
-      ),
+          ],
+        )))
+      ]),
     );
   }
 }

@@ -1,24 +1,66 @@
 import 'package:flutter/material.dart';
+import 'package:ppue/constants/constants.dart';
+import 'package:ppue/models/PP.model.dart';
 
 class NewPP_I extends StatefulWidget {
-  const NewPP_I({Key? key}) : super(key: key);
+  final PPModel? data;
+
+  const NewPP_I({Key? key, this.data}) : super(key: key);
 
   @override
   State<NewPP_I> createState() => _NewPP_IState();
 }
 
 class _NewPP_IState extends State<NewPP_I> {
+  late PPModel? data;
+
   final _formKey = GlobalKey<FormState>();
-  final _fullNameController = TextEditingController();
-  final _ageController = TextEditingController();
-  final _dateBirthController = TextEditingController();
-  final _motherNameController = TextEditingController();
-  final _genderController = TextEditingController();
-  final _formTransportController = TextEditingController();
-  String _selectedGender = '';
+  final _nomeController = TextEditingController();
+  final _idadeController = TextEditingController();
+  final _dataNascimentoController = TextEditingController();
+  final _nomeMaeController = TextEditingController();
+  final _sexoController = TextEditingController();
+  final _formaEncaminhamentoController = TextEditingController();
+  String _selectedSexo = '';
   String _selectedTransport = '';
 
-  final spacingRow = const SizedBox(height: 16);
+  final _nomeFocusNode = FocusNode();
+  final _idadeFocusNode = FocusNode();
+  final _dataNascimentoFocusNode = FocusNode();
+  final _nomeMaeFocusNode = FocusNode();
+
+  @override
+  void initState() {
+    super.initState();
+    data = widget.data;
+
+    if (data != null) {
+      _nomeController.text = data!.identificacao.nome;
+      _idadeController.text = data!.identificacao.idade.toString();
+      _dataNascimentoController.text = data!.identificacao.dataNascimento;
+      _nomeMaeController.text = data!.identificacao.nomeMae;
+      _sexoController.text = data!.identificacao.sexo;
+      _formaEncaminhamentoController.text =
+          data!.identificacao.formaEncaminhamento;
+      _selectedSexo = data!.identificacao.sexo;
+      _selectedTransport = data!.identificacao.formaEncaminhamento;
+    }
+  }
+
+  @override
+  void dispose() {
+    _nomeController.dispose;
+    _idadeController.dispose;
+    _dataNascimentoController.dispose;
+    _nomeMaeController.dispose;
+    _sexoController.dispose;
+    _formaEncaminhamentoController.dispose;
+    _nomeFocusNode.dispose;
+    _idadeFocusNode.dispose;
+    _dataNascimentoFocusNode.dispose;
+    _nomeMaeFocusNode.dispose;
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -28,7 +70,7 @@ class _NewPP_IState extends State<NewPP_I> {
         children: [
           Padding(
             padding: EdgeInsets.symmetric(vertical: 16),
-            child: Text('Indentificação do paciente',
+            child: Text('Identificação do paciente',
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 24,
@@ -42,6 +84,8 @@ class _NewPP_IState extends State<NewPP_I> {
               child: Column(
                 children: [
                   TextFormField(
+                    controller: _nomeController,
+                    readOnly: data != null,
                     decoration: InputDecoration(labelText: 'Nome'),
                     validator: (value) {
                       if (value == null || value.isEmpty) {
@@ -49,9 +93,16 @@ class _NewPP_IState extends State<NewPP_I> {
                       }
                       return null;
                     },
+                    textInputAction: TextInputAction.next,
+                    onFieldSubmitted: (_) {
+                      FocusScope.of(context).requestFocus(_idadeFocusNode);
+                    },
                   ),
                   spacingRow,
                   TextFormField(
+                    controller: _idadeController,
+                    focusNode: _idadeFocusNode,
+                    readOnly: data != null,
                     decoration: InputDecoration(labelText: 'Idade'),
                     validator: (value) {
                       if (value == null || value.isEmpty) {
@@ -59,9 +110,17 @@ class _NewPP_IState extends State<NewPP_I> {
                       }
                       return null;
                     },
+                    textInputAction: TextInputAction.next,
+                    onFieldSubmitted: (_) {
+                      FocusScope.of(context)
+                          .requestFocus(_dataNascimentoFocusNode);
+                    },
                   ),
                   spacingRow,
                   TextFormField(
+                    controller: _dataNascimentoController,
+                    focusNode: _dataNascimentoFocusNode,
+                    readOnly: data != null,
                     decoration:
                         InputDecoration(labelText: 'Data de nascimento'),
                     validator: (value) {
@@ -70,9 +129,16 @@ class _NewPP_IState extends State<NewPP_I> {
                       }
                       return null;
                     },
+                    textInputAction: TextInputAction.next,
+                    onFieldSubmitted: (_) {
+                      FocusScope.of(context).requestFocus(_nomeMaeFocusNode);
+                    },
                   ),
                   spacingRow,
                   TextFormField(
+                    controller: _nomeMaeController,
+                    focusNode: _nomeMaeFocusNode,
+                    readOnly: data != null,
                     decoration: InputDecoration(labelText: 'Nome da mãe'),
                     validator: (value) {
                       if (value == null || value.isEmpty) {
@@ -80,6 +146,7 @@ class _NewPP_IState extends State<NewPP_I> {
                       }
                       return null;
                     },
+                    textInputAction: TextInputAction.done,
                   ),
                   spacingRow,
                   Row(
@@ -94,10 +161,14 @@ class _NewPP_IState extends State<NewPP_I> {
                         children: [
                           Radio(
                             value: 'M',
-                            groupValue: _selectedGender,
+                            groupValue: _selectedSexo,
                             onChanged: (value) {
+                              if (data != null) {
+                                return;
+                              }
+
                               setState(() {
-                                _selectedGender = value.toString();
+                                _selectedSexo = value.toString();
                               });
                             },
                           ),
@@ -108,10 +179,14 @@ class _NewPP_IState extends State<NewPP_I> {
                         children: [
                           Radio(
                             value: 'F',
-                            groupValue: _selectedGender,
+                            groupValue: _selectedSexo,
                             onChanged: (value) {
+                              if (data != null) {
+                                return;
+                              }
+
                               setState(() {
-                                _selectedGender = value.toString();
+                                _selectedSexo = value.toString();
                               });
                             },
                           ),
@@ -122,10 +197,14 @@ class _NewPP_IState extends State<NewPP_I> {
                         children: [
                           Radio(
                             value: 'Outros',
-                            groupValue: _selectedGender,
+                            groupValue: _selectedSexo,
                             onChanged: (value) {
+                              if (data != null) {
+                                return;
+                              }
+
                               setState(() {
-                                _selectedGender = value.toString();
+                                _selectedSexo = value.toString();
                               });
                             },
                           ),
@@ -141,6 +220,9 @@ class _NewPP_IState extends State<NewPP_I> {
                   ),
                   InkWell(
                     onTap: () {
+                      if (data != null) {
+                        return;
+                      }
                       setState(() {
                         _selectedTransport = 'SAMU básica';
                       });
@@ -153,6 +235,10 @@ class _NewPP_IState extends State<NewPP_I> {
                           value: 'SAMU básica',
                           groupValue: _selectedTransport,
                           onChanged: (value) {
+                            if (data != null) {
+                              return;
+                            }
+
                             setState(() {
                               _selectedTransport = value.toString();
                             });
@@ -163,6 +249,10 @@ class _NewPP_IState extends State<NewPP_I> {
                   ),
                   InkWell(
                     onTap: () {
+                      if (data != null) {
+                        return;
+                      }
+
                       setState(() {
                         _selectedTransport = 'SIATE';
                       });
@@ -175,6 +265,10 @@ class _NewPP_IState extends State<NewPP_I> {
                           value: 'SIATE',
                           groupValue: _selectedTransport,
                           onChanged: (value) {
+                            if (data != null) {
+                              return;
+                            }
+
                             setState(() {
                               _selectedTransport = value.toString();
                             });
@@ -185,6 +279,10 @@ class _NewPP_IState extends State<NewPP_I> {
                   ),
                   InkWell(
                     onTap: () {
+                      if (data != null) {
+                        return;
+                      }
+
                       setState(() {
                         _selectedTransport = 'SAMU avançada';
                       });
@@ -197,6 +295,10 @@ class _NewPP_IState extends State<NewPP_I> {
                           value: 'SAMU avançada',
                           groupValue: _selectedTransport,
                           onChanged: (value) {
+                            if (data != null) {
+                              return;
+                            }
+
                             setState(() {
                               _selectedTransport = value.toString();
                             });
@@ -219,6 +321,10 @@ class _NewPP_IState extends State<NewPP_I> {
                           value: 'Aéreo',
                           groupValue: _selectedTransport,
                           onChanged: (value) {
+                            if (data != null) {
+                              return;
+                            }
+
                             setState(() {
                               _selectedTransport = value.toString();
                             });

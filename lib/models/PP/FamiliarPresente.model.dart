@@ -7,6 +7,12 @@ class FamiliarPresente {
     required this.nome,
   });
 
+  factory FamiliarPresente.fromJson(Map<String, dynamic> json) {
+    return FamiliarPresente(
+      nome: json['nome'],
+    );
+  }
+
   Map<String, dynamic> toJson() {
     return {
       'nome': nome,

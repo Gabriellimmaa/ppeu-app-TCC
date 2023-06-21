@@ -2,7 +2,7 @@ import 'dart:convert';
 
 class PCRModel {
   final String ciclos;
-  final PCRMedicacao? medicacoes;
+  final List<PCRMedicacao>? medicacoes;
   final bool cardioversaoOuDesfribilacao;
 
   PCRModel({
@@ -14,13 +14,25 @@ class PCRModel {
   Map<String, dynamic> toJson() {
     return {
       'ciclos': ciclos,
-      'medicacoes': medicacoes?.toJson(),
+      'medicacoes': medicacoes?.map((e) => e.toJson()).toList(),
       'cardioversaoOuDesfribilacao': cardioversaoOuDesfribilacao,
     };
   }
 
   String toJsonString() {
     return jsonEncode(toJson());
+  }
+
+  factory PCRModel.fromJson(Map<String, dynamic> json) {
+    return PCRModel(
+      ciclos: json['ciclos'],
+      medicacoes: json['medicacoes'] != null
+          ? (json['medicacoes'] as List)
+              .map((e) => PCRMedicacao.fromJson(e))
+              .toList()
+          : null,
+      cardioversaoOuDesfribilacao: json['cardioversaoOuDesfribilacao'],
+    );
   }
 }
 
@@ -34,6 +46,14 @@ class PCRMedicacao {
     required this.dose,
     required this.horario,
   });
+
+  factory PCRMedicacao.fromJson(Map<String, dynamic> json) {
+    return PCRMedicacao(
+      nome: json['nome'],
+      dose: json['dose'],
+      horario: json['horario'],
+    );
+  }
 
   Map<String, dynamic> toJson() {
     return {

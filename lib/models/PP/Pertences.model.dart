@@ -9,6 +9,13 @@ class Pertences {
     required this.parentesco,
   });
 
+  factory Pertences.fromJson(Map<String, dynamic> json) {
+    return Pertences(
+      nome: json['nome'],
+      parentesco: json['parentesco'],
+    );
+  }
+
   Map<String, dynamic> toJson() {
     return {
       'nome': nome,

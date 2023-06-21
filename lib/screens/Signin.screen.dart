@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:ppue/constants/constants.dart';
-import 'package:ppue/providers/UserProvider.provider.dart';
+import 'package:ppue/core/notifier/authentication.notifier.dart';
 import 'package:ppue/screens/selectUser.screen.dart';
 import 'package:ppue/widgets/CustomPageContainer.widget.dart';
 import 'package:ppue/widgets/CustomScaffold.widget.dart';
@@ -29,6 +29,12 @@ class _SigninScreenState extends State<SigninScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final AuthenticationNotifier _authenticationNotifier =
+        Provider.of<AuthenticationNotifier>(
+      context,
+      listen: false,
+    );
+
     return CustomScaffold(
         appBar: AppBar(
           title: Text('LOGIN'),
@@ -67,20 +73,12 @@ class _SigninScreenState extends State<SigninScreen> {
                 width: double.infinity,
                 child: GradientButton(
                   text: 'Avançar',
-                  onPressed: () {
-                    // Acesso aos valores digitados
-                    String nome = _emailController.text;
-                    String email = _passwordController.text;
+                  onPressed: () async {
+                    String email = _emailController.text;
+                    String password = _passwordController.text;
 
-                    final userProvider =
-                        Provider.of<UserProvider>(context, listen: false);
-                    userProvider.setUser('Gabriel Lima', 'token');
-
-                    Navigator.pushNamedAndRemoveUntil(
-                      context,
-                      '/select_user',
-                      (route) => false,
-                    );
+                    await _authenticationNotifier.login(
+                        context: context, email: email, password: password);
                   },
                 ),
               ),
@@ -96,14 +94,8 @@ class _SigninScreenState extends State<SigninScreen> {
                       style: TextStyle(
                         color: Colors.grey, // Define a cor do texto como preto
                       )),
-                  onPressed: () {
+                  onPressed: () async {
                     // Acesso aos valores digitados
-                    String nome = _emailController.text;
-                    String email = _passwordController.text;
-
-                    // Realizar ações com os valores (exemplo)
-                    print('Nome: $nome');
-                    print('E-mail: $email');
                   },
                 ),
               )

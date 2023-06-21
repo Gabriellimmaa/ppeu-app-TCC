@@ -43,6 +43,16 @@ class PPModel {
     };
   }
 
+  factory PPModel.fromJson(Map<String, dynamic> json) {
+    return PPModel(
+      identificacao: IdentificacaoModel.fromJson(json['identificacao']),
+      situacao: SituacaoModel.fromJson(json['situacao']),
+      breveHistorico: BreveHistoricoModel.fromJson(json['breveHistorico']),
+      avaliacao: AvaliacaoModel.fromJson(json['avaliacao']),
+      recomendacoes: RecomendacoesModel.fromJson(json['recomendacoes']),
+    );
+  }
+
   String toJsonString() {
     return jsonEncode(toJson());
   }
@@ -64,6 +74,17 @@ class IdentificacaoModel {
     required this.sexo,
     required this.formaEncaminhamento,
   });
+
+  factory IdentificacaoModel.fromJson(Map<String, dynamic> json) {
+    return IdentificacaoModel(
+      nome: json['nome'],
+      idade: json['idade'],
+      dataNascimento: json['dataNascimento'],
+      nomeMae: json['nomeMae'],
+      sexo: json['sexo'],
+      formaEncaminhamento: json['formaEncaminhamento'],
+    );
+  }
 
   Map<String, dynamic> toJson() {
     return {
@@ -99,6 +120,19 @@ class SituacaoModel {
     required this.hipoteseDiagnostico,
     required this.enfermeiroResponsavelTransferencia,
   });
+
+  factory SituacaoModel.fromJson(Map<String, dynamic> json) {
+    return SituacaoModel(
+      origem: json['origem'],
+      sintomas: SintomasModel.fromJson(json['sintomas']),
+      clinica: json['clinica'],
+      trauma: json['trauma'],
+      gestante: GestanteModel.fromJson(json['gestante']),
+      hipoteseDiagnostico: json['hipoteseDiagnostico'],
+      enfermeiroResponsavelTransferencia:
+          json['enfermeiroResponsavelTransferencia'],
+    );
+  }
 
   Map<String, dynamic> toJson() {
     return {
@@ -144,6 +178,22 @@ class BreveHistoricoModel {
     required this.jejum,
   });
 
+  factory BreveHistoricoModel.fromJson(Map<String, dynamic> json) {
+    return BreveHistoricoModel(
+      historicaClinica: json['historicaClinica'],
+      alergias: json['alergias'],
+      comorbidades: json['comorbidades'],
+      vicios: json['vicios'],
+      medicamentoEmUso: json['medicamentoEmUso'],
+      historicoInternacoes: json['historicoInternacoes'],
+      cirurgiaPrevia: json['cirurgiaPrevia'],
+      lesoes: json['lesoes'],
+      alteracoesLaboratoriais: json['alteracoesLaboratoriais'],
+      precaucoes: json['precaucoes'],
+      jejum: json['jejum'],
+    );
+  }
+
   Map<String, dynamic> toJson() {
     return {
       'historicaClinica': historicaClinica,
@@ -185,7 +235,7 @@ class AvaliacaoModel {
   final DrenoToraxModel? drenoTorax;
   final CateterGastricoModel? cateterGastrico;
   final CateterVisicalModel? cateterVesical;
-  final PCRModel? pcr;
+  // final PCRModel? pcr;
   final String? ecg;
   final String outrasAnotacoes;
 
@@ -209,10 +259,37 @@ class AvaliacaoModel {
     required this.drenoTorax,
     required this.cateterGastrico,
     required this.cateterVesical,
-    required this.pcr,
+    // required this.pcr,
     required this.ecg,
     required this.outrasAnotacoes,
   });
+
+  factory AvaliacaoModel.fromJson(Map<String, dynamic> json) {
+    return AvaliacaoModel(
+      dor: DorModel.fromJson(json['dor']),
+      pa: json['pa'],
+      temperatura: json['temperatura'],
+      fr: json['fr'],
+      fc: json['fc'],
+      glicemia: json['glicemia'],
+      sp02: json['sp02'],
+      ao: json['ao'],
+      rv: json['rv'],
+      rm: json['rm'],
+      avdi: json['avdi'],
+      pupilas: json['pupilas'],
+      intubacao: IntubacaoModel.fromJson(json['intubacao']),
+      oxigenio: OxigenioModel.fromJson(json['oxigenio']),
+      nomeMedicao: json['nomeMedicao'],
+      acesso: AcessoModel.fromJson(json['acesso']),
+      drenoTorax: DrenoToraxModel.fromJson(json['drenoTorax']),
+      cateterGastrico: CateterGastricoModel.fromJson(json['cateterGastrico']),
+      cateterVesical: CateterVisicalModel.fromJson(json['cateterVesical']),
+      // pcr: PCRModel.fromJson(json['pcr']),
+      ecg: json['ecg'],
+      outrasAnotacoes: json['outrasAnotacoes'],
+    );
+  }
 
   Map<String, dynamic> toJson() {
     return {
@@ -235,7 +312,7 @@ class AvaliacaoModel {
       'drenoTorax': drenoTorax?.toJson(),
       'cateterGastrico': cateterGastrico,
       'cateterVesical': cateterVesical?.toJson(),
-      'pcr': pcr?.toJson(),
+      // 'pcr': pcr?.toJson(),
       'ecg': ecg,
       'outrasAnotacoes': outrasAnotacoes,
     };
@@ -258,6 +335,18 @@ class RecomendacoesModel {
     required this.familiarPresente,
     required this.pertences,
   });
+
+  factory RecomendacoesModel.fromJson(Map<String, dynamic> json) {
+    return RecomendacoesModel(
+      encaminhamento: json['encaminhamento'],
+      responsavelRecebimento:
+          ResponsavelRecebimento.fromJson(json['responsavelRecebimento']),
+      familiarPresente: json['familiarPresente']
+          ?.map((e) => FamiliarPresente.fromJson(e))
+          .toList(),
+      pertences: Pertences.fromJson(json['pertences']),
+    );
+  }
 
   Map<String, dynamic> toJson() {
     return {

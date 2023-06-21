@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:ppue/core/notifier/database.notifier.dart';
+import 'package:ppue/core/notifier/newPP.notifier.dart';
 import 'package:ppue/screens/newPP/NewPP_A.screen.dart';
 import 'package:ppue/screens/newPP/NewPP_B.screen.dart';
 import 'package:ppue/screens/newPP/NewPP_I.screen.dart';
 import 'package:ppue/screens/newPP/NewPP_R.screen.dart';
 import 'package:ppue/screens/newPP/NewPP_S.screen.dart';
 import 'package:ppue/widgets/ViewPPNavigator.widget.dart';
+import 'package:provider/provider.dart';
 
 class NewPPScreen extends StatefulWidget {
   const NewPPScreen({Key? key}) : super(key: key);
@@ -18,6 +21,12 @@ class _NewPPScreenState extends State<NewPPScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // DatabaseNotifier databaseNotifier =
+    //     Provider.of<DatabaseNotifier>(context, listen: false);
+
+    NewPPNotifier newPPNotifier =
+        Provider.of<NewPPNotifier>(context, listen: false);
+
     return ViewPPNavigator(
         title: "Cadastrar PP",
         currentIndex: _currentIndex,
@@ -91,13 +100,25 @@ class _NewPPScreenState extends State<NewPPScreen> {
           IconButton(
             icon: Icon(Icons.arrow_forward_ios),
             onPressed: () {
-              _onTabTapped('next');
+              if (newPPNotifier.formIdentificacao != null) {
+                if (newPPNotifier.formIdentificacao!.currentState!.validate()) {
+                  _onTabTapped('next');
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('Preencha todos os campos obrigatórios'),
+                    ),
+                  );
+                }
+              }
             },
             color: Colors.white,
           ),
           IconButton(
             icon: Icon(Icons.save),
-            onPressed: () {},
+            onPressed: () async {
+              // databaseNotifier.addPP(data: newPPNotifier.data!);
+            },
             color: Colors.white,
           ),
         ]);

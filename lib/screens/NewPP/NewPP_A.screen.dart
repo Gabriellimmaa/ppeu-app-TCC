@@ -124,7 +124,7 @@ class _NewPP_AState extends State<NewPP_A> {
       bool hasEspecieMedicacao = data!.avaliacao.nomeMedicao != null;
       bool hasDrenoTorax = data!.avaliacao.drenoTorax != null;
       bool hasCateterVesical = data!.avaliacao.cateterVesical != null;
-      bool hasPCR = data!.avaliacao.pcr != null;
+      // bool hasPCR = data!.avaliacao.pcr != null;
       bool hasECG = data!.avaliacao.ecg != null;
       bool hasAcessoCentral = data!.avaliacao.acesso.central != null;
       bool hasAcessoPeriferico = data!.avaliacao.acesso.periferico != null;
@@ -202,15 +202,15 @@ class _NewPP_AState extends State<NewPP_A> {
             data!.avaliacao.cateterVesical!.profissional;
       }
 
-      if (hasPCR) {
-        _pcrCiclosController.text = data!.avaliacao.pcr!.ciclos;
-        _pcrMedicacoesController.text =
-            data!.avaliacao.pcr?.medicacoes!.horario ?? '';
-        _pcrMedicacoesHorariosController.text =
-            data!.avaliacao.pcr?.medicacoes!.horario ?? '';
-        _selectedPCRCardioversaoDesfribilacao =
-            data!.avaliacao.pcr!.cardioversaoOuDesfribilacao;
-      }
+      // if (hasPCR) {
+      //   _pcrCiclosController.text = data!.avaliacao.pcr!.ciclos;
+      //   _pcrMedicacoesController.text =
+      //       data!.avaliacao.pcr?.medicacoes!.horario ?? '';
+      //   _pcrMedicacoesHorariosController.text =
+      //       data!.avaliacao.pcr?.medicacoes!.horario ?? '';
+      //   _selectedPCRCardioversaoDesfribilacao =
+      //       data!.avaliacao.pcr!.cardioversaoOuDesfribilacao;
+      // }
 
       if (hasDor) {
         _dorLocalController.text = data!.avaliacao.dor!.local;
@@ -223,7 +223,7 @@ class _NewPP_AState extends State<NewPP_A> {
       _selectedDor = hasDor ? true : false;
       _selectedIntubacao = hasIntubacao ? true : false;
       _selectedDrenoTorax = hasDrenoTorax ? true : false;
-      _selectedPCR = hasPCR ? true : false;
+      // _selectedPCR = hasPCR ? true : false;
       _selectedECG = hasECG ? true : false;
       _selectedCateterVesical = hasCateterVesical ? true : false;
       _selectecNomeMedicacao = hasEspecieMedicacao ? true : false;

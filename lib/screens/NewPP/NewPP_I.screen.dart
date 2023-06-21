@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:ppue/constants/constants.dart';
+import 'package:ppue/core/notifier/newPP.notifier.dart';
 import 'package:ppue/models/PP.model.dart';
+import 'package:provider/provider.dart';
 
 class NewPP_I extends StatefulWidget {
   final PPModel? data;
@@ -15,6 +17,7 @@ class _NewPP_IState extends State<NewPP_I> {
   late PPModel? data;
 
   final _formKey = GlobalKey<FormState>();
+
   final _nomeController = TextEditingController();
   final _idadeController = TextEditingController();
   final _dataNascimentoController = TextEditingController();
@@ -33,7 +36,9 @@ class _NewPP_IState extends State<NewPP_I> {
   void initState() {
     super.initState();
     data = widget.data;
-
+    NewPPNotifier newPPNotifier =
+        Provider.of<NewPPNotifier>(context, listen: false);
+    newPPNotifier.setFormIdentificacao(_formKey);
     if (data != null) {
       _nomeController.text = data!.identificacao.nome;
       _idadeController.text = data!.identificacao.idade.toString();
@@ -81,6 +86,7 @@ class _NewPP_IState extends State<NewPP_I> {
             padding: EdgeInsets.symmetric(horizontal: 16),
             child: Form(
               key: _formKey,
+              autovalidateMode: AutovalidateMode.onUserInteraction,
               child: Column(
                 children: [
                   TextFormField(

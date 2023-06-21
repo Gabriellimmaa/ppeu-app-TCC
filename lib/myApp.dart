@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:ppue/routes/app.routes.dart';
 import 'package:ppue/screens/SelectUser.screen.dart';
 import 'package:ppue/screens/Signin.screen.dart';
 import 'package:ppue/screens/Signup.screen.dart';
@@ -26,12 +27,7 @@ class MyApp extends StatelessWidget {
         ),
       ),
       home: WelcomeScreen(),
-      routes: {
-        '/select_user': (context) => SelectUserScreen(),
-        '/singin': (context) => SigninScreen(),
-        '/signup': (context) => SignupScreen(),
-        '/welcome': (context) => WelcomeScreen(),
-      },
+      routes: AppRoutes.routes,
     );
   }
 }

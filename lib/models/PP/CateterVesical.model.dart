@@ -11,6 +11,14 @@ class CateterVisicalModel {
     required this.profissional,
   });
 
+  factory CateterVisicalModel.fromJson(Map<String, dynamic> json) {
+    return CateterVisicalModel(
+      tamanho: json['tamanho'],
+      horario: json['horario'],
+      profissional: json['profissional'],
+    );
+  }
+
   Map<String, dynamic> toJson() {
     return {
       'tamanho': tamanho,

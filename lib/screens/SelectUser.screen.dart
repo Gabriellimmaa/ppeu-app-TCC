@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:ppue/constants/constants.dart';
-import 'package:ppue/providers/UserProvider.provider.dart';
+import 'package:ppue/core/notifier/authentication.notifier.dart';
+import 'package:ppue/core/notifier/user.notifier.dart';
 import 'package:ppue/screens/Home.screen.dart';
 import 'package:ppue/widgets/CustomPageContainer.widget.dart';
 import 'package:ppue/widgets/CustomScaffold.widget.dart';
@@ -17,8 +18,15 @@ class SelectUserScreen extends StatefulWidget {
 class _SelectUserScreenState extends State<SelectUserScreen> {
   @override
   Widget build(BuildContext context) {
-    final userProvider = Provider.of<UserProvider>(context, listen: false);
-
+    AuthenticationNotifier authenticationNotifier =
+        Provider.of<AuthenticationNotifier>(
+      context,
+      listen: false,
+    );
+    UserNotifier userNotifier = Provider.of<UserNotifier>(
+      context,
+      listen: false,
+    );
     return CustomScaffold(
         appBar: AppBar(
           title: Text('PPEU'),
@@ -26,9 +34,7 @@ class _SelectUserScreenState extends State<SelectUserScreen> {
             IconButton(
               icon: Icon(Icons.logout),
               onPressed: () {
-                userProvider.logout();
-                Navigator.pushNamedAndRemoveUntil(
-                    context, '/welcome', (route) => false);
+                authenticationNotifier.logout(context: context);
               },
             ),
           ],
@@ -80,7 +86,7 @@ class _SelectUserScreenState extends State<SelectUserScreen> {
                               width: double.infinity,
                               child: GradientButton(
                                 onPressed: () {
-                                  userProvider.setType(1);
+                                  userNotifier.setType(1);
                                   Navigator.push(
                                       context,
                                       MaterialPageRoute(
@@ -94,13 +100,12 @@ class _SelectUserScreenState extends State<SelectUserScreen> {
                               width: double.infinity,
                               child: GradientButton(
                                 onPressed: () {
-                                  userProvider.setType(2);
+                                  userNotifier.setType(2);
                                   Navigator.push(
                                       context,
                                       MaterialPageRoute(
                                           builder: (context) => HomeScreen()));
                                 },
-                                // child: Text('Logar como unidade hospitalar'),
                                 text: 'Logar como unidade hospitalar',
                               ),
                             )

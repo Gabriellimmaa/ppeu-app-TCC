@@ -15,6 +15,16 @@ class SintomasModel {
     required this.outros,
   });
 
+  factory SintomasModel.fromJson(Map<String, dynamic> json) {
+    return SintomasModel(
+      horario: json['horario'],
+      dorToracica: json['dorToracica'],
+      deficitMotor: json['deficitMotor'],
+      local: json['local'],
+      outros: json['outros'],
+    );
+  }
+
   Map<String, dynamic> toJson() {
     return {
       'horario': horario,

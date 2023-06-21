@@ -141,7 +141,7 @@ PPModel examplePP = PPModel(
     cateterGastrico: null,
     cateterVesical: CateterVisicalModel(
         tamanho: 16.0, horario: '23:30', profissional: 'Gabriel Lima'),
-    pcr: null,
+    // pcr: null,
     ecg: "Normal",
     outrasAnotacoes: "Paciente alérgico a amoxicilina.",
   ),

@@ -11,6 +11,14 @@ class AcessoModel {
     required this.intraosseo,
   });
 
+  factory AcessoModel.fromJson(Map<String, dynamic> json) {
+    return AcessoModel(
+      central: json['central'],
+      periferico: json['periferico'],
+      intraosseo: json['intraosseo'],
+    );
+  }
+
   Map<String, dynamic> toJson() {
     return {
       'central': central,

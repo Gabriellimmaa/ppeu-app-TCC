@@ -11,6 +11,13 @@ class DorModel {
 
   bool? get isNotEmpty => null;
 
+  factory DorModel.fromJson(Map<String, dynamic> json) {
+    return DorModel(
+      local: json['local'],
+      intensidade: json['intensidade'],
+    );
+  }
+
   Map<String, dynamic> toJson() {
     return {
       'local': local,

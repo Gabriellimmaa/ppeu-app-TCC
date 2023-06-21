@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:ppue/constants/constants.dart';
+import 'package:ppue/routes/app.routes.dart';
 import 'package:ppue/screens/Signin.screen.dart';
 import 'package:ppue/screens/Signup.screen.dart';
 import 'package:ppue/widgets/CustomPageContainer.widget.dart';
@@ -61,12 +62,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                     flex: 1,
                     child: GradientButton(
                       onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => SignupScreen(),
-                          ),
-                        );
+                        Navigator.of(context).pushNamed(AppRoutes.SingupRoute);
                       },
                       text: 'Novo cadastro',
                     ),
@@ -76,12 +72,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                     flex: 1,
                     child: GradientButton(
                       onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => SigninScreen(),
-                          ),
-                        );
+                        Navigator.of(context).pushNamed(AppRoutes.SinginRoute);
                       },
                       text: 'Login',
                     ),

@@ -11,6 +11,14 @@ class ResponsavelRecebimento {
     required this.cargo,
   });
 
+  factory ResponsavelRecebimento.fromJson(Map<String, dynamic> json) {
+    return ResponsavelRecebimento(
+      nome: json['nome'],
+      cpf: json['cpf'],
+      cargo: json['cargo'],
+    );
+  }
+
   Map<String, dynamic> toJson() {
     return {
       'nome': nome,

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 import 'package:ppue/constants/constants.dart';
+import 'package:ppue/core/notifier/authentication.notifier.dart';
 import 'package:ppue/screens/Signin.screen.dart';
 import 'package:ppue/utils/inputMask/cpf.mask.dart';
 import 'package:ppue/utils/validation/cpf.validation.dart';
@@ -8,6 +9,7 @@ import 'package:ppue/utils/validation/email.validation.dart';
 import 'package:ppue/widgets/CustomPageContainer.widget.dart';
 import 'package:ppue/widgets/CustomScaffold.widget.dart';
 import 'package:ppue/widgets/GradientButton.widget.dart';
+import 'package:provider/provider.dart';
 
 class SignupScreen extends StatefulWidget {
   const SignupScreen({Key? key}) : super(key: key);
@@ -61,6 +63,12 @@ class _SignupScreenState extends State<SignupScreen> {
   }
 
   Widget buildForm() {
+    final AuthenticationNotifier authenticationNotifier =
+        Provider.of<AuthenticationNotifier>(
+      context,
+      listen: false,
+    );
+
     return Padding(
       padding: EdgeInsets.all(16),
       child: Column(
@@ -98,6 +106,7 @@ class _SignupScreenState extends State<SignupScreen> {
                     spacingRow,
                     TextFormField(
                       focusNode: _emailFocusNode,
+                      controller: _emailController,
                       decoration: InputDecoration(labelText: 'E-mail'),
                       validator: (value) {
                         if (value!.isEmpty) {
@@ -181,9 +190,14 @@ class _SignupScreenState extends State<SignupScreen> {
                 width: double.infinity,
                 child: GradientButton(
                   text: 'Confirmar cadastro',
-                  onPressed: () {
-                    if (_formKey.currentState!.validate()) {}
-                    Navigator.popAndPushNamed(context, '/singin');
+                  onPressed: () async {
+                    if (_formKey.currentState!.validate()) {
+                      String email = _emailController.text;
+                      String password = _passwordController.text;
+
+                      await authenticationNotifier.singup(
+                          context: context, email: email, password: password);
+                    }
                   },
                 ),
               ),

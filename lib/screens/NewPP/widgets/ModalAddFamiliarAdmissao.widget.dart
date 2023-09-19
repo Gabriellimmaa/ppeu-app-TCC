@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:ppue/constants/constants.dart';
+import 'package:ppue/utils/validation/FormValidators.validation.dart';
 
 class ModalAddFamiliarAdmissao extends StatefulWidget {
   final Function(String) onChanged;
@@ -55,14 +56,16 @@ class _ModalAddFamiliarAdmissaoState extends State<ModalAddFamiliarAdmissao> {
                   ),
                   spacingRow,
                   TextFormField(
-                    controller: _nomeController,
-                    decoration: InputDecoration(labelText: 'Nome completo'),
-                  ),
+                      controller: _nomeController,
+                      decoration: InputDecoration(labelText: 'Nome completo'),
+                      validator: FormValidators.required),
                   spacingRow,
                   SizedBox(
                     width: double.infinity,
                     child: ElevatedButton(
                       onPressed: () {
+                        if (!_formKey.currentState!.validate()) return;
+
                         widget.onChanged(_nomeController.text);
                         Navigator.pop(context);
                       },

@@ -1,0 +1,123 @@
+[
+    {
+        "id": 1,
+        "identificacao": {
+            "nome": "João Silva",
+            "sexo": "M",
+            "idade": "35",
+            "nomeMae": "Maria Silva",
+            "dataNascimento": "1988-03-15",
+            "formaEncaminhamento": "SIATE"
+        },
+        "situacao": {
+            "origem": "Residência",
+            "trauma": "Agressão",
+            "clinica": "asdasdasd",
+            "gestante": {
+                "ig": "ig",
+                "bcf": "bcf",
+                "perdasVW": true,
+                "tipoGestacao": "Primigesta"
+            },
+            "sintomas": {
+                "local": "local",
+                "outros": "outros",
+                "horario": "12:00",
+                "dorToracica": true,
+                "deficitMotor": false
+            },
+            "hipoteseDiagnostico": "Pneumonia",
+            "enfermeiroResponsavelTransferencia": "Maria Souza"
+        },
+        "breveHistorico": {
+            "jejum": "12 horas",
+            "lesoes": "Nenhuma",
+            "vicios": "Nenhum",
+            "alergias": "TESTES",
+            "precaucoes": "Gotículas",
+            "comorbidades": "Diabetes tipo 2",
+            "cirurgiaPrevia": "Cirurgia de apendicite em 2010",
+            "historicaClinica": "Hipertensão arterial",
+            "medicamentoEmUso": "Losartana",
+            "historicoInternacoes": "Nenhuma",
+            "alteracoesLaboratoriais": "Nenhuma"
+        },
+        "avaliacao": {
+            "ao": 4,
+            "fc": "80",
+            "fr": "20",
+            "pa": "120/80",
+            "rm": 2,
+            "rv": 3,
+            "dor": null,
+            "ecg": "Normal",
+            "avdi": "Inconciente",
+            "sp02": "98",
+            "acesso": {
+                "central": {
+                    "local": "JE",
+                    "horario": "12:00",
+                    "profissional": "Gabriel Lima"
+                },
+                "intraosseo": {
+                    "local": "no osso",
+                    "horario": "14:00",
+                    "profissional": "Gabriel Lima"
+                },
+                "periferico": {
+                    "local": "periferico",
+                    "horario": "13:00",
+                    "profissional": "Gabriel Lima",
+                    "numeroDispositivoIntravenoso": 25
+                }
+            },
+            "pupilas": "Midriáticas",
+            "glicemia": "110",
+            "oxigenio": {
+                "tipo": "MAF",
+                "litrosMinuto": 5.5
+            },
+            "intubacao": {
+                "horario": "12:00",
+                "numeroTubo": "123",
+                "responsavel": "Maria Souza"
+            },
+            "drenoTorax": {
+                "local": "HTD",
+                "numero": "2",
+                "horario": "12:30",
+                "profissional": "Gabriel Lima"
+            },
+            "temperatura": "38.5",
+            "nomeMedicacao": "Nenhuma",
+            "cateterVesical": {
+                "horario": "23:30",
+                "tamanho": 16,
+                "profissional": "Gabriel Lima"
+            },
+            "cateterGastrico": null,
+            "outrasAnotacoes": "Paciente alérgico a amoxicilina."
+        },
+        "recomendacoes": {
+            "pertences": {
+                "nome": "Gabriel Lima",
+                "parentesco": "Pai"
+            },
+            "encaminhamento": "Hospital do Trabalhador",
+            "familiarPresente": [
+                {
+                    "nome": "Gabriel Lima"
+                },
+                {
+                    "nome": "Menolli"
+                }
+            ],
+            "responsavelRecebimento": {
+                "cpf": "48052317851",
+                "nome": "Matheus Valeri",
+                "cargo": "Médico"
+            }
+        },
+        "created_at": "2023-06-22 02:58:07.312202+00"
+    }
+]

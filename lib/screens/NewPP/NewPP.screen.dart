@@ -100,17 +100,24 @@ class _NewPPScreenState extends State<NewPPScreen> {
           IconButton(
             icon: Icon(Icons.arrow_forward_ios),
             onPressed: () {
-              if (newPPNotifier.formIdentificacao != null) {
-                if (newPPNotifier.formIdentificacao!.currentState!.validate()) {
-                  _onTabTapped('next');
-                } else {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text('Preencha todos os campos obrigatórios'),
-                    ),
-                  );
-                }
-              }
+              _onTabTapped('next');
+              // List<GlobalKey<FormState>> formKeys = [];
+              // formKeys.add(newPPNotifier.formKeyIdentificacao);
+              // formKeys.add(newPPNotifier.formKeySituacao);
+              // formKeys.add(newPPNotifier.formKeyBreveHistorico);
+              // formKeys.add(newPPNotifier.formKeyAvaliacao);
+              // formKeys.add(newPPNotifier.formKeyRecomendacoes);
+              // if (formKeys[_currentIndex].currentState!.validate()) {
+              //   formKeys[_currentIndex].currentState!.save();
+              //   print(newPPNotifier.identificacao.nomeMae);
+              //   _onTabTapped('next');
+              // } else {
+              //   ScaffoldMessenger.of(context).showSnackBar(
+              //     SnackBar(
+              //       content: Text('Preencha todos os campos obrigatórios'),
+              //     ),
+              //   );
+              // }
             },
             color: Colors.white,
           ),

@@ -9,7 +9,14 @@ class OxigenioModel {
     required this.litrosMinuto,
   }) : assert(tipo == 'MAF' || tipo == 'Catater');
 
-  factory OxigenioModel.fromJson(Map<String, dynamic> json) {
+  factory OxigenioModel.fromJson(Map<String, dynamic>? json) {
+    if (json == null) {
+      return OxigenioModel(
+        tipo: '',
+        litrosMinuto: 0,
+      );
+    }
+
     return OxigenioModel(
       tipo: json['tipo'],
       litrosMinuto: json['litrosMinuto'],

@@ -1,6 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:ppue/constants/constants.dart';
+import 'package:ppue/core/notifier/newPP.notifier.dart';
 import 'package:ppue/models/PP.model.dart';
+import 'package:ppue/models/PP/Gestante.model.dart';
+import 'package:ppue/models/PP/Sintomas.model.dart';
+import 'package:ppue/utils/validation/FormValidators.validation.dart';
+import 'package:ppue/widgets/inputs/TimePickerTextField.widget.dart';
+import 'package:provider/provider.dart';
 
 class NewPP_S extends StatefulWidget {
   final PPModel? data;
@@ -17,7 +23,7 @@ class NewPP_S extends StatefulWidget {
 class _NewPP_SState extends State<NewPP_S> {
   PPModel? data;
 
-  final _formKey = GlobalKey<FormState>();
+  late GlobalKey<FormState> _formKey;
   String? _selectedOrigem;
   String? _selectedCausasExternas;
   String? _selectedClinica;
@@ -55,6 +61,10 @@ class _NewPP_SState extends State<NewPP_S> {
   void initState() {
     super.initState();
     data = widget.data;
+
+    NewPPNotifier newPPNotifier =
+        Provider.of<NewPPNotifier>(context, listen: false);
+    _formKey = newPPNotifier.formKeySituacao;
 
     if (data != null) {
       _selectedOrigem = data!.situacao.origem;
@@ -101,6 +111,39 @@ class _NewPP_SState extends State<NewPP_S> {
 
   @override
   Widget build(BuildContext context) {
+    NewPPNotifier newPPNotifier =
+        Provider.of<NewPPNotifier>(context, listen: false);
+
+    void updateFormData() {
+      newPPNotifier.situacao = SituacaoModel(
+        origem: _selectedOrigem ?? '',
+        trauma: _selectedCausasExternas ?? '',
+        clinica: _selectedClinica ?? '',
+        sintomas: SintomasModel(
+          horario: _sintomasHorarioController.text,
+          dorToracica: _sintomasDorToracica ?? false,
+          deficitMotor: _sintomasDeficitMotor ?? false,
+          local: _sintomasLocalController.text,
+          outros: _sintomasOutrosController.text,
+        ),
+        gestante: GestanteModel(
+          bcf: _gestanteBCFController.text,
+          ig: _gestanteIGController.text,
+          perdasVW: _gestantePerdasVW ?? false,
+          tipoGestacao: _gestanteTipoGestacao ?? '',
+        ),
+        hipoteseDiagnostico: _hipoteseDiagnosticoController.text,
+        enfermeiroResponsavelTransferencia:
+            _enfermeiroResponsavelTransferenciaController.text,
+      );
+    }
+
+    void checkValidFields() {
+      if (_formKey.currentState!.validate()) {
+        _formKey.currentState!.validate();
+      }
+    }
+
     return SingleChildScrollView(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -158,9 +201,12 @@ class _NewPP_SState extends State<NewPP_S> {
                               ),
                             )
                             .toList(),
+                        validator: FormValidators.required,
+                        onSaved: (newValue) => updateFormData(),
                         onChanged: data != null
                             ? null
                             : (value) {
+                                checkValidFields();
                                 setState(() {
                                   _selectedOrigem = value as String?;
                                   _showTransferField = value == 'Transferência';
@@ -192,17 +238,19 @@ class _NewPP_SState extends State<NewPP_S> {
                     child: Column(
                       children: [
                         spacingRow,
-                        TextFormField(
+                        TimePickerTextField(
                           controller: _sintomasHorarioController,
                           readOnly: data != null,
-                          decoration: InputDecoration(
-                              labelText: 'Horário (início dos sintomas)'),
+                          labelText: 'Horário (início dos sintomas)',
+                          validator: FormValidators.required,
+                          onChanged: (_) => checkValidFields(),
                         ),
                         spacingRow,
                         DropdownButtonFormField(
                           value: _sintomasDorToracica,
                           decoration:
                               InputDecoration(labelText: 'Dor torácica'),
+                          validator: FormValidators.required,
                           items: const [
                             DropdownMenuItem(
                               value: true,
@@ -228,6 +276,7 @@ class _NewPP_SState extends State<NewPP_S> {
                           onChanged: data != null
                               ? null
                               : (value) {
+                                  checkValidFields();
                                   setState(() {
                                     _sintomasDorToracica = value as bool?;
                                   });
@@ -260,9 +309,11 @@ class _NewPP_SState extends State<NewPP_S> {
                               ),
                             ),
                           ],
+                          validator: FormValidators.required,
                           onChanged: data != null
                               ? null
                               : (value) {
+                                  checkValidFields();
                                   setState(() {
                                     _sintomasDeficitMotor = value as bool?;
                                   });
@@ -377,9 +428,11 @@ class _NewPP_SState extends State<NewPP_S> {
                                       ),
                                     ))
                                 .toList(),
+                            validator: FormValidators.required,
                             onChanged: data != null
                                 ? null
                                 : (value) {
+                                    checkValidFields();
                                     setState(() {
                                       _selectedCausasExternas =
                                           value as String?;
@@ -469,9 +522,13 @@ class _NewPP_SState extends State<NewPP_S> {
                                         ),
                                       ))
                                   .toList(),
+                              validator: (value) => FormValidators.required(
+                                  value,
+                                  condition: _selectedGestante == true),
                               onChanged: data != null
                                   ? null
                                   : (value) {
+                                      checkValidFields();
                                       setState(() {
                                         _gestanteTipoGestacao =
                                             value as String?;
@@ -493,9 +550,13 @@ class _NewPP_SState extends State<NewPP_S> {
                                   child: Text('Não'),
                                 ),
                               ],
+                              validator: (value) => FormValidators.required(
+                                  value,
+                                  condition: _selectedGestante == true),
                               onChanged: data != null
                                   ? null
                                   : (value) {
+                                      checkValidFields();
                                       setState(() {
                                         _gestantePerdasVW = value as bool?;
                                       });
@@ -513,6 +574,10 @@ class _NewPP_SState extends State<NewPP_S> {
                                 FocusScope.of(context)
                                     .requestFocus(_gestanteBCFFocusNode);
                               },
+                              validator: (value) => FormValidators.required(
+                                  value,
+                                  condition: _selectedGestante == true),
+                              onChanged: (_) => checkValidFields(),
                               textInputAction: TextInputAction.next,
                             ),
                             spacingRow,
@@ -525,6 +590,10 @@ class _NewPP_SState extends State<NewPP_S> {
                                       'Batimentos cardíacos fetais (BCF)'),
                               keyboardType: TextInputType.number,
                               textInputAction: TextInputAction.next,
+                              validator: (value) => FormValidators.required(
+                                  value,
+                                  condition: _selectedGestante == true),
+                              onChanged: (_) => checkValidFields(),
                               onFieldSubmitted: (_) {
                                 FocusScope.of(context).requestFocus(
                                     _hipoteseDiagnosticoFocusNode);
@@ -553,6 +622,8 @@ class _NewPP_SState extends State<NewPP_S> {
                       readOnly: data != null,
                       decoration: InputDecoration(labelText: 'Preencher'),
                       textInputAction: TextInputAction.next,
+                      validator: FormValidators.required,
+                      onChanged: (_) => checkValidFields(),
                       onFieldSubmitted: (_) {
                         FocusScope.of(context).requestFocus(
                             _enfermeiroResponsavelTransferenciaFocusNode);
@@ -577,6 +648,8 @@ class _NewPP_SState extends State<NewPP_S> {
                       controller: _enfermeiroResponsavelTransferenciaController,
                       focusNode: _enfermeiroResponsavelTransferenciaFocusNode,
                       readOnly: data != null,
+                      validator: FormValidators.required,
+                      onChanged: (_) => checkValidFields(),
                       decoration: InputDecoration(labelText: 'Preencher'),
                     ),
                   ),

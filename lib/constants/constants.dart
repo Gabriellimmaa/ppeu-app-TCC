@@ -121,7 +121,7 @@ PPModel examplePP = PPModel(
       responsavel: 'Maria Souza',
     ),
     oxigenio: OxigenioModel(tipo: 'MAF', litrosMinuto: 5.5),
-    nomeMedicao: "Nenhuma",
+    nomeMedicacao: "Nenhuma",
     acesso: AcessoModel(
       central: AcessoCentral(
           profissional: 'Gabriel Lima', horario: '12:00', local: 'JE'),
@@ -139,7 +139,7 @@ PPModel examplePP = PPModel(
         horario: '12:30',
         profissional: 'Gabriel Lima'),
     cateterGastrico: null,
-    cateterVesical: CateterVisicalModel(
+    cateterVesical: CateterVesicalModel(
         tamanho: 16.0, horario: '23:30', profissional: 'Gabriel Lima'),
     // pcr: null,
     ecg: "Normal",
@@ -147,10 +147,7 @@ PPModel examplePP = PPModel(
   ),
   recomendacoes: RecomendacoesModel(
       encaminhamento: "Hospital do Trabalhador",
-      familiarPresente: [
-        FamiliarPresente(nome: 'Gabriel Lima'),
-        FamiliarPresente(nome: 'Menolli'),
-      ],
+      familiarPresente: ['Gabriel Lima', 'Menolli'],
       pertences: Pertences(nome: 'Gabriel Lima', parentesco: 'Pai'),
       responsavelRecebimento: ResponsavelRecebimento(
           nome: 'Matheus Valeri', cpf: '48052317851', cargo: 'Médico')),

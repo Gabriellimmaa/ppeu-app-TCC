@@ -1,18 +1,26 @@
 import 'dart:convert';
 
-class CateterVisicalModel {
+class CateterVesicalModel {
   final double tamanho;
   final String horario;
   final String profissional;
 
-  CateterVisicalModel({
+  CateterVesicalModel({
     required this.tamanho,
     required this.horario,
     required this.profissional,
   });
 
-  factory CateterVisicalModel.fromJson(Map<String, dynamic> json) {
-    return CateterVisicalModel(
+  factory CateterVesicalModel.fromJson(Map<String, dynamic>? json) {
+    if (json == null) {
+      return CateterVesicalModel(
+        tamanho: 0,
+        horario: '',
+        profissional: '',
+      );
+    }
+
+    return CateterVesicalModel(
       tamanho: json['tamanho'],
       horario: json['horario'],
       profissional: json['profissional'],

@@ -9,6 +9,7 @@ class DatabaseService {
           .from('pp')
           .select()
           .execute();
+
       print(response.data);
     } catch (e) {
       print(e.toString());
@@ -29,6 +30,26 @@ class DatabaseService {
       } else {
         print(response.error);
       }
+    } catch (e) {
+      print(e.toString());
+    }
+  }
+
+  Future filterPP({
+    required String nome,
+    required String responsavelRecebimentoCpf,
+    required String encaminhamento,
+  }) async {
+    try {
+      var response = await SupabaseCredentials.supabaseClient
+          .from('pp')
+          .select()
+          .ilike('identificacao->>nome', '%$nome%')
+          .eq('recomendacoes->>encaminhamento', encaminhamento)
+          .eq('recomendacoes->responsavelRecebimento->>cpf',
+              responsavelRecebimentoCpf)
+          .execute();
+      return response.data;
     } catch (e) {
       print(e.toString());
     }

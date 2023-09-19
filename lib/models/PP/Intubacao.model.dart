@@ -11,7 +11,15 @@ class IntubacaoModel {
     required this.responsavel,
   });
 
-  factory IntubacaoModel.fromJson(Map<String, dynamic> json) {
+  factory IntubacaoModel.fromJson(Map<String, dynamic>? json) {
+    if (json == null) {
+      return IntubacaoModel(
+        horario: '',
+        numeroTubo: '',
+        responsavel: '',
+      );
+    }
+
     return IntubacaoModel(
       horario: json['horario'],
       numeroTubo: json['numeroTubo'],

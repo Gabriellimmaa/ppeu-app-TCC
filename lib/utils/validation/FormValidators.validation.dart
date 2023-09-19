@@ -15,10 +15,14 @@ class FormValidators {
     };
   }
 
-  static String? required(String? value) {
-    if (value == null || value.isEmpty) {
+  static String? required(dynamic value, {bool condition = true}) {
+    if (condition &&
+        (value == null ||
+            (value is String && value.isEmpty) ||
+            (value == null))) {
       return 'Campo obrigatório';
     }
+
     return null;
   }
 

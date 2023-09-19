@@ -1,3 +1,13 @@
+import 'package:ppue/core/notifier/newPP.notifier.dart';
+import 'package:ppue/models/PP/Acesso.model.dart';
+import 'package:ppue/models/PP/CateterGastrico.model.dart';
+import 'package:ppue/models/PP/CateterVesical.model.dart';
+import 'package:ppue/models/PP/Dor.model.dart';
+import 'package:ppue/models/PP/DrenoTorax.model.dart';
+import 'package:ppue/models/PP/Intubacao.model.dart';
+import 'package:ppue/models/PP/Oxigenio.model.dart';
+import 'package:ppue/utils/validation/FormValidators.validation.dart';
+import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
 import 'package:ppue/constants/constants.dart';
 import 'package:ppue/models/PP.model.dart';
@@ -16,7 +26,7 @@ class NewPP_A extends StatefulWidget {
 
 class _NewPP_AState extends State<NewPP_A> {
   PPModel? data;
-  final _formKey = GlobalKey<FormState>();
+  late GlobalKey<FormState> _formKey;
 
   bool _selectedDor = false;
   bool _selectedIntubacao = false;
@@ -36,7 +46,7 @@ class _NewPP_AState extends State<NewPP_A> {
   bool _selectedPCRMedicine = false;
   bool _selectedECG = false;
 
-  double? _intensidadeDor;
+  double _intensidadeDor = 1.0;
 
   final _dorLocalController = TextEditingController();
   final _dorLocalFocusNode = FocusNode();
@@ -75,6 +85,8 @@ class _NewPP_AState extends State<NewPP_A> {
   final _acessoPerifericoProfissionalController = TextEditingController();
   final _acessoPerifericoHorarioController = TextEditingController();
   final _acessoPerifericoLocalController = TextEditingController();
+  final _acessoPerifericoDispositivoIntravenosoController =
+      TextEditingController();
   final _acessoPerifericoLocalFocusNode = FocusNode();
   final _acessoPerifericoProfissionalFocusNode = FocusNode();
   final _acessoPerifericoHorarioFocusNode = FocusNode();
@@ -116,12 +128,15 @@ class _NewPP_AState extends State<NewPP_A> {
   void initState() {
     super.initState();
     data = widget.data;
+    NewPPNotifier newPPNotifier =
+        Provider.of<NewPPNotifier>(context, listen: false);
+    _formKey = newPPNotifier.formKeyAvaliacao;
 
     if (data != null) {
       bool hasDor = data?.avaliacao.dor != null;
       bool hasIntubacao = data!.avaliacao.intubacao != null;
       bool hasOxigenio = data!.avaliacao.oxigenio != null;
-      bool hasEspecieMedicacao = data!.avaliacao.nomeMedicao != null;
+      bool hasEspecieMedicacao = data!.avaliacao.nomeMedicacao != null;
       bool hasDrenoTorax = data!.avaliacao.drenoTorax != null;
       bool hasCateterVesical = data!.avaliacao.cateterVesical != null;
       // bool hasPCR = data!.avaliacao.pcr != null;
@@ -151,6 +166,9 @@ class _NewPP_AState extends State<NewPP_A> {
             data!.avaliacao.acesso.central!.horario;
       }
       if (hasAcessoPeriferico) {
+        _acessoPerifericoDispositivoIntravenosoController.text = data!
+            .avaliacao.acesso.periferico!.numeroDispositivoIntravenoso
+            .toString();
         _selectedAcessoPeriferico = hasAcessoPeriferico ? true : false;
         _acessoPerifericoLocalController.text =
             data!.avaliacao.acesso.periferico!.local;
@@ -179,7 +197,7 @@ class _NewPP_AState extends State<NewPP_A> {
 
       if (hasOxigenio) {}
 
-      _nomeMedicacaoController.text = data!.avaliacao.nomeMedicao ?? '';
+      _nomeMedicacaoController.text = data!.avaliacao.nomeMedicacao ?? '';
 
       if (hasDrenoTorax) {
         _selectedDrenoToraxLocal = data!.avaliacao.drenoTorax!.local;
@@ -293,8 +311,114 @@ class _NewPP_AState extends State<NewPP_A> {
     });
   }
 
+  void checkValidFields() {
+    if (_formKey.currentState!.validate()) {
+      _formKey.currentState!.validate();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    NewPPNotifier newPPNotifier =
+        Provider.of<NewPPNotifier>(context, listen: false);
+
+    void updateFormData() {
+      bool hasDor = _selectedDor == true;
+      bool hasIntubacao = _selectedIntubacao == true;
+      bool hasOxigenio = _selectedOxigenio == true;
+      bool hasDrenoTorax = _selectedDrenoTorax == true;
+      bool hasCateterVesical = _selectedCateterVesical == true;
+      // bool hasPCR = _selectedPCR == true;
+      bool hasECG = _selectedECG == true;
+      bool hasAcessoCentral = _selectedAcessoCentral == true;
+      bool hasAcessoPeriferico = _selectedAcessoPeriferico == true;
+      bool hasAcessoIntraosseo = _selectedAcessoIntraosseo == true;
+
+      newPPNotifier.avaliacao = AvaliacaoModel(
+        acesso: AcessoModel(
+          central: hasAcessoCentral
+              ? AcessoCentral(
+                  local: _selectedAcessoCentralLocal ?? '',
+                  horario: _acessoCentralHorarioController.text,
+                  profissional: _acessoCentralProfissionalController.text,
+                )
+              : null,
+          intraosseo: hasAcessoIntraosseo
+              ? AcessoIntraosseo(
+                  horario: _acessoIntraosseoHorarioController.text,
+                  local: _acessoIntraosseoLocalController.text,
+                  profissional: _acessoIntraosseoProfissionalController.text,
+                )
+              : null,
+          periferico: hasAcessoPeriferico
+              ? AcessoPeriferico(
+                  horario: _acessoPerifericoHorarioController.text,
+                  local: _acessoPerifericoLocalController.text,
+                  profissional: _acessoPerifericoProfissionalController.text,
+                  numeroDispositivoIntravenoso: int.parse(
+                      _acessoPerifericoDispositivoIntravenosoController.text))
+              : null,
+        ),
+        cateterGastrico: CateterGastricoModel(
+          profissional: _cateterGastricoProfissionalController.text,
+          tipo: _selectedCateterGastrico ?? '',
+        ),
+        cateterVesical: hasCateterVesical
+            ? CateterVesicalModel(
+                horario: _cateterVesicalHorarioController.text,
+                profissional: _cateterVesicalProfissionalController.text,
+                tamanho: _cateterVesicalTamanho,
+              )
+            : null,
+        dor: hasDor
+            ? DorModel(
+                intensidade: _intensidadeDor,
+                local: _dorLocalController.text,
+              )
+            : null,
+        drenoTorax: hasDrenoTorax
+            ? DrenoToraxModel(
+                horario: _drenoToraxHorarioController.text,
+                numero: _drenoToraxNumeroController.text,
+                profissional: _drenoToraxProfissionalController.text,
+                local: _selectedDrenoToraxLocal ?? '',
+              )
+            : null,
+        ecg: hasECG ? _ecgController.text : null,
+        intubacao: hasIntubacao
+            ? IntubacaoModel(
+                horario: _intubacaoHorarioController.text,
+                numeroTubo: _intubacaoNumeroTuboController.text,
+                responsavel: _intubacaoResponsavelController.text,
+              )
+            : null,
+        glicemia: _glicemiaController.text,
+        // pcr: PcrModel(
+        //   ciclos: _pcrCiclosController.text,
+        //   medicacoes: _pcrMedicacoesController.text,
+        //   medicacoesHorarios: _pcrMedicacoesHorariosController.text,
+        // ),
+        outrasAnotacoes: _outrasAnotacoesController.text,
+        fc: _fcController.text,
+        fr: _frController.text,
+        sp02: _sp02Controller.text,
+        temperatura: _temperaturaController.text,
+        pa: _paController.text,
+        rm: _rm,
+        rv: _rv,
+        ao: _ao,
+        avdi: _avdi ?? '',
+        pupilas: _pupilas ?? '',
+        nomeMedicacao: _nomeMedicacaoController.text,
+        oxigenio: hasOxigenio
+            ? OxigenioModel(
+                litrosMinuto: _oxigenioLitros,
+                tipo: _selectedOxigenio ?? '',
+              )
+            : null,
+      );
+    }
+
     return SingleChildScrollView(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -388,6 +512,9 @@ class _NewPP_AState extends State<NewPP_A> {
                           decoration: InputDecoration(
                             labelText: 'Local',
                           ),
+                          validator: (value) => FormValidators.required(value,
+                              condition: _selectedDor == true),
+                          onChanged: (_) => checkValidFields(),
                         ),
                         spacingRow,
                         Text('Intensidade da dor:',
@@ -426,6 +553,11 @@ class _NewPP_AState extends State<NewPP_A> {
                                 textInputAction: TextInputAction.next,
                                 onEditingComplete: () => FocusScope.of(context)
                                     .requestFocus(_temperaturaFocusNode),
+                                onSaved: (value) {
+                                  updateFormData();
+                                },
+                                validator: FormValidators.required,
+                                onChanged: (_) => checkValidFields(),
                               ),
                             ),
                             spacingColumn,
@@ -440,6 +572,8 @@ class _NewPP_AState extends State<NewPP_A> {
                                 textInputAction: TextInputAction.next,
                                 onEditingComplete: () => FocusScope.of(context)
                                     .requestFocus(_frFocusNode),
+                                validator: FormValidators.required,
+                                onChanged: (_) => checkValidFields(),
                               ),
                             ),
                           ],
@@ -458,6 +592,8 @@ class _NewPP_AState extends State<NewPP_A> {
                                 textInputAction: TextInputAction.next,
                                 onEditingComplete: () => FocusScope.of(context)
                                     .requestFocus(_fcFocusNode),
+                                validator: FormValidators.required,
+                                onChanged: (_) => checkValidFields(),
                               ),
                             ),
                             spacingColumn,
@@ -472,6 +608,8 @@ class _NewPP_AState extends State<NewPP_A> {
                                 textInputAction: TextInputAction.next,
                                 onEditingComplete: () => FocusScope.of(context)
                                     .requestFocus(_glicemiaFocusNode),
+                                validator: FormValidators.required,
+                                onChanged: (_) => checkValidFields(),
                               ),
                             ),
                           ],
@@ -490,6 +628,8 @@ class _NewPP_AState extends State<NewPP_A> {
                                 textInputAction: TextInputAction.next,
                                 onEditingComplete: () => FocusScope.of(context)
                                     .requestFocus(_sp02FocusNode),
+                                validator: FormValidators.required,
+                                onChanged: (_) => checkValidFields(),
                               ),
                             ),
                             spacingColumn,
@@ -501,6 +641,8 @@ class _NewPP_AState extends State<NewPP_A> {
                                 decoration: InputDecoration(
                                   labelText: 'SP02',
                                 ),
+                                validator: FormValidators.required,
+                                onChanged: (_) => checkValidFields(),
                               ),
                             ),
                           ],
@@ -627,9 +769,11 @@ class _NewPP_AState extends State<NewPP_A> {
                             ? null
                             : (value) {
                                 setState(() {
+                                  checkValidFields();
                                   _avdi = value as String;
                                 });
                               },
+                        validator: FormValidators.required,
                       ),
                       spacingRow,
                       DropdownButtonFormField(
@@ -648,9 +792,11 @@ class _NewPP_AState extends State<NewPP_A> {
                             ? null
                             : (value) {
                                 setState(() {
+                                  checkValidFields();
                                   _pupilas = value as String;
                                 });
                               },
+                        validator: FormValidators.required,
                       ),
                       spacingRow,
                     ]),
@@ -721,9 +867,13 @@ class _NewPP_AState extends State<NewPP_A> {
                                   controller: _intubacaoHorarioController,
                                   readOnly: data != null,
                                   onChanged: (value) {
+                                    checkValidFields();
                                     FocusScope.of(context).requestFocus(
                                         _intubacaoNumeroTuboFocusNode);
                                   },
+                                  validator: (value) => FormValidators.required(
+                                      value,
+                                      condition: _selectedIntubacao),
                                 )),
                                 spacingColumn,
                                 Expanded(
@@ -739,6 +889,10 @@ class _NewPP_AState extends State<NewPP_A> {
                                     onFieldSubmitted: (_) =>
                                         FocusScope.of(context).requestFocus(
                                             _intubacaoResponsavelFocusNode),
+                                    validator: (value) =>
+                                        FormValidators.required(value,
+                                            condition: _selectedIntubacao),
+                                    onChanged: (_) => checkValidFields(),
                                   ),
                                 )
                               ],
@@ -751,6 +905,10 @@ class _NewPP_AState extends State<NewPP_A> {
                               decoration: InputDecoration(
                                 labelText: 'Responsável',
                               ),
+                              validator: (value) => FormValidators.required(
+                                  value,
+                                  condition: _selectedIntubacao),
+                              onChanged: (_) => checkValidFields(),
                             ),
                             spacingRow,
                           ]),
@@ -772,33 +930,34 @@ class _NewPP_AState extends State<NewPP_A> {
                     child: Column(children: [
                       spacingRow,
                       DropdownButtonFormField(
-                        value: _selectedOxigenio,
-                        decoration: InputDecoration(labelText: 'Oxigênio'),
-                        items: optionsOxigenio
-                            .map((e) => DropdownMenuItem(
-                                  value: e,
-                                  child: Text(e,
-                                      style: TextStyle(
-                                        color: Colors.black,
-                                      )),
-                                ))
-                            .toList(),
-                        onChanged: data != null
-                            ? null
-                            : (value) {
-                                setState(() {
-                                  if (value == 'MAF') {
-                                    _oxigenioLitros = 7.0;
-                                  }
-                                  if (value == 'Catéter') {
-                                    _oxigenioLitros = 1.0;
-                                  }
+                          value: _selectedOxigenio,
+                          decoration: InputDecoration(labelText: 'Oxigênio'),
+                          items: optionsOxigenio
+                              .map((e) => DropdownMenuItem(
+                                    value: e,
+                                    child: Text(e,
+                                        style: TextStyle(
+                                          color: Colors.black,
+                                        )),
+                                  ))
+                              .toList(),
+                          onChanged: data != null
+                              ? null
+                              : (value) {
+                                  setState(() {
+                                    if (value == 'MAF') {
+                                      _oxigenioLitros = 7.0;
+                                    }
+                                    if (value == 'Catéter') {
+                                      _oxigenioLitros = 1.0;
+                                    }
 
-                                  _selectedOxigenio =
-                                      value == 'Não' ? null : value as String;
-                                });
-                              },
-                      ),
+                                    _selectedOxigenio =
+                                        value == 'Não' ? null : value as String;
+                                    checkValidFields();
+                                  });
+                                },
+                          validator: FormValidators.required),
                       spacingRow,
                       if (_selectedOxigenio != 'Não' &&
                           _selectedOxigenio != null)
@@ -889,6 +1048,10 @@ class _NewPP_AState extends State<NewPP_A> {
                               decoration: InputDecoration(
                                 labelText: 'Nome da medicação',
                               ),
+                              validator: (value) => FormValidators.required(
+                                  value,
+                                  condition: _selectecNomeMedicacao),
+                              onChanged: (_) => checkValidFields(),
                             ),
                             spacingRow,
                           ]),
@@ -967,12 +1130,15 @@ class _NewPP_AState extends State<NewPP_A> {
                               ? null
                               : (value) {
                                   setState(() {
+                                    checkValidFields();
                                     _selectedAcessoCentralLocal =
                                         value as String?;
                                     FocusScope.of(context).requestFocus(
                                         _acessoCentralProfissionalFocusNode);
                                   });
                                 },
+                          validator: (value) => FormValidators.required(value,
+                              condition: _selectedAcessoCentral),
                         ),
                         spacingRow,
                         TextFormField(
@@ -985,15 +1151,19 @@ class _NewPP_AState extends State<NewPP_A> {
                           textInputAction: TextInputAction.next,
                           onFieldSubmitted: (_) => FocusScope.of(context)
                               .requestFocus(_acessoCentralHorarioFocusNode),
+                          validator: (value) => FormValidators.required(value,
+                              condition: _selectedAcessoCentral),
+                          onChanged: (_) => checkValidFields(),
                         ),
                         spacingRow,
-                        TextFormField(
+                        TimePickerTextField(
                           readOnly: data != null,
                           controller: _acessoCentralHorarioController,
                           focusNode: _acessoCentralHorarioFocusNode,
-                          decoration: InputDecoration(
-                            labelText: 'Horário',
-                          ),
+                          labelText: 'Horário',
+                          validator: (value) => FormValidators.required(value,
+                              condition: _selectedAcessoCentral),
+                          onChanged: (_) => checkValidFields(),
                         ),
                       ]),
                     ),
@@ -1055,6 +1225,9 @@ class _NewPP_AState extends State<NewPP_A> {
                           onFieldSubmitted: (_) => FocusScope.of(context)
                               .requestFocus(
                                   _acessoPerifericoProfissionalFocusNode),
+                          validator: (value) => FormValidators.required(value,
+                              condition: _selectedAcessoPeriferico),
+                          onChanged: (_) => checkValidFields(),
                         ),
                         spacingRow,
                         TextFormField(
@@ -1067,6 +1240,9 @@ class _NewPP_AState extends State<NewPP_A> {
                           textInputAction: TextInputAction.next,
                           onFieldSubmitted: (_) => FocusScope.of(context)
                               .requestFocus(_acessoPerifericoHorarioFocusNode),
+                          validator: (value) => FormValidators.required(value,
+                              condition: _selectedAcessoPeriferico),
+                          onChanged: (_) => checkValidFields(),
                         ),
                         spacingRow,
                         TextFormField(
@@ -1080,16 +1256,24 @@ class _NewPP_AState extends State<NewPP_A> {
                           onFieldSubmitted: (_) => FocusScope.of(context)
                               .requestFocus(
                                   _acessoPerifericoNumeroDispositivoIntravenosoFocusNode),
+                          validator: (value) => FormValidators.required(value,
+                              condition: _selectedAcessoPeriferico),
+                          onChanged: (_) => checkValidFields(),
                         ),
                         spacingRow,
                         TextFormField(
                           readOnly: data != null,
-                          controller: _acessoPerifericoLocalController,
+                          controller:
+                              _acessoPerifericoDispositivoIntravenosoController,
                           focusNode:
                               _acessoPerifericoNumeroDispositivoIntravenosoFocusNode,
                           decoration: InputDecoration(
                             labelText: 'Dispositivo intravenoso nº',
                           ),
+                          keyboardType: TextInputType.number,
+                          validator: (value) => FormValidators.required(value,
+                              condition: _selectedAcessoPeriferico),
+                          onChanged: (_) => checkValidFields(),
                         ),
                       ]),
                     ),
@@ -1151,6 +1335,9 @@ class _NewPP_AState extends State<NewPP_A> {
                           onFieldSubmitted: (value) => FocusScope.of(context)
                               .requestFocus(
                                   _acessoIntraosseoProfissionalFocusNode),
+                          validator: (value) => FormValidators.required(value,
+                              condition: _selectedAcessoIntraosseo),
+                          onChanged: (_) => checkValidFields(),
                         ),
                         spacingRow,
                         TextFormField(
@@ -1163,15 +1350,19 @@ class _NewPP_AState extends State<NewPP_A> {
                           textInputAction: TextInputAction.next,
                           onFieldSubmitted: (_) => FocusScope.of(context)
                               .requestFocus(_acessoIntraosseoHorarioFocusNode),
+                          validator: (value) => FormValidators.required(value,
+                              condition: _selectedAcessoIntraosseo),
+                          onChanged: (_) => checkValidFields(),
                         ),
                         spacingRow,
-                        TextFormField(
+                        TimePickerTextField(
                           readOnly: data != null,
                           controller: _acessoIntraosseoHorarioController,
                           focusNode: _acessoIntraosseoHorarioFocusNode,
-                          decoration: InputDecoration(
-                            labelText: 'Horário',
-                          ),
+                          labelText: 'Horário',
+                          validator: (value) => FormValidators.required(value,
+                              condition: _selectedAcessoIntraosseo),
+                          onChanged: (_) => checkValidFields(),
                         ),
                       ]),
                     ),
@@ -1243,11 +1434,14 @@ class _NewPP_AState extends State<NewPP_A> {
                               ? null
                               : (value) {
                                   setState(() {
+                                    checkValidFields();
                                     _selectedDrenoToraxLocal = value as String?;
                                   });
                                   FocusScope.of(context)
                                       .requestFocus(_drenoToraxNumeroFocusNode);
                                 },
+                          validator: (value) => FormValidators.required(value,
+                              condition: _selectedDrenoTorax),
                         ),
                         spacingRow,
                         Row(children: [
@@ -1263,6 +1457,10 @@ class _NewPP_AState extends State<NewPP_A> {
                               textInputAction: TextInputAction.next,
                               onFieldSubmitted: (_) => FocusScope.of(context)
                                   .requestFocus(_drenoToraxHorarioFocusNode),
+                              validator: (value) => FormValidators.required(
+                                  value,
+                                  condition: _selectedDrenoTorax),
+                              onChanged: (_) => checkValidFields(),
                             ),
                           ),
                           spacingColumn,
@@ -1282,9 +1480,14 @@ class _NewPP_AState extends State<NewPP_A> {
                               labelText: 'Horário',
                               controller: _drenoToraxHorarioController,
                               focusNode: _drenoToraxHorarioFocusNode,
-                              onChanged: (_) => FocusScope.of(context)
-                                  .requestFocus(
-                                      _drenoToraxProfissionalFocusNode),
+                              onChanged: (_) {
+                                checkValidFields();
+                                FocusScope.of(context).requestFocus(
+                                    _drenoToraxProfissionalFocusNode);
+                              },
+                              validator: (value) => FormValidators.required(
+                                  value,
+                                  condition: _selectedDrenoTorax),
                             ),
                           )
                         ]),
@@ -1296,6 +1499,9 @@ class _NewPP_AState extends State<NewPP_A> {
                           decoration: InputDecoration(
                             labelText: 'Profissional',
                           ),
+                          validator: (value) => FormValidators.required(value,
+                              condition: _selectedDrenoTorax),
+                          onChanged: (_) => checkValidFields(),
                         ),
                         spacingRow,
                       ]),
@@ -1335,10 +1541,12 @@ class _NewPP_AState extends State<NewPP_A> {
                                       return;
                                     }
                                     setState(() {
+                                      checkValidFields();
                                       _selectedCateterGastrico =
                                           value as String?;
                                     });
                                   },
+                            validator: FormValidators.required,
                           ),
                           spacingRow,
                           if (_selectedCateterGastrico != 'Não' &&
@@ -1350,6 +1558,12 @@ class _NewPP_AState extends State<NewPP_A> {
                               decoration: InputDecoration(
                                 labelText: 'Profissional',
                               ),
+                              validator: (value) => FormValidators.required(
+                                value,
+                                condition: _selectedCateterGastrico != 'Não' &&
+                                    _selectedCateterGastrico != null,
+                              ),
+                              onChanged: (_) => checkValidFields(),
                             ),
                             spacingRow,
                           ]
@@ -1429,9 +1643,15 @@ class _NewPP_AState extends State<NewPP_A> {
                               readOnly: data != null,
                               controller: _cateterVesicalHorarioController,
                               labelText: 'Horário',
-                              onChanged: (_) => FocusScope.of(context)
-                                  .requestFocus(
-                                      _cateterVesicalProfissionalFocusNode),
+                              onChanged: (_) {
+                                checkValidFields();
+                                FocusScope.of(context).requestFocus(
+                                    _cateterVesicalProfissionalFocusNode);
+                              },
+                              validator: (value) => FormValidators.required(
+                                value,
+                                condition: _selectedCateterVesical,
+                              ),
                             ))
                           ],
                         ),
@@ -1443,6 +1663,11 @@ class _NewPP_AState extends State<NewPP_A> {
                           decoration: InputDecoration(
                             labelText: 'Profissional',
                           ),
+                          validator: (value) => FormValidators.required(
+                            value,
+                            condition: _selectedCateterVesical,
+                          ),
+                          onChanged: (_) => checkValidFields(),
                         ),
                         spacingRow,
                       ]
@@ -1502,6 +1727,11 @@ class _NewPP_AState extends State<NewPP_A> {
                             labelText: 'Ciclos',
                           ),
                           keyboardType: TextInputType.number,
+                          validator: (value) => FormValidators.required(
+                            value,
+                            condition: _selectedPCR,
+                          ),
+                          onChanged: (_) => checkValidFields(),
                         ),
                         spacingRow,
                         Row(
@@ -1702,6 +1932,11 @@ class _NewPP_AState extends State<NewPP_A> {
                           decoration: InputDecoration(
                             labelText: 'Alteração',
                           ),
+                          validator: (value) => FormValidators.required(
+                            value,
+                            condition: _selectedECG,
+                          ),
+                          onChanged: (_) => checkValidFields(),
                         ),
                         spacingRow,
                       ]

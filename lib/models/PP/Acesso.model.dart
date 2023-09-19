@@ -13,9 +13,9 @@ class AcessoModel {
 
   factory AcessoModel.fromJson(Map<String, dynamic> json) {
     return AcessoModel(
-      central: json['central'],
-      periferico: json['periferico'],
-      intraosseo: json['intraosseo'],
+      central: AcessoCentral.fromJson(json['central']),
+      periferico: AcessoPeriferico.fromJson(json['periferico']),
+      intraosseo: AcessoIntraosseo.fromJson(json['intraosseo']),
     );
   }
 
@@ -42,6 +42,14 @@ class AcessoCentral {
     required this.profissional,
     required this.horario,
   });
+
+  factory AcessoCentral.fromJson(Map<String, dynamic> json) {
+    return AcessoCentral(
+      local: json['local'],
+      profissional: json['profissional'],
+      horario: json['horario'],
+    );
+  }
 }
 
 class AcessoPeriferico {
@@ -55,6 +63,15 @@ class AcessoPeriferico {
       required this.profissional,
       required this.horario,
       required this.numeroDispositivoIntravenoso});
+
+  factory AcessoPeriferico.fromJson(Map<String, dynamic> json) {
+    return AcessoPeriferico(
+      local: json['local'],
+      profissional: json['profissional'],
+      horario: json['horario'],
+      numeroDispositivoIntravenoso: json['numeroDispositivoIntravenoso'],
+    );
+  }
 }
 
 class AcessoIntraosseo {
@@ -67,4 +84,12 @@ class AcessoIntraosseo {
     required this.profissional,
     required this.horario,
   });
+
+  factory AcessoIntraosseo.fromJson(Map<String, dynamic> json) {
+    return AcessoIntraosseo(
+      local: json['local'],
+      profissional: json['profissional'],
+      horario: json['horario'],
+    );
+  }
 }

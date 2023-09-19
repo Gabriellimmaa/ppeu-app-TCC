@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:ppue/constants/constants.dart';
 import 'package:ppue/core/notifier/newPP.notifier.dart';
 import 'package:ppue/models/PP.model.dart';
+import 'package:ppue/utils/validation/FormValidators.validation.dart';
 import 'package:provider/provider.dart';
 
 class NewPP_I extends StatefulWidget {
@@ -16,7 +17,7 @@ class NewPP_I extends StatefulWidget {
 class _NewPP_IState extends State<NewPP_I> {
   late PPModel? data;
 
-  final _formKey = GlobalKey<FormState>();
+  late GlobalKey<FormState> _formKey;
 
   final _nomeController = TextEditingController();
   final _idadeController = TextEditingController();
@@ -24,8 +25,8 @@ class _NewPP_IState extends State<NewPP_I> {
   final _nomeMaeController = TextEditingController();
   final _sexoController = TextEditingController();
   final _formaEncaminhamentoController = TextEditingController();
-  String _selectedSexo = '';
-  String _selectedTransport = '';
+  String? _selectedSexo;
+  String? _selectedTransport;
 
   final _nomeFocusNode = FocusNode();
   final _idadeFocusNode = FocusNode();
@@ -38,7 +39,8 @@ class _NewPP_IState extends State<NewPP_I> {
     data = widget.data;
     NewPPNotifier newPPNotifier =
         Provider.of<NewPPNotifier>(context, listen: false);
-    newPPNotifier.setFormIdentificacao(_formKey);
+    _formKey = newPPNotifier.formKeyIdentificacao;
+
     if (data != null) {
       _nomeController.text = data!.identificacao.nome;
       _idadeController.text = data!.identificacao.idade.toString();
@@ -54,21 +56,42 @@ class _NewPP_IState extends State<NewPP_I> {
 
   @override
   void dispose() {
-    _nomeController.dispose;
-    _idadeController.dispose;
-    _dataNascimentoController.dispose;
-    _nomeMaeController.dispose;
-    _sexoController.dispose;
-    _formaEncaminhamentoController.dispose;
-    _nomeFocusNode.dispose;
-    _idadeFocusNode.dispose;
-    _dataNascimentoFocusNode.dispose;
-    _nomeMaeFocusNode.dispose;
+    _nomeController.dispose();
+    _idadeController.dispose();
+    _dataNascimentoController.dispose();
+    _nomeMaeController.dispose();
+    _sexoController.dispose();
+    _formaEncaminhamentoController.dispose();
+    _nomeFocusNode.dispose();
+    _idadeFocusNode.dispose();
+    _dataNascimentoFocusNode.dispose();
+    _nomeMaeFocusNode.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    NewPPNotifier newPPNotifier =
+        Provider.of<NewPPNotifier>(context, listen: false);
+
+    void updateFormData() {
+      newPPNotifier.identificacao = IdentificacaoModel(
+        nome: _nomeController.text,
+        // idade: int.tryParse(_idadeController.text),
+        idade: _idadeController.text,
+        dataNascimento: _dataNascimentoController.text,
+        nomeMae: _nomeMaeController.text,
+        sexo: _selectedSexo!,
+        formaEncaminhamento: _selectedTransport!,
+      );
+    }
+
+    void checkValidFields() {
+      if (_formKey.currentState!.validate()) {
+        _formKey.currentState!.validate();
+      }
+    }
+
     return SingleChildScrollView(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -86,23 +109,19 @@ class _NewPP_IState extends State<NewPP_I> {
             padding: EdgeInsets.symmetric(horizontal: 16),
             child: Form(
               key: _formKey,
-              autovalidateMode: AutovalidateMode.onUserInteraction,
               child: Column(
                 children: [
                   TextFormField(
                     controller: _nomeController,
                     readOnly: data != null,
                     decoration: InputDecoration(labelText: 'Nome'),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Por favor, insira o nome';
-                      }
-                      return null;
-                    },
+                    validator: FormValidators.required,
+                    onChanged: (_) => checkValidFields(),
                     textInputAction: TextInputAction.next,
                     onFieldSubmitted: (_) {
                       FocusScope.of(context).requestFocus(_idadeFocusNode);
                     },
+                    onSaved: (_) => updateFormData(),
                   ),
                   spacingRow,
                   TextFormField(
@@ -110,12 +129,8 @@ class _NewPP_IState extends State<NewPP_I> {
                     focusNode: _idadeFocusNode,
                     readOnly: data != null,
                     decoration: InputDecoration(labelText: 'Idade'),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Por favor, insira a idade';
-                      }
-                      return null;
-                    },
+                    validator: FormValidators.required,
+                    onChanged: (_) => checkValidFields(),
                     textInputAction: TextInputAction.next,
                     onFieldSubmitted: (_) {
                       FocusScope.of(context)
@@ -129,12 +144,8 @@ class _NewPP_IState extends State<NewPP_I> {
                     readOnly: data != null,
                     decoration:
                         InputDecoration(labelText: 'Data de nascimento'),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Por favor, insira a data de nascimento';
-                      }
-                      return null;
-                    },
+                    validator: FormValidators.required,
+                    onChanged: (_) => checkValidFields(),
                     textInputAction: TextInputAction.next,
                     onFieldSubmitted: (_) {
                       FocusScope.of(context).requestFocus(_nomeMaeFocusNode);
@@ -142,18 +153,14 @@ class _NewPP_IState extends State<NewPP_I> {
                   ),
                   spacingRow,
                   TextFormField(
-                    controller: _nomeMaeController,
-                    focusNode: _nomeMaeFocusNode,
-                    readOnly: data != null,
-                    decoration: InputDecoration(labelText: 'Nome da mãe'),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Por favor, insira o nome da mãe';
-                      }
-                      return null;
-                    },
-                    textInputAction: TextInputAction.done,
-                  ),
+                      controller: _nomeMaeController,
+                      focusNode: _nomeMaeFocusNode,
+                      readOnly: data != null,
+                      decoration: InputDecoration(labelText: 'Nome da mãe'),
+                      validator: FormValidators.required,
+                      onChanged: (_) => checkValidFields(),
+                      textInputAction: TextInputAction.done,
+                      onFieldSubmitted: (value) => updateFormData()),
                   spacingRow,
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -219,6 +226,11 @@ class _NewPP_IState extends State<NewPP_I> {
                       ),
                     ],
                   ),
+                  if (_selectedSexo == null)
+                    Text(
+                      'Por favor, selecione o sexo.',
+                      style: TextStyle(color: Colors.red),
+                    ),
                   spacingRow,
                   Text(
                     'Forma de encaminhamento',
@@ -339,16 +351,11 @@ class _NewPP_IState extends State<NewPP_I> {
                       ],
                     ),
                   ),
-                  // ElevatedButton(
-                  //   onPressed: () {
-                  //     if (_formKey.currentState!.validate() &&
-                  //         _selectedGender.isNotEmpty) {
-                  //       // Form is valid and gender is selected
-                  //       // Perform desired actions
-                  //     }
-                  //   },
-                  //   child: Text('Enviar'),
-                  // ),
+                  if (_selectedTransport == null)
+                    Text(
+                      'Por favor, selecione a forma de encaminhamento.',
+                      style: TextStyle(color: Colors.red),
+                    ),
                 ],
               ),
             ),

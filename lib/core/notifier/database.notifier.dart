@@ -14,4 +14,15 @@ class DatabaseNotifier extends ChangeNotifier {
   Future<PostgrestResponse?> addPP({required PPModel data}) async {
     await _databaseService.addPP(data: data);
   }
+
+  Future filterPP(
+      {required String nome,
+      required String responsavelRecebimentoCpf,
+      required String encaminhamento}) async {
+    var data = await _databaseService.filterPP(
+        nome: nome,
+        responsavelRecebimentoCpf: responsavelRecebimentoCpf,
+        encaminhamento: encaminhamento);
+    return data.map((e) => PPModel.fromJson(e)).toList();
+  }
 }

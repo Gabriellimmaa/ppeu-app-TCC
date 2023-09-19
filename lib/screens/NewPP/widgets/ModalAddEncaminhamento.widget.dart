@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:ppue/constants/constants.dart';
+import 'package:ppue/utils/validation/FormValidators.validation.dart';
 
 class ModalAddEncaminhamento extends StatefulWidget {
   final Function(String) onChanged;
@@ -58,12 +59,14 @@ class _ModalAddEncaminhamentoState extends State<ModalAddEncaminhamento> {
                     controller: _nomeController,
                     decoration: InputDecoration(
                         labelText: 'Nome do local de encaminhamento'),
+                    validator: FormValidators.required,
                   ),
                   spacingRow,
                   SizedBox(
                     width: double.infinity,
                     child: ElevatedButton(
                       onPressed: () {
+                        if (!_formKey.currentState!.validate()) return;
                         widget.onChanged(_nomeController.text);
                         Navigator.pop(context);
                       },

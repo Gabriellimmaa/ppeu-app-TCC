@@ -1,6 +1,10 @@
+import 'package:ppue/core/notifier/newPP.notifier.dart';
+import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
 import 'package:ppue/constants/constants.dart';
 import 'package:ppue/models/PP.model.dart';
+
+import '../../utils/validation/FormValidators.validation.dart';
 
 class NewPP_B extends StatefulWidget {
   final PPModel? data;
@@ -14,7 +18,7 @@ class NewPP_B extends StatefulWidget {
 class _NewPP_BState extends State<NewPP_B> {
   PPModel? data;
 
-  final _formKey = GlobalKey<FormState>();
+  late GlobalKey<FormState> _formKey;
   final _historicaClinicaController = TextEditingController();
   final _alergiasController = TextEditingController();
   final _comorbidadesController = TextEditingController();
@@ -36,7 +40,7 @@ class _NewPP_BState extends State<NewPP_B> {
   final _jejumFocusNode = FocusNode();
 
   bool? _selectedAlergias = false;
-  bool? _selectedComorbidity = false;
+  bool? _selectedComorbidades = false;
   bool? _selectedVices = false;
   bool? _selectedMedicationsInUse = false;
   bool? _selectedHospitalizationHistory = false;
@@ -51,6 +55,10 @@ class _NewPP_BState extends State<NewPP_B> {
   void initState() {
     super.initState();
     data = widget.data;
+    NewPPNotifier newPPNotifier =
+        Provider.of<NewPPNotifier>(context, listen: false);
+    _formKey = newPPNotifier.formKeyBreveHistorico;
+
     if (data != null) {
       _historicaClinicaController.text = data!.breveHistorico.historicaClinica;
       _alergiasController.text = data!.breveHistorico.alergias ?? '';
@@ -67,7 +75,7 @@ class _NewPP_BState extends State<NewPP_B> {
       _jejumController.text = data!.breveHistorico.jejum!;
 
       _selectedAlergias = data!.breveHistorico.alergias == null ? false : true;
-      _selectedComorbidity = data!.breveHistorico.comorbidades!.isNotEmpty;
+      _selectedComorbidades = data!.breveHistorico.comorbidades!.isNotEmpty;
       _selectedVices = data!.breveHistorico.vicios!.isNotEmpty;
       _selectedMedicationsInUse =
           data!.breveHistorico.medicamentoEmUso!.isNotEmpty;
@@ -112,6 +120,31 @@ class _NewPP_BState extends State<NewPP_B> {
 
   @override
   Widget build(BuildContext context) {
+    NewPPNotifier newPPNotifier =
+        Provider.of<NewPPNotifier>(context, listen: false);
+
+    void checkValidFields() {
+      if (_formKey.currentState!.validate()) {
+        _formKey.currentState!.validate();
+      }
+    }
+
+    void updateFormData() {
+      newPPNotifier.breveHistorico = BreveHistoricoModel(
+        historicaClinica: _historicaClinicaController.text,
+        alergias: _alergiasController.text,
+        comorbidades: _comorbidadesController.text,
+        vicios: _viciosController.text,
+        medicamentoEmUso: _medicamentosEmUsoController.text,
+        historicoInternacoes: _historicoInternacoesController.text,
+        cirurgiaPrevia: _cirurgiaPreviaController.text,
+        lesoes: _lesoesController.text,
+        alteracoesLaboratoriais: _alteracoesLaboratoriaisController.text,
+        jejum: _jejumController.text,
+        precaucoes: _precaucoes ?? '',
+      );
+    }
+
     return SingleChildScrollView(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -160,6 +193,9 @@ class _NewPP_BState extends State<NewPP_B> {
                       ),
                       maxLines: null,
                       textInputAction: TextInputAction.done,
+                      onSaved: (_) => updateFormData(),
+                      validator: FormValidators.required,
+                      onChanged: (_) => checkValidFields(),
                     ),
                     spacingRow,
                   ]),
@@ -226,6 +262,9 @@ class _NewPP_BState extends State<NewPP_B> {
                         maxLines: null,
                         keyboardType: TextInputType.multiline,
                         textInputAction: TextInputAction.done,
+                        validator: (value) => FormValidators.required(value,
+                            condition: _selectedAlergias == true),
+                        onChanged: (_) => checkValidFields(),
                       ),
                       spacingRow,
                     ]),
@@ -248,13 +287,13 @@ class _NewPP_BState extends State<NewPP_B> {
                       child: RadioListTile(
                         title: const Text('Sim'),
                         value: true,
-                        groupValue: _selectedComorbidity,
+                        groupValue: _selectedComorbidades,
                         onChanged: (value) {
                           if (data != null) {
                             return;
                           }
                           setState(() {
-                            _selectedComorbidity = value as bool;
+                            _selectedComorbidades = value as bool;
                             _comorbidadesFocusNode.requestFocus();
                           });
                         },
@@ -264,20 +303,20 @@ class _NewPP_BState extends State<NewPP_B> {
                       child: RadioListTile(
                         title: const Text('Não'),
                         value: false,
-                        groupValue: _selectedComorbidity,
+                        groupValue: _selectedComorbidades,
                         onChanged: (value) {
                           if (data != null) {
                             return;
                           }
                           setState(() {
-                            _selectedComorbidity = value as bool;
+                            _selectedComorbidades = value as bool;
                           });
                         },
                       ),
                     ),
                   ]),
                 ),
-                if (_selectedComorbidity == true)
+                if (_selectedComorbidades == true)
                   Padding(
                     padding: EdgeInsets.symmetric(horizontal: 16),
                     child: Column(children: [
@@ -292,6 +331,9 @@ class _NewPP_BState extends State<NewPP_B> {
                         maxLines: null,
                         keyboardType: TextInputType.multiline,
                         textInputAction: TextInputAction.done,
+                        validator: (value) => FormValidators.required(value,
+                            condition: _selectedComorbidades == true),
+                        onChanged: (_) => checkValidFields(),
                       ),
                       spacingRow,
                     ]),
@@ -358,6 +400,9 @@ class _NewPP_BState extends State<NewPP_B> {
                         maxLines: null,
                         keyboardType: TextInputType.multiline,
                         textInputAction: TextInputAction.done,
+                        validator: (value) => FormValidators.required(value,
+                            condition: _selectedVices == true),
+                        onChanged: (_) => checkValidFields(),
                       ),
                       spacingRow,
                     ]),
@@ -424,6 +469,9 @@ class _NewPP_BState extends State<NewPP_B> {
                         maxLines: null,
                         keyboardType: TextInputType.multiline,
                         textInputAction: TextInputAction.done,
+                        validator: (value) => FormValidators.required(value,
+                            condition: _selectedMedicationsInUse == true),
+                        onChanged: (_) => checkValidFields(),
                       ),
                       spacingRow,
                     ]),
@@ -490,6 +538,9 @@ class _NewPP_BState extends State<NewPP_B> {
                         maxLines: null,
                         keyboardType: TextInputType.multiline,
                         textInputAction: TextInputAction.done,
+                        validator: (value) => FormValidators.required(value,
+                            condition: _selectedHospitalizationHistory == true),
+                        onChanged: (_) => checkValidFields(),
                       ),
                       spacingRow,
                     ]),
@@ -556,6 +607,9 @@ class _NewPP_BState extends State<NewPP_B> {
                         maxLines: null,
                         keyboardType: TextInputType.multiline,
                         textInputAction: TextInputAction.done,
+                        validator: (value) => FormValidators.required(value,
+                            condition: _selectedPreviousSurgery == true),
+                        onChanged: (_) => checkValidFields(),
                       ),
                       spacingRow,
                     ]),
@@ -622,6 +676,9 @@ class _NewPP_BState extends State<NewPP_B> {
                         maxLines: null,
                         keyboardType: TextInputType.multiline,
                         textInputAction: TextInputAction.done,
+                        validator: (value) => FormValidators.required(value,
+                            condition: _selectedInjuries == true),
+                        onChanged: (_) => checkValidFields(),
                       ),
                       spacingRow,
                     ]),
@@ -688,6 +745,9 @@ class _NewPP_BState extends State<NewPP_B> {
                         maxLines: null,
                         keyboardType: TextInputType.multiline,
                         textInputAction: TextInputAction.done,
+                        validator: (value) => FormValidators.required(value,
+                            condition: _selectedLaboratoryAlterations == true),
+                        onChanged: (_) => checkValidFields(),
                       ),
                       spacingRow,
                     ]),
@@ -758,10 +818,13 @@ class _NewPP_BState extends State<NewPP_B> {
                         onChanged: data != null
                             ? null
                             : (value) {
+                                checkValidFields();
                                 setState(() {
                                   _precaucoes = value as String;
                                 });
                               },
+                        validator: (value) => FormValidators.required(value,
+                            condition: _selectedPrecaucoes == true),
                       ),
                       spacingRow,
                     ]),
@@ -826,6 +889,9 @@ class _NewPP_BState extends State<NewPP_B> {
                           labelText: 'Tempo de jejum',
                         ),
                         textInputAction: TextInputAction.done,
+                        validator: (value) => FormValidators.required(value,
+                            condition: _selectedJejum == true),
+                        onChanged: (_) => checkValidFields(),
                       ),
                       spacingRow,
                     ]),

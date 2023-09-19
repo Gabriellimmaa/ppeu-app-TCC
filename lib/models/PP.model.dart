@@ -14,15 +14,10 @@ import 'package:ppue/models/PP/ResponsavelRecebimento.model.dart';
 import 'package:ppue/models/PP/Sintomas.model.dart';
 
 class PPModel {
-  // Form Identificacao paciente
-  final IdentificacaoModel identificacao;
-  // Form Situacao
+  late final IdentificacaoModel identificacao;
   final SituacaoModel situacao;
-  // Form Breve Historico
   final BreveHistoricoModel breveHistorico;
-  // Form Avaliacao
   final AvaliacaoModel avaliacao;
-  // Form Recomendacoes
   final RecomendacoesModel recomendacoes;
 
   PPModel({
@@ -230,11 +225,11 @@ class AvaliacaoModel {
   final String pupilas;
   final IntubacaoModel? intubacao;
   final OxigenioModel? oxigenio;
-  final String? nomeMedicao;
+  final String? nomeMedicacao;
   final AcessoModel acesso;
   final DrenoToraxModel? drenoTorax;
   final CateterGastricoModel? cateterGastrico;
-  final CateterVisicalModel? cateterVesical;
+  final CateterVesicalModel? cateterVesical;
   // final PCRModel? pcr;
   final String? ecg;
   final String outrasAnotacoes;
@@ -254,7 +249,7 @@ class AvaliacaoModel {
     required this.pupilas,
     required this.intubacao,
     required this.oxigenio,
-    required this.nomeMedicao,
+    required this.nomeMedicacao,
     required this.acesso,
     required this.drenoTorax,
     required this.cateterGastrico,
@@ -280,11 +275,13 @@ class AvaliacaoModel {
       pupilas: json['pupilas'],
       intubacao: IntubacaoModel.fromJson(json['intubacao']),
       oxigenio: OxigenioModel.fromJson(json['oxigenio']),
-      nomeMedicao: json['nomeMedicao'],
+      nomeMedicacao: json['nomeMedicao'],
       acesso: AcessoModel.fromJson(json['acesso']),
       drenoTorax: DrenoToraxModel.fromJson(json['drenoTorax']),
-      cateterGastrico: CateterGastricoModel.fromJson(json['cateterGastrico']),
-      cateterVesical: CateterVisicalModel.fromJson(json['cateterVesical']),
+      cateterGastrico: json['cateterGastrico'] == null
+          ? null
+          : CateterGastricoModel.fromJson(json['cateterGastrico']),
+      cateterVesical: CateterVesicalModel.fromJson(json['cateterVesical']),
       // pcr: PCRModel.fromJson(json['pcr']),
       ecg: json['ecg'],
       outrasAnotacoes: json['outrasAnotacoes'],
@@ -307,7 +304,7 @@ class AvaliacaoModel {
       'pupilas': pupilas,
       'intubacao': intubacao?.toJson(),
       'oxigenio': oxigenio?.toJson(),
-      'nomeMedicao': nomeMedicao,
+      'nomeMedicao': nomeMedicacao,
       'acesso': acesso.toJson(),
       'drenoTorax': drenoTorax?.toJson(),
       'cateterGastrico': cateterGastrico,
@@ -326,7 +323,7 @@ class AvaliacaoModel {
 class RecomendacoesModel {
   final String encaminhamento;
   final ResponsavelRecebimento responsavelRecebimento;
-  final List<FamiliarPresente>? familiarPresente;
+  final List<dynamic> familiarPresente;
   final Pertences? pertences;
 
   RecomendacoesModel({
@@ -341,9 +338,7 @@ class RecomendacoesModel {
       encaminhamento: json['encaminhamento'],
       responsavelRecebimento:
           ResponsavelRecebimento.fromJson(json['responsavelRecebimento']),
-      familiarPresente: json['familiarPresente']
-          ?.map((e) => FamiliarPresente.fromJson(e))
-          .toList(),
+      familiarPresente: json['familiarPresente'],
       pertences: Pertences.fromJson(json['pertences']),
     );
   }
@@ -352,8 +347,7 @@ class RecomendacoesModel {
     return {
       'encaminhamento': encaminhamento,
       'responsavelRecebimento': responsavelRecebimento,
-      'familiarPresente':
-          familiarPresente?.map((e) => e.toJson()).toList() ?? [],
+      'familiarPresente': familiarPresente,
       'pertences': pertences?.toJson(),
     };
   }

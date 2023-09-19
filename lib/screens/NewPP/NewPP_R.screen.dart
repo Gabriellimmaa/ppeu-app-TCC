@@ -8,6 +8,9 @@ import 'package:ppue/models/PP/ResponsavelRecebimento.model.dart';
 import 'package:ppue/screens/NewPP/widgets/ModalAddEncaminhamento.widget.dart';
 import 'package:ppue/screens/NewPP/widgets/ModalAddFamiliarAdmissao.widget.dart';
 import 'package:ppue/screens/NewPP/widgets/ModalAddResponsavelRecebimento.widget.dart';
+import 'package:ppue/core/notifier/newPP.notifier.dart';
+import 'package:ppue/utils/validation/FormValidators.validation.dart';
+import 'package:provider/provider.dart';
 
 class NewPP_R extends StatefulWidget {
   final PPModel? data;
@@ -19,10 +22,10 @@ class NewPP_R extends StatefulWidget {
 
 class _NewPP_RState extends State<NewPP_R> {
   PPModel? data;
-  final _formKey = GlobalKey<FormState>();
+  late GlobalKey<FormState> _formKey;
   String? _selectedEncaminhamento;
 
-  List<FamiliarPresente> _listFamiliarPresente = [];
+  List<dynamic> _listFamiliarPresente = [];
   ResponsavelRecebimento? _responsavelRecebimento;
 
   final _pertencesNomeController = TextEditingController();
@@ -51,18 +54,6 @@ class _NewPP_RState extends State<NewPP_R> {
   ];
   final List<DropdownMenuItem<String>> _optionsResponsavelProfissional = [
     DropdownMenuItem(
-        value: 'Gabriel Lima',
-        child: Text('Gabriel Lima',
-            style: TextStyle(
-              color: Colors.black,
-            ))),
-    DropdownMenuItem(
-        value: 'Andre Menolli',
-        child: Text('Andre Menolli',
-            style: TextStyle(
-              color: Colors.black,
-            ))),
-    DropdownMenuItem(
         value: 'Gilmar Dias',
         child: Text('Gilmar Dias',
             style: TextStyle(
@@ -75,10 +66,12 @@ class _NewPP_RState extends State<NewPP_R> {
     super.initState();
     data = widget.data;
 
+    NewPPNotifier newPPNotifier =
+        Provider.of<NewPPNotifier>(context, listen: false);
+    _formKey = newPPNotifier.formKeyRecomendacoes;
+
     if (data != null) {
       bool hasPertences = data!.recomendacoes.pertences != null ? true : false;
-      bool hasFamiliar =
-          data!.recomendacoes.familiarPresente != null ? true : false;
 
       _optionsEncaminhamento.add(DropdownMenuItem(
           value: data!.recomendacoes.encaminhamento,
@@ -103,9 +96,7 @@ class _NewPP_RState extends State<NewPP_R> {
             data!.recomendacoes.pertences!.parentesco;
       }
 
-      if (hasFamiliar) {
-        _listFamiliarPresente = data!.recomendacoes.familiarPresente!;
-      }
+      _listFamiliarPresente = data!.recomendacoes.familiarPresente;
     }
   }
 
@@ -119,6 +110,12 @@ class _NewPP_RState extends State<NewPP_R> {
 
   @override
   Widget build(BuildContext context) {
+    void checkValidFields() {
+      if (_formKey.currentState!.validate()) {
+        _formKey.currentState!.validate();
+      }
+    }
+
     return SingleChildScrollView(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -171,6 +168,7 @@ class _NewPP_RState extends State<NewPP_R> {
                                     _selectedEncaminhamento = value as String?;
                                   });
                                 },
+                          validator: FormValidators.required,
                         ),
                       ),
                       spacingColumn,
@@ -199,6 +197,7 @@ class _NewPP_RState extends State<NewPP_R> {
                                               ))),
                                     );
                                     _selectedEncaminhamento = value;
+                                    checkValidFields();
                                   });
                                 },
                               ),
@@ -239,8 +238,10 @@ class _NewPP_RState extends State<NewPP_R> {
                           onChanged: data != null
                               ? null
                               : (value) {
+                                  checkValidFields();
                                   setState(() {});
                                 },
+                          validator: FormValidators.required,
                         ),
                       ),
                       spacingColumn,
@@ -326,9 +327,8 @@ class _NewPP_RState extends State<NewPP_R> {
                                           ModalAddFamiliarAdmissao(
                                             onChanged: (value) {
                                               setState(() {
-                                                _listFamiliarPresente.add(
-                                                    FamiliarPresente(
-                                                        nome: value));
+                                                _listFamiliarPresente
+                                                    .add(value);
                                               });
                                             },
                                           ));
@@ -349,7 +349,7 @@ class _NewPP_RState extends State<NewPP_R> {
                           itemBuilder: (BuildContext context, int index) {
                             return ListTile(
                               title: Text(
-                                _listFamiliarPresente[index].nome,
+                                _listFamiliarPresente[index],
                               ),
                               trailing: data != null
                                   ? null
@@ -365,7 +365,7 @@ class _NewPP_RState extends State<NewPP_R> {
                                                     fontWeight:
                                                         FontWeight.bold)),
                                             content: Text(
-                                                'Deseja remover o familiar ${_listFamiliarPresente[index].nome}?'),
+                                                'Deseja remover o familiar ${_listFamiliarPresente[index]}?'),
                                             actions: [
                                               TextButton(
                                                 child: Text('Cancelar'),

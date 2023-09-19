@@ -7,22 +7,26 @@ import 'package:ppue/widgets/CustomPageContainer.widget.dart';
 import 'package:ppue/widgets/CustomScaffold.widget.dart';
 
 class SearchPPListScreen extends StatefulWidget {
-  const SearchPPListScreen({Key? key}) : super(key: key);
+  final List<dynamic> ppModels;
+
+  const SearchPPListScreen({
+    Key? key,
+    required this.ppModels,
+  }) : super(key: key);
 
   @override
-  State<SearchPPListScreen> createState() => _SearchPPListScreenState();
+  // ignore: no_logic_in_create_state
+  State<SearchPPListScreen> createState() => _SearchPPListScreenState(
+        items: ppModels,
+      );
 }
 
 class _SearchPPListScreenState extends State<SearchPPListScreen> {
-  final List<PPModel> items = [
-    examplePP,
-    examplePP,
-    examplePP,
-    examplePP,
-    examplePP,
-    examplePP,
-    examplePP
-  ];
+  final List<dynamic> items;
+
+  _SearchPPListScreenState({
+    required this.items,
+  });
 
   @override
   Widget build(BuildContext context) {

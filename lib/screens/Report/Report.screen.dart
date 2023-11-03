@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:ppue/constants/constants.dart';
 import 'package:ppue/models/PP.model.dart';
@@ -6,13 +5,9 @@ import 'package:ppue/screens/Report/widgets/Graphs.widget.dart';
 import 'package:ppue/screens/Report/widgets/ListNominal.widget.dart';
 import 'package:ppue/screens/Report/widgets/ModalReportFilters.widget.dart';
 import 'package:ppue/screens/Report/widgets/TableNumeric.widget.dart';
-import 'package:ppue/screens/SearchPP/SearchPP_List.screen.dart';
-import 'package:ppue/utils/formater/DateFormatter.util.dart';
+
 import 'package:ppue/widgets/GradientContainer.widget.dart';
 import 'package:ppue/widgets/inputs/DatePickerTextField.widget.dart';
-import 'package:ppue/widgets/inputs/DropdownTextField.widget.dart';
-
-import '../ViewPP.screen.dart';
 
 class ReportScreen extends StatefulWidget {
   const ReportScreen({Key? key}) : super(key: key);

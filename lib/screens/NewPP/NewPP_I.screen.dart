@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:ppue/constants/constants.dart';
 import 'package:ppue/core/notifier/newPP.notifier.dart';
 import 'package:ppue/models/PP.model.dart';
+import 'package:ppue/utils/formater/DateFormatter.util.dart';
 import 'package:ppue/utils/validation/FormValidators.validation.dart';
 import 'package:provider/provider.dart';
 
@@ -132,35 +133,47 @@ class _NewPP_IState extends State<NewPP_I> {
                     validator: FormValidators.required,
                     onChanged: (_) => checkValidFields(),
                     textInputAction: TextInputAction.next,
-                    onFieldSubmitted: (_) {
-                      FocusScope.of(context)
-                          .requestFocus(_dataNascimentoFocusNode);
-                    },
                   ),
                   spacingRow,
                   TextFormField(
                     controller: _dataNascimentoController,
                     focusNode: _dataNascimentoFocusNode,
-                    readOnly: data != null,
+                    readOnly: true,
                     decoration:
                         InputDecoration(labelText: 'Data de nascimento'),
                     validator: FormValidators.required,
                     onChanged: (_) => checkValidFields(),
                     textInputAction: TextInputAction.next,
+                    onTap: () async {
+                      DateTime? date = await showDatePicker(
+                        context: context,
+                        initialDate: DateTime.now(),
+                        firstDate: DateTime(1900),
+                        lastDate: DateTime.now(),
+                      );
+
+                      if (date != null) {
+                        _dataNascimentoController.text = formatDate(
+                          date,
+                          format: FormatDate.diaMesAno,
+                        );
+                        checkValidFields();
+                      }
+                    },
                     onFieldSubmitted: (_) {
                       FocusScope.of(context).requestFocus(_nomeMaeFocusNode);
                     },
                   ),
                   spacingRow,
                   TextFormField(
-                      controller: _nomeMaeController,
-                      focusNode: _nomeMaeFocusNode,
-                      readOnly: data != null,
-                      decoration: InputDecoration(labelText: 'Nome da mãe'),
-                      validator: FormValidators.required,
-                      onChanged: (_) => checkValidFields(),
-                      textInputAction: TextInputAction.done,
-                      onFieldSubmitted: (value) => updateFormData()),
+                    controller: _nomeMaeController,
+                    focusNode: _nomeMaeFocusNode,
+                    readOnly: data != null,
+                    decoration: InputDecoration(labelText: 'Nome da mãe'),
+                    validator: FormValidators.required,
+                    onChanged: (_) => checkValidFields(),
+                    textInputAction: TextInputAction.done,
+                  ),
                   spacingRow,
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,

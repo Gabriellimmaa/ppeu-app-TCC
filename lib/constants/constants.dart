@@ -64,7 +64,7 @@ PPModel examplePP = PPModel(
   identificacao: IdentificacaoModel(
     nome: "João Silva",
     idade: "35",
-    dataNascimento: "1988-03-15",
+    dataNascimento: "20/20/2002",
     nomeMae: "Maria Silva",
     sexo: "M",
     formaEncaminhamento: "SIATE",
@@ -148,7 +148,7 @@ PPModel examplePP = PPModel(
   recomendacoes: RecomendacoesModel(
       encaminhamento: "Hospital do Trabalhador",
       familiarPresente: ['Gabriel Lima', 'Menolli'],
-      pertences: Pertences(nome: 'Gabriel Lima', parentesco: 'Pai'),
-      responsavelRecebimento: ResponsavelRecebimento(
+      pertences: PertencesModel(nome: 'Gabriel Lima', parentesco: 'Pai'),
+      responsavelRecebimento: ResponsavelRecebimentoModel(
           nome: 'Matheus Valeri', cpf: '48052317851', cargo: 'Médico')),
 );

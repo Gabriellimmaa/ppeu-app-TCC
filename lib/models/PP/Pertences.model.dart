@@ -1,16 +1,16 @@
 import 'dart:convert';
 
-class Pertences {
+class PertencesModel {
   final String nome;
   final String parentesco;
 
-  Pertences({
+  PertencesModel({
     required this.nome,
     required this.parentesco,
   });
 
-  factory Pertences.fromJson(Map<String, dynamic> json) {
-    return Pertences(
+  factory PertencesModel.fromJson(Map<String, dynamic> json) {
+    return PertencesModel(
       nome: json['nome'],
       parentesco: json['parentesco'],
     );

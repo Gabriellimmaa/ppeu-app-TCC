@@ -13,16 +13,7 @@ class DrenoToraxModel {
     required this.profissional,
   });
 
-  factory DrenoToraxModel.fromJson(Map<String, dynamic>? json) {
-    if (json == null) {
-      return DrenoToraxModel(
-        local: '',
-        numero: '',
-        horario: '',
-        profissional: '',
-      );
-    }
-
+  factory DrenoToraxModel.fromJson(Map<String, dynamic> json) {
     return DrenoToraxModel(
       local: json['local'],
       numero: json['numero'],

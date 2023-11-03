@@ -1,14 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:ppue/core/notifier/database.notifier.dart';
+import 'package:ppue/models/PP.model.dart';
 import 'package:ppue/widgets/CustomPageContainer.widget.dart';
 import 'package:ppue/widgets/CustomScaffold.widget.dart';
-import 'package:ppue/widgets/GradientContainer.widget.dart';
+import 'package:provider/provider.dart';
 
 class ViewPPNavigator extends StatelessWidget {
   final int currentIndex;
   final List<Widget> screens;
   final List<Widget> bottomNavigationBarItems;
   final bool willPopScope;
+  final bool canEditStatus;
   final String title;
+  final PPModel? pp;
 
   const ViewPPNavigator(
       {Key? key,
@@ -16,24 +20,34 @@ class ViewPPNavigator extends StatelessWidget {
       required this.currentIndex,
       required this.screens,
       required this.bottomNavigationBarItems,
+      this.canEditStatus = false,
+      this.pp,
       this.willPopScope = true})
       : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    DatabaseNotifier databaseNotifier =
+        Provider.of<DatabaseNotifier>(context, listen: false);
+
     if (willPopScope == false) {
-      return buildScaffold();
+      return buildScaffold(
+          databaseNotifier: databaseNotifier, context: context, id: pp?.id);
     } else {
       return WillPopScope(
         onWillPop: () async {
           return await showExitConfirmationDialog(context);
         },
-        child: buildScaffold(),
+        child: buildScaffold(
+            databaseNotifier: databaseNotifier, context: context, id: pp?.id),
       );
     }
   }
 
-  Scaffold buildScaffold() {
+  Scaffold buildScaffold(
+      {required DatabaseNotifier databaseNotifier,
+      required BuildContext context,
+      int? id}) {
     return CustomScaffold(
       appBar: AppBar(
         title: Text(title),
@@ -46,20 +60,69 @@ class ViewPPNavigator extends StatelessWidget {
       )),
       bottomNavigationBar: BottomAppBar(
         child: Container(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: const [
-                  Color.fromARGB(255, 2, 189, 189),
-                  Colors.blue,
-                ],
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-              ),
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: const [
+                Color.fromARGB(255, 2, 189, 189),
+                Colors.blue,
+              ],
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
             ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [...bottomNavigationBarItems],
-            )),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              if (canEditStatus)
+                InkWell(
+                  onTap: () async {
+                    var response = await databaseNotifier
+                        .changeStatusToConfirmed(context: context, id: id!);
+                    if (response) {
+                      Navigator.of(context).pop();
+                    }
+                  },
+                  child: Container(
+                    padding: EdgeInsets.symmetric(vertical: 8),
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: const [
+                          Color.fromARGB(255, 224, 224, 224),
+                          Color.fromRGBO(168, 255, 176, 1),
+                        ],
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                      ),
+                      border: Border(
+                        top: BorderSide(color: Colors.grey, width: 0.5),
+                      ),
+                    ),
+                    child: Align(
+                      alignment: Alignment.center,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: const [
+                          Icon(Icons.check_box, color: Colors.green),
+                          SizedBox(width: 8),
+                          Text(
+                            'Recepcionar PP',
+                            style: TextStyle(
+                                color: Colors.black,
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [...bottomNavigationBarItems],
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }

@@ -5,7 +5,7 @@ import 'package:ppue/utils/inputMask/cpf.mask.dart';
 import 'package:ppue/utils/validation/FormValidators.validation.dart';
 
 class ModalAddResponsavelRecebimento extends StatefulWidget {
-  final Function(ResponsavelRecebimento) onChanged;
+  final Function(ResponsavelRecebimentoModel) onChanged;
 
   const ModalAddResponsavelRecebimento({Key? key, required this.onChanged})
       : super(key: key);
@@ -112,7 +112,7 @@ class _ModalAddResponsavelRecebimentoState
                         if (!_formKey.currentState!.validate()) return;
 
                         widget.onChanged(
-                          ResponsavelRecebimento(
+                          ResponsavelRecebimentoModel(
                             nome: _nomeController.text,
                             cpf: _cpfController.text,
                             cargo: _selectedCargo!,

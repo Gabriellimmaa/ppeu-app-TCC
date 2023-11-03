@@ -70,6 +70,7 @@ class _NewPP_SState extends State<NewPP_S> {
       _selectedOrigem = data!.situacao.origem;
       _selectedCausasExternas = data!.situacao.trauma;
       _selectedClinica = data!.situacao.clinica;
+      _selectedGestante = data!.situacao.gestante != null;
       _clinicaController.text = data!.situacao.clinica;
       // _showClinica = data!.situacao.clinica;
 
@@ -79,10 +80,12 @@ class _NewPP_SState extends State<NewPP_S> {
       _sintomasLocalController.text = data!.situacao.sintomas.local ?? '';
       _sintomasOutrosController.text = data!.situacao.sintomas.outros;
 
-      _gestanteBCFController.text = data!.situacao.gestante.bcf;
-      _gestanteIGController.text = data!.situacao.gestante.ig;
-      _gestantePerdasVW = data!.situacao.gestante.perdasVW;
-      _gestanteTipoGestacao = data!.situacao.gestante.tipoGestacao;
+      if (_selectedGestante == true) {
+        _gestanteBCFController.text = data!.situacao.gestante!.bcf;
+        _gestanteIGController.text = data!.situacao.gestante!.ig;
+        _gestantePerdasVW = data!.situacao.gestante!.perdasVW;
+        _gestanteTipoGestacao = data!.situacao.gestante!.tipoGestacao;
+      }
 
       _hipoteseDiagnosticoController.text = data!.situacao.hipoteseDiagnostico;
       _enfermeiroResponsavelTransferenciaController.text =
@@ -123,15 +126,19 @@ class _NewPP_SState extends State<NewPP_S> {
           horario: _sintomasHorarioController.text,
           dorToracica: _sintomasDorToracica ?? false,
           deficitMotor: _sintomasDeficitMotor ?? false,
-          local: _sintomasLocalController.text,
+          local: _sintomasDorToracica == true || _sintomasDeficitMotor == true
+              ? _sintomasLocalController.text
+              : null,
           outros: _sintomasOutrosController.text,
         ),
-        gestante: GestanteModel(
-          bcf: _gestanteBCFController.text,
-          ig: _gestanteIGController.text,
-          perdasVW: _gestantePerdasVW ?? false,
-          tipoGestacao: _gestanteTipoGestacao ?? '',
-        ),
+        gestante: _selectedGestante == false
+            ? null
+            : GestanteModel(
+                bcf: _gestanteBCFController.text,
+                ig: _gestanteIGController.text,
+                perdasVW: _gestantePerdasVW ?? false,
+                tipoGestacao: _gestanteTipoGestacao ?? '',
+              ),
         hipoteseDiagnostico: _hipoteseDiagnosticoController.text,
         enfermeiroResponsavelTransferencia:
             _enfermeiroResponsavelTransferenciaController.text,
@@ -341,7 +348,7 @@ class _NewPP_SState extends State<NewPP_S> {
                           readOnly: data != null,
                           decoration: InputDecoration(
                               labelText: 'Outros (se for o caso)'),
-                          textInputAction: TextInputAction.continueAction,
+                          textInputAction: TextInputAction.next,
                         ),
                         spacingRow,
                       ],

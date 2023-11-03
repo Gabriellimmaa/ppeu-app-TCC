@@ -53,23 +53,6 @@ class NewPPNotifier extends ChangeNotifier {
     });
   }
 
-  // Responsabilidades voltadas a recomendacao
-  RecomendacoesModel? _recomendacoes;
-  RecomendacoesModel get recomendacoes => _recomendacoes!;
-  set recomendacoes(RecomendacoesModel identificacao) {
-    _recomendacoes = identificacao;
-    notifyListeners();
-  }
-
-  GlobalKey<FormState> _formKeyRecomendacoes = GlobalKey<FormState>();
-  GlobalKey<FormState> get formKeyRecomendacoes => _formKeyRecomendacoes;
-  set formKeyRecomendacoes(GlobalKey<FormState> formKey) {
-    _formKeyRecomendacoes = formKey;
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      notifyListeners();
-    });
-  }
-
   // Responsabilidades voltadas a situacao
   SituacaoModel? _situacao;
   SituacaoModel get situacao => _situacao!;
@@ -82,6 +65,23 @@ class NewPPNotifier extends ChangeNotifier {
   GlobalKey<FormState> get formKeySituacao => _formKeySituacao;
   set formKeySituacao(GlobalKey<FormState> formKey) {
     _formKeySituacao = formKey;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      notifyListeners();
+    });
+  }
+
+  // Responsabilidades voltadas a recomendacao
+  RecomendacoesModel? _recomendacoes;
+  RecomendacoesModel get recomendacoes => _recomendacoes!;
+  set recomendacoes(RecomendacoesModel identificacao) {
+    _recomendacoes = identificacao;
+    notifyListeners();
+  }
+
+  GlobalKey<FormState> _formKeyRecomendacoes = GlobalKey<FormState>();
+  GlobalKey<FormState> get formKeyRecomendacoes => _formKeyRecomendacoes;
+  set formKeyRecomendacoes(GlobalKey<FormState> formKey) {
+    _formKeyRecomendacoes = formKey;
     WidgetsBinding.instance.addPostFrameCallback((_) {
       notifyListeners();
     });

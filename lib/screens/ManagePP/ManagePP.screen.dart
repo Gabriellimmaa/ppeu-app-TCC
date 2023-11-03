@@ -1,12 +1,10 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:ppue/constants/constants.dart';
+import 'package:ppue/core/notifier/database.notifier.dart';
 import 'package:ppue/models/PP.model.dart';
-import 'package:ppue/screens/SearchPP/SearchPP_List.screen.dart';
-import 'package:ppue/utils/formater/DateFormatter.util.dart';
+import 'package:ppue/models/PPStatus.model.dart';
+import 'package:ppue/screens/ViewPP.screen.dart';
 import 'package:ppue/widgets/GradientContainer.widget.dart';
-import 'package:ppue/widgets/inputs/DatePickerTextField.widget.dart';
-import 'package:ppue/widgets/inputs/DropdownTextField.widget.dart';
+import 'package:provider/provider.dart';
 
 class ManagePPScreen extends StatefulWidget {
   const ManagePPScreen({Key? key}) : super(key: key);
@@ -17,29 +15,46 @@ class ManagePPScreen extends StatefulWidget {
 
 class _ManagePPScreenState extends State<ManagePPScreen> {
   DateTime selectedDate = DateTime.now();
-  String? _selectedItem;
   String buttonText = 'Selecione';
-  final TextEditingController _dateController = TextEditingController();
-  int _selectedButtonIndex = 0;
-  final List<PPModel> items = [
-    examplePP,
-    examplePP,
-    examplePP,
-    examplePP,
-    examplePP,
-    examplePP,
-    examplePP
-  ];
-
-  int _currentSegment = 0;
-
-  final List<bool> _selectedFruits = <bool>[true, false, false];
+  String _selectedButtonIndex = 'all';
+  List<dynamic> data = [];
 
   bool vertical = false;
   List<Widget> fruits = <Widget>[Text('Apple'), Text('Banana'), Text('Orange')];
 
+  Future<void> fetchAllPP(BuildContext context) async {
+    DatabaseNotifier databaseNotifier =
+        Provider.of<DatabaseNotifier>(context, listen: false);
+    var response = await databaseNotifier.fetchAll();
+    data = response;
+    setState(() {});
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    fetchAllPP(context);
+  }
+
   @override
   Widget build(BuildContext context) {
+    DatabaseNotifier databaseNotifier =
+        Provider.of<DatabaseNotifier>(context, listen: false);
+
+    Future<void> fetchFilterByStatus(String status) async {
+      if (status == 'all') {
+        var response = await databaseNotifier.fetchAll();
+        setState(() {
+          data = response;
+        });
+      } else {
+        var response = await databaseNotifier.filterByStatus(status: status);
+        setState(() {
+          data = response;
+        });
+      }
+    }
+
     return Scaffold(
         appBar: AppBar(
           title: Text('GERENCIAR PPs',
@@ -91,14 +106,15 @@ class _ManagePPScreenState extends State<ManagePPScreen> {
                     child: GestureDetector(
                       onTap: () {
                         setState(() {
-                          _selectedButtonIndex = 0;
+                          _selectedButtonIndex = 'all';
+                          fetchFilterByStatus('all');
                         });
                       },
                       child: Container(
                         decoration: BoxDecoration(
                           border: Border(
                             bottom: BorderSide(
-                              color: _selectedButtonIndex == 0
+                              color: _selectedButtonIndex == 'all'
                                   ? Colors.white
                                   : Colors.transparent,
                               width: 10.0,
@@ -123,14 +139,15 @@ class _ManagePPScreenState extends State<ManagePPScreen> {
                     child: GestureDetector(
                       onTap: () {
                         setState(() {
-                          _selectedButtonIndex = 1;
+                          _selectedButtonIndex = PPStatus.CONFIRMED;
+                          fetchFilterByStatus(PPStatus.CONFIRMED);
                         });
                       },
                       child: Container(
                         decoration: BoxDecoration(
                           border: Border(
                             bottom: BorderSide(
-                              color: _selectedButtonIndex == 1
+                              color: _selectedButtonIndex == 'CONFIRMED'
                                   ? Colors.white
                                   : Colors.transparent,
                               width: 10.0,
@@ -155,16 +172,18 @@ class _ManagePPScreenState extends State<ManagePPScreen> {
                     child: GestureDetector(
                       onTap: () {
                         setState(() {
-                          _selectedButtonIndex = 2;
+                          _selectedButtonIndex = PPStatus.WAITING_CONFIRMATION;
+                          fetchFilterByStatus(PPStatus.WAITING_CONFIRMATION);
                         });
                       },
                       child: Container(
                         decoration: BoxDecoration(
                           border: Border(
                             bottom: BorderSide(
-                              color: _selectedButtonIndex == 2
-                                  ? Colors.white
-                                  : Colors.transparent,
+                              color:
+                                  _selectedButtonIndex == 'WAITING_CONFIRMATION'
+                                      ? Colors.white
+                                      : Colors.transparent,
                               width: 10.0,
                             ),
                           ),
@@ -192,17 +211,23 @@ class _ManagePPScreenState extends State<ManagePPScreen> {
                   width: double.infinity,
                   child: ListView.builder(
                     padding: EdgeInsets.zero,
-                    itemCount: items.length,
+                    itemCount: data.length,
                     itemBuilder: (BuildContext context, int index) {
-                      PPModel item = items[index];
+                      PPModel item = data[index];
                       return GestureDetector(
-                        onTap: () {
-                          // Navigator.push(
-                          //   context,
-                          //   MaterialPageRoute(
-                          //     builder: (context) => ViewPPScreen(data: item),
-                          //   ),
-                          // );
+                        onTap: () async {
+                          await Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => ViewPPScreen(
+                                data: item,
+                                canEditStatus: item.status == PPStatus.CONFIRMED
+                                    ? false
+                                    : true,
+                              ),
+                            ),
+                          ).then((value) =>
+                              fetchFilterByStatus(_selectedButtonIndex));
                         },
                         child: SizedBox(
                           child: Column(
@@ -217,17 +242,19 @@ class _ManagePPScreenState extends State<ManagePPScreen> {
                                 //   fit: BoxFit.cover,
                                 // ),
                                 trailing: Column(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceAround,
-                                    children: [
-                                      Icon(Icons.list_alt),
-                                      // Icon(Icons.check_box,
-                                      //     color: Colors.green),
-                                      Icon(
-                                        Icons.access_time_filled,
-                                        color: Colors.yellow.shade900,
-                                      )
-                                    ]),
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceAround,
+                                  children: [
+                                    Icon(Icons.list_alt),
+                                    if (item.status == PPStatus.CONFIRMED)
+                                      Icon(Icons.check_box,
+                                          color: Colors.green),
+                                    if (item.status ==
+                                        PPStatus.WAITING_CONFIRMATION)
+                                      Icon(Icons.access_time_filled,
+                                          color: Colors.yellow.shade900),
+                                  ],
+                                ),
                                 title: Row(
                                   mainAxisAlignment:
                                       MainAxisAlignment.spaceBetween,
@@ -238,11 +265,7 @@ class _ManagePPScreenState extends State<ManagePPScreen> {
                                           fontWeight: FontWeight.bold),
                                     ),
                                     Text(
-                                      formatDate(
-                                        DateTime.parse(
-                                            item.identificacao.dataNascimento),
-                                        format: FormatDate.diaMesNomeAno,
-                                      ),
+                                      item.identificacao.dataNascimento,
                                       style: TextStyle(fontSize: 14),
                                     ),
                                   ],

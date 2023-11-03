@@ -18,6 +18,7 @@ class CateterGastricoModel {
 
   Map<String, dynamic> toJson() {
     return {
+      'tipo': tipo,
       'profissional': profissional,
     };
   }

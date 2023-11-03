@@ -20,15 +20,15 @@ class _NewPP_BState extends State<NewPP_B> {
 
   late GlobalKey<FormState> _formKey;
   final _historicaClinicaController = TextEditingController();
-  final _alergiasController = TextEditingController();
-  final _comorbidadesController = TextEditingController();
-  final _viciosController = TextEditingController();
-  final _medicamentosEmUsoController = TextEditingController();
+  final _alergiasController = TextEditingController(text: null);
+  final _comorbidadesController = TextEditingController(text: null);
+  final _viciosController = TextEditingController(text: null);
+  final _medicamentosEmUsoController = TextEditingController(text: null);
   final _historicoInternacoesController = TextEditingController();
-  final _cirurgiaPreviaController = TextEditingController();
-  final _lesoesController = TextEditingController();
-  final _alteracoesLaboratoriaisController = TextEditingController();
-  final _jejumController = TextEditingController();
+  final _cirurgiaPreviaController = TextEditingController(text: null);
+  final _lesoesController = TextEditingController(text: null);
+  final _alteracoesLaboratoriaisController = TextEditingController(text: null);
+  final _jejumController = TextEditingController(text: null);
   final _alergiasFocusNode = FocusNode();
   final _comorbidadesFocusNode = FocusNode();
   final _viciosFocusNode = FocusNode();
@@ -49,7 +49,7 @@ class _NewPP_BState extends State<NewPP_B> {
   bool? _selectedLaboratoryAlterations = false;
   bool? _selectedJejum = false;
   bool? _selectedPrecaucoes = false;
-  String? _precaucoes;
+  late String _precaucoes = '';
 
   @override
   void initState() {
@@ -61,7 +61,7 @@ class _NewPP_BState extends State<NewPP_B> {
 
     if (data != null) {
       _historicaClinicaController.text = data!.breveHistorico.historicaClinica;
-      _alergiasController.text = data!.breveHistorico.alergias ?? '';
+      _alergiasController.text = data!.breveHistorico.alergias!;
       _comorbidadesController.text = data!.breveHistorico.comorbidades!;
       _viciosController.text = data!.breveHistorico.vicios!;
       _medicamentosEmUsoController.text =
@@ -74,7 +74,7 @@ class _NewPP_BState extends State<NewPP_B> {
           data!.breveHistorico.alteracoesLaboratoriais!;
       _jejumController.text = data!.breveHistorico.jejum!;
 
-      _selectedAlergias = data!.breveHistorico.alergias == null ? false : true;
+      _selectedAlergias = data!.breveHistorico.alergias == '' ? false : true;
       _selectedComorbidades = data!.breveHistorico.comorbidades!.isNotEmpty;
       _selectedVices = data!.breveHistorico.vicios!.isNotEmpty;
       _selectedMedicationsInUse =
@@ -87,7 +87,7 @@ class _NewPP_BState extends State<NewPP_B> {
       _selectedLaboratoryAlterations =
           data!.breveHistorico.alteracoesLaboratoriais!.isNotEmpty;
       _precaucoes = data!.breveHistorico.precaucoes;
-      if (_precaucoes != null) {
+      if (_precaucoes != '') {
         _selectedPrecaucoes = true;
       }
       _selectedJejum = data!.breveHistorico.jejum!.isNotEmpty;
@@ -141,7 +141,7 @@ class _NewPP_BState extends State<NewPP_B> {
         lesoes: _lesoesController.text,
         alteracoesLaboratoriais: _alteracoesLaboratoriaisController.text,
         jejum: _jejumController.text,
-        precaucoes: _precaucoes ?? '',
+        precaucoes: _precaucoes,
       );
     }
 
@@ -804,7 +804,7 @@ class _NewPP_BState extends State<NewPP_B> {
                     child: Column(children: [
                       spacingRow,
                       DropdownButtonFormField(
-                        value: _precaucoes,
+                        value: _precaucoes == '' ? null : _precaucoes,
                         decoration: InputDecoration(labelText: 'Precauções'),
                         items: optionsPrecaucoes
                             .map((e) => DropdownMenuItem(

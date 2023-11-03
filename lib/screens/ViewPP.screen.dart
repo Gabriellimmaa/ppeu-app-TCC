@@ -9,7 +9,9 @@ import 'package:ppue/widgets/ViewPPNavigator.widget.dart';
 
 class ViewPPScreen extends StatefulWidget {
   final PPModel data;
-  const ViewPPScreen({Key? key, required this.data}) : super(key: key);
+  final bool canEditStatus;
+  const ViewPPScreen({Key? key, required this.data, this.canEditStatus = false})
+      : super(key: key);
 
   @override
   State<ViewPPScreen> createState() => _ViewPPScreenState();
@@ -24,6 +26,8 @@ class _ViewPPScreenState extends State<ViewPPScreen> {
         title: "Detalhes PP",
         willPopScope: false,
         currentIndex: _currentIndex,
+        pp: widget.data,
+        canEditStatus: widget.canEditStatus,
         screens: [
           NewPP_I(data: widget.data),
           NewPP_S(data: widget.data),

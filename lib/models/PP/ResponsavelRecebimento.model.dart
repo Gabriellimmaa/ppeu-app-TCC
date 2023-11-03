@@ -1,18 +1,18 @@
 import 'dart:convert';
 
-class ResponsavelRecebimento {
+class ResponsavelRecebimentoModel {
   final String nome;
   final String cpf;
   final String cargo;
 
-  ResponsavelRecebimento({
+  ResponsavelRecebimentoModel({
     required this.nome,
     required this.cpf,
     required this.cargo,
   });
 
-  factory ResponsavelRecebimento.fromJson(Map<String, dynamic> json) {
-    return ResponsavelRecebimento(
+  factory ResponsavelRecebimentoModel.fromJson(Map<String, dynamic> json) {
+    return ResponsavelRecebimentoModel(
       nome: json['nome'],
       cpf: json['cpf'],
       cargo: json['cargo'],
@@ -30,4 +30,6 @@ class ResponsavelRecebimento {
   String toJsonString() {
     return jsonEncode(toJson());
   }
+
+  split(String s) {}
 }

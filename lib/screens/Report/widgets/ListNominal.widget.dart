@@ -79,10 +79,7 @@ class ListNominal extends StatelessWidget {
                             style: TextStyle(fontWeight: FontWeight.bold),
                           ),
                           Text(
-                            formatDate(
-                              DateTime.parse(item.identificacao.dataNascimento),
-                              format: FormatDate.diaMesNomeAno,
-                            ),
+                            item.identificacao.dataNascimento,
                             style: TextStyle(fontSize: 14),
                           ),
                         ],

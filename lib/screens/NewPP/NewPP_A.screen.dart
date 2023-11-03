@@ -195,7 +195,9 @@ class _NewPP_AState extends State<NewPP_A> {
             data!.avaliacao.intubacao!.responsavel;
       }
 
-      if (hasOxigenio) {}
+      if (hasOxigenio) {
+        _oxigenioLitros = data!.avaliacao.oxigenio!.litrosMinuto;
+      }
 
       _nomeMedicacaoController.text = data!.avaliacao.nomeMedicacao ?? '';
 
@@ -206,9 +208,11 @@ class _NewPP_AState extends State<NewPP_A> {
         _drenoToraxProfissionalController.text =
             data!.avaliacao.drenoTorax!.profissional;
       }
-      _selectedCateterGastrico = data?.avaliacao.cateterGastrico == null
-          ? 'Não'
-          : data?.avaliacao.cateterGastrico!.tipo;
+      // ignore: unrelated_type_equality_checks
+      _selectedCateterGastrico = data?.avaliacao.cateterGastrico != null
+          ? data?.avaliacao.cateterGastrico!.tipo
+          : 'Não';
+
       _cateterGastricoProfissionalController.text =
           data?.avaliacao.cateterGastrico?.profissional ?? '';
 
@@ -235,7 +239,7 @@ class _NewPP_AState extends State<NewPP_A> {
         _intensidadeDor = data!.avaliacao.dor!.intensidade;
       }
 
-      _ecgController.text = data!.avaliacao.ecg!;
+      _ecgController.text = data!.avaliacao.ecg ?? '';
       _outrasAnotacoesController.text = data!.avaliacao.outrasAnotacoes;
 
       _selectedDor = hasDor ? true : false;
@@ -359,10 +363,12 @@ class _NewPP_AState extends State<NewPP_A> {
                       _acessoPerifericoDispositivoIntravenosoController.text))
               : null,
         ),
-        cateterGastrico: CateterGastricoModel(
-          profissional: _cateterGastricoProfissionalController.text,
-          tipo: _selectedCateterGastrico ?? '',
-        ),
+        cateterGastrico: _selectedCateterGastrico == 'Não'
+            ? null
+            : CateterGastricoModel(
+                profissional: _cateterGastricoProfissionalController.text,
+                tipo: _selectedCateterGastrico ?? '',
+              ),
         cateterVesical: hasCateterVesical
             ? CateterVesicalModel(
                 horario: _cateterVesicalHorarioController.text,
@@ -409,7 +415,9 @@ class _NewPP_AState extends State<NewPP_A> {
         ao: _ao,
         avdi: _avdi ?? '',
         pupilas: _pupilas ?? '',
-        nomeMedicacao: _nomeMedicacaoController.text,
+        nomeMedicacao: _nomeMedicacaoController.text == ''
+            ? null
+            : _nomeMedicacaoController.text,
         oxigenio: hasOxigenio
             ? OxigenioModel(
                 litrosMinuto: _oxigenioLitros,
@@ -1245,19 +1253,12 @@ class _NewPP_AState extends State<NewPP_A> {
                           onChanged: (_) => checkValidFields(),
                         ),
                         spacingRow,
-                        TextFormField(
-                          readOnly: data != null,
+                        TimePickerTextField(
                           controller: _acessoPerifericoHorarioController,
                           focusNode: _acessoPerifericoHorarioFocusNode,
-                          decoration: InputDecoration(
-                            labelText: 'Horário',
-                          ),
-                          textInputAction: TextInputAction.next,
-                          onFieldSubmitted: (_) => FocusScope.of(context)
-                              .requestFocus(
-                                  _acessoPerifericoNumeroDispositivoIntravenosoFocusNode),
-                          validator: (value) => FormValidators.required(value,
-                              condition: _selectedAcessoPeriferico),
+                          readOnly: data != null,
+                          labelText: 'Horário',
+                          validator: FormValidators.required,
                           onChanged: (_) => checkValidFields(),
                         ),
                         spacingRow,

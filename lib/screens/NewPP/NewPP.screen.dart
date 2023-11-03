@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:ppue/core/notifier/database.notifier.dart';
 import 'package:ppue/core/notifier/newPP.notifier.dart';
+import 'package:ppue/models/PP.model.dart';
 import 'package:ppue/screens/newPP/NewPP_A.screen.dart';
 import 'package:ppue/screens/newPP/NewPP_B.screen.dart';
 import 'package:ppue/screens/newPP/NewPP_I.screen.dart';
@@ -21,8 +22,8 @@ class _NewPPScreenState extends State<NewPPScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // DatabaseNotifier databaseNotifier =
-    //     Provider.of<DatabaseNotifier>(context, listen: false);
+    DatabaseNotifier databaseNotifier =
+        Provider.of<DatabaseNotifier>(context, listen: false);
 
     NewPPNotifier newPPNotifier =
         Provider.of<NewPPNotifier>(context, listen: false);
@@ -100,31 +101,59 @@ class _NewPPScreenState extends State<NewPPScreen> {
           IconButton(
             icon: Icon(Icons.arrow_forward_ios),
             onPressed: () {
-              _onTabTapped('next');
-              // List<GlobalKey<FormState>> formKeys = [];
-              // formKeys.add(newPPNotifier.formKeyIdentificacao);
-              // formKeys.add(newPPNotifier.formKeySituacao);
-              // formKeys.add(newPPNotifier.formKeyBreveHistorico);
-              // formKeys.add(newPPNotifier.formKeyAvaliacao);
-              // formKeys.add(newPPNotifier.formKeyRecomendacoes);
-              // if (formKeys[_currentIndex].currentState!.validate()) {
-              //   formKeys[_currentIndex].currentState!.save();
-              //   print(newPPNotifier.identificacao.nomeMae);
-              //   _onTabTapped('next');
-              // } else {
-              //   ScaffoldMessenger.of(context).showSnackBar(
-              //     SnackBar(
-              //       content: Text('Preencha todos os campos obrigatórios'),
-              //     ),
-              //   );
-              // }
+              // _onTabTapped('next');
+              List<GlobalKey<FormState>> formKeys = [];
+              formKeys.add(newPPNotifier.formKeyIdentificacao);
+              formKeys.add(newPPNotifier.formKeySituacao);
+              formKeys.add(newPPNotifier.formKeyBreveHistorico);
+              formKeys.add(newPPNotifier.formKeyAvaliacao);
+              formKeys.add(newPPNotifier.formKeyRecomendacoes);
+
+              if (formKeys[_currentIndex].currentState!.validate()) {
+                formKeys[_currentIndex].currentState!.save();
+                _onTabTapped('next');
+              } else {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text('Preencha todos os campos obrigatórios'),
+                  ),
+                );
+              }
             },
             color: Colors.white,
           ),
           IconButton(
             icon: Icon(Icons.save),
             onPressed: () async {
-              // databaseNotifier.addPP(data: newPPNotifier.data!);
+              databaseNotifier.addPP(
+                  context: context,
+                  data: PPModel(
+                      identificacao: newPPNotifier.identificacao,
+                      situacao: newPPNotifier.situacao,
+                      breveHistorico: newPPNotifier.breveHistorico,
+                      avaliacao: newPPNotifier.avaliacao,
+                      recomendacoes: newPPNotifier.recomendacoes));
+
+              showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return AlertDialog(
+                      title:
+                          Text('Passagem de Plantão cadastrada com sucesso!'),
+                      content: Text(
+                          'Você está sendo redirecionado para a tela de inicial.'),
+                      actions: [
+                        TextButton(
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                          },
+                          child: Text('OK'),
+                        ),
+                      ],
+                    );
+                  }).then((value) {
+                Navigator.of(context).pop();
+              });
             },
             color: Colors.white,
           ),

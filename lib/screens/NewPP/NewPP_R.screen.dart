@@ -1,14 +1,15 @@
-import 'dart:ffi';
-
 import 'package:flutter/material.dart';
 import 'package:ppue/constants/constants.dart';
+import 'package:ppue/core/notifier/hospitalUnit.notifier.dart';
+import 'package:ppue/core/notifier/user.notifier.dart';
 import 'package:ppue/models/PP.model.dart';
-import 'package:ppue/models/PP/FamiliarPresente.model.dart';
+import 'package:ppue/models/PP/Pertences.model.dart';
 import 'package:ppue/models/PP/ResponsavelRecebimento.model.dart';
 import 'package:ppue/screens/NewPP/widgets/ModalAddEncaminhamento.widget.dart';
 import 'package:ppue/screens/NewPP/widgets/ModalAddFamiliarAdmissao.widget.dart';
 import 'package:ppue/screens/NewPP/widgets/ModalAddResponsavelRecebimento.widget.dart';
 import 'package:ppue/core/notifier/newPP.notifier.dart';
+import 'package:ppue/utils/formater/LimitCharacters.util.dart';
 import 'package:ppue/utils/validation/FormValidators.validation.dart';
 import 'package:provider/provider.dart';
 
@@ -22,44 +23,56 @@ class NewPP_R extends StatefulWidget {
 
 class _NewPP_RState extends State<NewPP_R> {
   PPModel? data;
+
   late GlobalKey<FormState> _formKey;
   String? _selectedEncaminhamento;
 
   List<dynamic> _listFamiliarPresente = [];
-  ResponsavelRecebimento? _responsavelRecebimento;
-
+  String? _responsavelRecebimento;
+  List<DropdownMenuItem<String>> _hospitalUnitDropdownItems = [];
+  List<DropdownMenuItem<String>> _usersDropdownItems = [];
   final _pertencesNomeController = TextEditingController();
   final _pertencesParentescoController = TextEditingController();
   final _pertencesParentescoFocusNode = FocusNode();
 
-  final List<DropdownMenuItem<String>> _optionsEncaminhamento = [
-    DropdownMenuItem(
-        value: 'HU',
-        child: Text('HU',
-            style: TextStyle(
-              color: Colors.black,
-            ))),
-    DropdownMenuItem(
-        value: 'HZN',
-        child: Text('HZN',
-            style: TextStyle(
-              color: Colors.black,
-            ))),
-    DropdownMenuItem(
-        value: 'ISCAL',
-        child: Text('ISCAL',
-            style: TextStyle(
-              color: Colors.black,
-            ))),
-  ];
-  final List<DropdownMenuItem<String>> _optionsResponsavelProfissional = [
-    DropdownMenuItem(
-        value: 'Gilmar Dias',
-        child: Text('Gilmar Dias',
-            style: TextStyle(
-              color: Colors.black,
-            ))),
-  ];
+  Future<void> fetchHospitalUnitsAndBuildDropdown(BuildContext context) async {
+    HospitalUnitNotifier hospitalUnitNotifier =
+        Provider.of<HospitalUnitNotifier>(context, listen: false);
+
+    List<dynamic> data = await hospitalUnitNotifier.fetchAll();
+    _hospitalUnitDropdownItems = data.map((element) {
+      return DropdownMenuItem<String>(
+        value: '${element.id.toString()}::${element.name}',
+        child: Text(
+          limitCharacters(element.name, 30),
+          style: TextStyle(
+            color: Colors.black,
+          ),
+        ),
+      );
+    }).toList();
+
+    setState(() {}); // Força o rebuild do widget
+  }
+
+  Future<void> fetchUsersAndBuildDropdown(BuildContext context) async {
+    UserNotifier userNotifier =
+        Provider.of<UserNotifier>(context, listen: false);
+    List<dynamic> data = await userNotifier.fetchAll();
+    _usersDropdownItems = data.map((element) {
+      return DropdownMenuItem<String>(
+        value: '${element.name}::${element.role}::${element.taxId}',
+        child: Text(
+          limitCharacters(element.name, 30),
+          style: TextStyle(
+            color: Colors.black,
+          ),
+        ),
+      );
+    }).toList();
+
+    setState(() {}); // Força o rebuild do widget
+  }
 
   @override
   void initState() {
@@ -73,7 +86,7 @@ class _NewPP_RState extends State<NewPP_R> {
     if (data != null) {
       bool hasPertences = data!.recomendacoes.pertences != null ? true : false;
 
-      _optionsEncaminhamento.add(DropdownMenuItem(
+      _hospitalUnitDropdownItems.add(DropdownMenuItem(
           value: data!.recomendacoes.encaminhamento,
           child: Text(data!.recomendacoes.encaminhamento,
               style: TextStyle(
@@ -81,11 +94,13 @@ class _NewPP_RState extends State<NewPP_R> {
               ))));
       _selectedEncaminhamento = data!.recomendacoes.encaminhamento;
 
-      _responsavelRecebimento = data!.recomendacoes.responsavelRecebimento;
-      _optionsResponsavelProfissional.add(DropdownMenuItem(
-          value: _responsavelRecebimento!.nome,
+      _responsavelRecebimento =
+          '${data!.recomendacoes.responsavelRecebimento.nome}::${data!.recomendacoes.responsavelRecebimento.cargo}::${data!.recomendacoes.responsavelRecebimento.cpf}';
+      _usersDropdownItems.add(DropdownMenuItem(
+          value:
+              '${data!.recomendacoes.responsavelRecebimento.nome}::${data!.recomendacoes.responsavelRecebimento.cargo}::${data!.recomendacoes.responsavelRecebimento.cpf}',
           child: Text(
-              '${_responsavelRecebimento?.nome} - ${_responsavelRecebimento?.cargo}',
+              '${data!.recomendacoes.responsavelRecebimento.nome} - ${data!.recomendacoes.responsavelRecebimento.cargo}',
               style: TextStyle(
                 color: Colors.black,
               ))));
@@ -97,6 +112,9 @@ class _NewPP_RState extends State<NewPP_R> {
       }
 
       _listFamiliarPresente = data!.recomendacoes.familiarPresente;
+    } else {
+      // fetchHospitalUnitsAndBuildDropdown(context);
+      // fetchUsersAndBuildDropdown(context);
     }
   }
 
@@ -110,10 +128,49 @@ class _NewPP_RState extends State<NewPP_R> {
 
   @override
   Widget build(BuildContext context) {
+    NewPPNotifier newPPNotifier =
+        Provider.of<NewPPNotifier>(context, listen: false);
+    UserNotifier userNotifier =
+        Provider.of<UserNotifier>(context, listen: false);
+
+    void updateFormData() {
+      var parsedResponsavelRecebimento = _responsavelRecebimento!.split('::');
+      newPPNotifier.recomendacoes = RecomendacoesModel(
+          encaminhamento: _selectedEncaminhamento!.split('::')[1],
+          familiarPresente: _listFamiliarPresente,
+          pertences: _pertencesNomeController.text.isNotEmpty
+              ? PertencesModel(
+                  nome: _pertencesNomeController.text,
+                  parentesco: _pertencesParentescoController.text)
+              : null,
+          responsavelRecebimento: ResponsavelRecebimentoModel(
+              nome: parsedResponsavelRecebimento[0],
+              cargo: parsedResponsavelRecebimento[1],
+              cpf: parsedResponsavelRecebimento[2]));
+    }
+
     void checkValidFields() {
       if (_formKey.currentState!.validate()) {
         _formKey.currentState!.validate();
       }
+    }
+
+    void updateUsersDropdown(id) async {
+      List<dynamic> data = await userNotifier.filterByHospitalUnit(id: id);
+
+      setState(() {
+        _usersDropdownItems = data.map((element) {
+          return DropdownMenuItem<String>(
+            value: '${element.name}::${element.role}::${element.taxId}',
+            child: Text(
+              limitCharacters(element.name, 30),
+              style: TextStyle(
+                color: Colors.black,
+              ),
+            ),
+          );
+        }).toList();
+      });
     }
 
     return SingleChildScrollView(
@@ -157,18 +214,26 @@ class _NewPP_RState extends State<NewPP_R> {
                     children: [
                       Expanded(
                         child: DropdownButtonFormField(
+                          isExpanded: true,
                           value: _selectedEncaminhamento,
                           decoration: InputDecoration(
                               labelText: 'Local encaminhamento'),
-                          items: _optionsEncaminhamento,
+                          items: _hospitalUnitDropdownItems,
                           onChanged: data != null
                               ? null
                               : (value) {
+                                  updateUsersDropdown(int.parse(value
+                                      .toString()
+                                      .split('::')[0]
+                                      .toString()));
                                   setState(() {
                                     _selectedEncaminhamento = value as String?;
                                   });
                                 },
                           validator: FormValidators.required,
+                          onSaved: (value) {
+                            updateFormData();
+                          },
                         ),
                       ),
                       spacingColumn,
@@ -188,7 +253,7 @@ class _NewPP_RState extends State<NewPP_R> {
                               builder: (context) => ModalAddEncaminhamento(
                                 onChanged: (value) {
                                   setState(() {
-                                    _optionsEncaminhamento.add(
+                                    _hospitalUnitDropdownItems.add(
                                       DropdownMenuItem(
                                           value: value,
                                           child: Text(value,
@@ -229,19 +294,25 @@ class _NewPP_RState extends State<NewPP_R> {
                     children: [
                       Expanded(
                         child: DropdownButtonFormField(
-                          value: _responsavelRecebimento != null
-                              ? _responsavelRecebimento!.nome
-                              : null,
+                          value: _responsavelRecebimento,
                           decoration: InputDecoration(
                               labelText: 'Selecione o profissional'),
-                          items: _optionsResponsavelProfissional,
+                          items: _usersDropdownItems,
                           onChanged: data != null
                               ? null
                               : (value) {
                                   checkValidFields();
-                                  setState(() {});
+                                  setState(() {
+                                    var _value = value as String;
+                                    var parsedValue = _value.split('::');
+                                    _responsavelRecebimento =
+                                        '${parsedValue[0]}::${parsedValue[1]}::${parsedValue[2]}';
+                                  });
                                 },
                           validator: FormValidators.required,
+                          onSaved: (value) {
+                            updateFormData();
+                          },
                         ),
                       ),
                       spacingColumn,
@@ -262,16 +333,18 @@ class _NewPP_RState extends State<NewPP_R> {
                                     ModalAddResponsavelRecebimento(
                                       onChanged: (value) {
                                         setState(() {
-                                          _optionsResponsavelProfissional.add(
+                                          var parsedValue = value.split('::');
+                                          _usersDropdownItems.add(
                                             DropdownMenuItem(
-                                                value: value.nome,
+                                                value: parsedValue[0],
                                                 child: Text(
-                                                    '${value.nome} - ${value.cargo}',
+                                                    '${parsedValue[0]}::${parsedValue[1]}::${parsedValue[2]}',
                                                     style: TextStyle(
                                                       color: Colors.black,
                                                     ))),
                                           );
-                                          _responsavelRecebimento = value;
+                                          _responsavelRecebimento =
+                                              '${parsedValue[0]}::${parsedValue[1]}::${parsedValue[2]}';
                                         });
                                       },
                                     ));
@@ -423,6 +496,9 @@ class _NewPP_RState extends State<NewPP_R> {
                         onFieldSubmitted: (value) {
                           _pertencesParentescoFocusNode.requestFocus();
                         },
+                        onSaved: (value) {
+                          updateFormData();
+                        },
                       ),
                       spacingRow,
                       TextFormField(
@@ -432,6 +508,9 @@ class _NewPP_RState extends State<NewPP_R> {
                         decoration: InputDecoration(
                           labelText: 'Parentesco',
                         ),
+                        onSaved: (value) {
+                          updateFormData();
+                        },
                       ),
                       spacingRow,
                     ])),

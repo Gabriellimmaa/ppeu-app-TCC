@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:ppue/constants/constants.dart';
 import 'package:ppue/models/PP.model.dart';
 import 'package:ppue/screens/ViewPP.screen.dart';
-import 'package:ppue/utils/formater/DateFormatter.util.dart';
 import 'package:ppue/widgets/CustomPageContainer.widget.dart';
 import 'package:ppue/widgets/CustomScaffold.widget.dart';
 
@@ -75,11 +73,7 @@ class _SearchPPListScreenState extends State<SearchPPListScreen> {
                               style: TextStyle(fontWeight: FontWeight.bold),
                             ),
                             Text(
-                              formatDate(
-                                DateTime.parse(
-                                    item.identificacao.dataNascimento),
-                                format: FormatDate.diaMesNomeAno,
-                              ),
+                              item.identificacao.dataNascimento,
                               style: TextStyle(fontSize: 14),
                             ),
                           ],

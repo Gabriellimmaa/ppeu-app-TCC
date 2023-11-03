@@ -11,8 +11,14 @@ class DatabaseNotifier extends ChangeNotifier {
     return data.map((e) => PPModel.fromJson(e)).toList();
   }
 
-  Future<PostgrestResponse?> addPP({required PPModel data}) async {
-    await _databaseService.addPP(data: data);
+  Future fetchAll() async {
+    var data = await _databaseService.fetchAll();
+    return data.map((e) => PPModel.fromJson(e)).toList();
+  }
+
+  Future<PostgrestResponse?> addPP(
+      {required BuildContext context, required PPModel data}) async {
+    await _databaseService.addPP(context: context, data: data);
   }
 
   Future filterPP(
@@ -23,6 +29,28 @@ class DatabaseNotifier extends ChangeNotifier {
         nome: nome,
         responsavelRecebimentoCpf: responsavelRecebimentoCpf,
         encaminhamento: encaminhamento);
+
+    data.map((e) => {print(e), PPModel.fromJson(e)}).toList();
+
     return data.map((e) => PPModel.fromJson(e)).toList();
+  }
+
+  Future filterByStatus({required String status}) async {
+    var data = await _databaseService.filterByStatus(
+      status: status,
+    );
+
+    return data.map((e) => PPModel.fromJson(e)).toList();
+  }
+
+  Future<bool> changeStatusToConfirmed({
+    required BuildContext context,
+    required int id,
+  }) async {
+    var response = await _databaseService.changeStatusToConfirmed(
+      context: context,
+      id: id,
+    );
+    return response;
   }
 }

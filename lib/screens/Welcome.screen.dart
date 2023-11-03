@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:ppue/constants/constants.dart';
 import 'package:ppue/routes/app.routes.dart';
-import 'package:ppue/screens/Signin.screen.dart';
-import 'package:ppue/screens/Signup.screen.dart';
 import 'package:ppue/widgets/CustomPageContainer.widget.dart';
 import 'package:ppue/widgets/CustomScaffold.widget.dart';
 import 'package:ppue/widgets/GradientButton.widget.dart';

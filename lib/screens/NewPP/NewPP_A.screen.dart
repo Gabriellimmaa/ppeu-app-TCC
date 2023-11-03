@@ -43,7 +43,6 @@ class _NewPP_AState extends State<NewPP_A> {
   String? _selectedCateterGastrico;
   bool _selectedCateterVesical = false;
   bool _selectedPCR = false;
-  bool _selectedPCRMedicine = false;
   bool _selectedECG = false;
 
   double _intensidadeDor = 1.0;
@@ -530,7 +529,7 @@ class _NewPP_AState extends State<NewPP_A> {
                               fontSize: 16,
                             )),
                         Slider(
-                          value: _intensidadeDor ?? 1.0,
+                          value: _intensidadeDor,
                           min: 1.0,
                           max: 10.0,
                           divisions: 9,

@@ -1,8 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:ppue/routes/app.routes.dart';
-import 'package:ppue/screens/SelectUser.screen.dart';
-import 'package:ppue/screens/Signin.screen.dart';
-import 'package:ppue/screens/Signup.screen.dart';
 
 import 'screens/Welcome.screen.dart';
 

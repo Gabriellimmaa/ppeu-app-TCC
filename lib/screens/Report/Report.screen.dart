@@ -18,9 +18,7 @@ class ReportScreen extends StatefulWidget {
 
 class _ReportScreenState extends State<ReportScreen> {
   DateTime selectedDate = DateTime.now();
-  String? _selectedItem;
   String buttonText = 'Selecione';
-  final TextEditingController _dateController = TextEditingController();
   int _selectedButtonIndex = 0;
   final List<PPModel> items = [
     examplePP,
@@ -31,10 +29,6 @@ class _ReportScreenState extends State<ReportScreen> {
     examplePP,
     examplePP
   ];
-
-  int _currentSegment = 0;
-
-  final List<bool> _selectedFruits = <bool>[true, false, false];
 
   bool vertical = false;
   List<Widget> fruits = <Widget>[Text('Apple'), Text('Banana'), Text('Orange')];

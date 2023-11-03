@@ -1,19 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:ppue/constants/constants.dart';
 import 'package:ppue/core/notifier/user.notifier.dart';
-import 'package:ppue/models/PP.model.dart';
-import 'package:ppue/models/PP/Acesso.model.dart';
-import 'package:ppue/models/PP/Gestante.model.dart';
-import 'package:ppue/models/PP/Sintomas.model.dart';
 import 'package:ppue/screens/ManagePP/ManagePP.screen.dart';
 import 'package:ppue/screens/NewPP/NewPP.screen.dart';
 import 'package:ppue/screens/Report/Report.screen.dart';
 import 'package:ppue/screens/SearchPP/SearchPP.screen.dart';
-import 'package:ppue/screens/ViewPP.screen.dart';
 import 'package:ppue/widgets/CustomScaffold.widget.dart';
 import 'package:ppue/widgets/GradientButton.widget.dart';
-import 'package:ppue/widgets/GradientContainer.widget.dart';
 import 'package:provider/provider.dart';
 
 class HomeScreen extends StatelessWidget {

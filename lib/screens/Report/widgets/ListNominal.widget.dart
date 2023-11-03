@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:ppue/models/PP.model.dart';
 import 'package:ppue/screens/ViewPP.screen.dart';
-import 'package:ppue/utils/formater/DateFormatter.util.dart';
 
 class ListNominal extends StatelessWidget {
   final List<PPModel> items;

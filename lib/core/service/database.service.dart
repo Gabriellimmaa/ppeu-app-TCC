@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:ppue/credentials/supabase.credentials.dart';
 import 'package:ppue/models/PP.model.dart';
 import 'package:ppue/models/PPStatus.model.dart';
@@ -95,12 +96,36 @@ class DatabaseService {
 
   Future filterByStatus({
     required String status,
+    required String name,
+    required String date,
   }) async {
-    var response = await SupabaseCredentials.supabaseClient
-        .from('pp')
-        .select()
-        .eq('status', status)
-        .execute();
+    var query = SupabaseCredentials.supabaseClient.from('pp').select();
+
+    if (status != 'all') {
+      query = query.eq('status', status);
+    }
+
+    if (name != '') {
+      query = query.ilike('identificacao->>nome', '%$name%');
+    }
+
+    if (date != '') {
+      DateTime selectedDate = DateFormat("yyyy-MM-dd").parse(date);
+
+      DateTime startDate = DateTime(
+          selectedDate.year, selectedDate.month, selectedDate.day, 0, 0, 0);
+      DateTime endDate = DateTime(selectedDate.year, selectedDate.month,
+          selectedDate.day, 23, 59, 59, 999);
+
+      query = query
+          .gte('created_at', startDate.toIso8601String())
+          .lte('created_at', endDate.toIso8601String());
+    }
+    print(name);
+    print(status);
+    print(date);
+    var response = await query.execute();
+
     return response.data;
   }
 }

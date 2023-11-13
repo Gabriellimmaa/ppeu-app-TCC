@@ -35,9 +35,14 @@ class DatabaseNotifier extends ChangeNotifier {
     return data.map((e) => PPModel.fromJson(e)).toList();
   }
 
-  Future filterByStatus({required String status}) async {
+  Future filterByStatus(
+      {required String status,
+      required String name,
+      required String date}) async {
     var data = await _databaseService.filterByStatus(
       status: status,
+      name: name,
+      date: date,
     );
 
     return data.map((e) => PPModel.fromJson(e)).toList();

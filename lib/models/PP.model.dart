@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:intl/intl.dart';
 import 'package:ppue/models/PP/Acesso.model.dart';
 import 'package:ppue/models/PP/CateterGastrico.model.dart';
 import 'package:ppue/models/PP/CateterVesical.model.dart';
@@ -19,6 +20,7 @@ class PPModel {
   final AvaliacaoModel avaliacao;
   final RecomendacoesModel recomendacoes;
   String? status;
+  String? createdAt;
 
   PPModel(
       {required this.identificacao,
@@ -27,6 +29,7 @@ class PPModel {
       required this.avaliacao,
       required this.recomendacoes,
       this.status,
+      this.createdAt,
       this.id});
 
   Map<String, dynamic> toJson() {
@@ -40,6 +43,11 @@ class PPModel {
   }
 
   factory PPModel.fromJson(Map<String, dynamic> json) {
+    String dateString = json['created_at'];
+
+    DateFormat format = DateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSSSSZ");
+
+    DateTime createdAt = format.parse(dateString);
     return PPModel(
       identificacao: IdentificacaoModel.fromJson(json['identificacao']),
       situacao: SituacaoModel.fromJson(json['situacao']),
@@ -47,6 +55,8 @@ class PPModel {
       avaliacao: AvaliacaoModel.fromJson(json['avaliacao']),
       recomendacoes: RecomendacoesModel.fromJson(json['recomendacoes']),
       status: json['status'],
+      createdAt:
+          "${createdAt.day.toString().padLeft(2, '0')}/${createdAt.month.toString().padLeft(2, '0')}/${createdAt.year}",
       id: json['id'],
     );
   }

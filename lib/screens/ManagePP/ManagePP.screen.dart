@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:ppue/core/notifier/database.notifier.dart';
 import 'package:ppue/models/PP.model.dart';
 import 'package:ppue/models/PPStatus.model.dart';
 import 'package:ppue/screens/ViewPP.screen.dart';
 import 'package:ppue/widgets/GradientContainer.widget.dart';
 import 'package:provider/provider.dart';
+import 'dart:async';
 
 class ManagePPScreen extends StatefulWidget {
   const ManagePPScreen({Key? key}) : super(key: key);
@@ -18,6 +20,9 @@ class _ManagePPScreenState extends State<ManagePPScreen> {
   String buttonText = 'Selecione';
   String _selectedButtonIndex = 'all';
   List<dynamic> data = [];
+  final TextEditingController _dateController = TextEditingController();
+  final TextEditingController _nameController = TextEditingController();
+  Timer? _debounce;
 
   bool vertical = false;
   List<Widget> fruits = <Widget>[Text('Apple'), Text('Banana'), Text('Orange')];
@@ -31,6 +36,14 @@ class _ManagePPScreenState extends State<ManagePPScreen> {
   }
 
   @override
+  void dispose() {
+    _dateController.dispose();
+    _nameController.dispose();
+    _debounce?.cancel();
+    super.dispose();
+  }
+
+  @override
   void initState() {
     super.initState();
     fetchAllPP(context);
@@ -41,18 +54,68 @@ class _ManagePPScreenState extends State<ManagePPScreen> {
     DatabaseNotifier databaseNotifier =
         Provider.of<DatabaseNotifier>(context, listen: false);
 
+    _onSearchChanged() {
+      if (_debounce?.isActive ?? false) _debounce?.cancel();
+      _debounce = Timer(const Duration(milliseconds: 500), () async {
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return Center(
+              child: CircularProgressIndicator(),
+            );
+          },
+          barrierDismissible: false,
+        );
+
+        try {
+          var response = await databaseNotifier.filterByStatus(
+              status: _selectedButtonIndex,
+              name: _nameController.text,
+              date: _dateController.text);
+
+          if (response.isEmpty) {
+            // ignore: use_build_context_synchronously
+            Navigator.pop(context); // Fecha o diálogo de loading
+            // ignore: use_build_context_synchronously
+            showDialog(
+              context: context,
+              builder: (BuildContext context) {
+                return AlertDialog(
+                  title: Text('Nenhuma PP encontrada'),
+                  content: Text(
+                      'Não foi encontrado nenhuma passagem de plantão com os dados informados.'),
+                  actions: [
+                    TextButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      child: Text('OK'),
+                    ),
+                  ],
+                );
+              },
+            );
+          } else {
+            // ignore: use_build_context_synchronously
+            Navigator.pop(context);
+            setState(() {
+              data = response;
+            });
+          }
+        } catch (e) {
+          Navigator.pop(context); // Fecha o diálogo de loading em caso de erro
+        }
+      });
+    }
+
     Future<void> fetchFilterByStatus(String status) async {
-      if (status == 'all') {
-        var response = await databaseNotifier.fetchAll();
-        setState(() {
-          data = response;
-        });
-      } else {
-        var response = await databaseNotifier.filterByStatus(status: status);
-        setState(() {
-          data = response;
-        });
-      }
+      var response = await databaseNotifier.filterByStatus(
+          status: status,
+          name: _nameController.text,
+          date: _dateController.text);
+      setState(() {
+        data = response;
+      });
     }
 
     return Scaffold(
@@ -75,30 +138,76 @@ class _ManagePPScreenState extends State<ManagePPScreen> {
                   top: 8,
                   bottom: 16,
                 ),
-                child: Row(children: [
-                  Expanded(
-                    child: TextField(
-                      decoration: InputDecoration(
-                        filled: true,
-                        fillColor: Colors.white.withOpacity(0.5),
-                        hintText: 'Pesquisar',
-                        prefixIcon: Icon(Icons.search),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
-                          borderSide: BorderSide.none,
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: TextField(
+                        controller: _nameController,
+                        onChanged: (data) => _onSearchChanged(),
+                        decoration: InputDecoration(
+                          filled: true,
+                          fillColor: Colors.white.withOpacity(0.5),
+                          hintText: 'Nome do paciente',
+                          prefixIcon: Icon(Icons.search),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                            borderSide: BorderSide.none,
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                  IconButton(
-                    onPressed: () {},
-                    icon: Icon(
-                      Icons.calendar_today,
-                      color: Colors.white.withOpacity(0.5),
-                      size: 34,
-                    ),
-                  )
-                ]),
+                    IconButton(
+                      onPressed: () async {
+                        DateTime? date = await showDatePicker(
+                          context: context,
+                          initialDate: DateTime.now(),
+                          firstDate: DateTime(2018),
+                          lastDate: DateTime(2030),
+                        );
+
+                        if (date != null) {
+                          _dateController.text =
+                              DateFormat('yyyy-MM-dd').format(date);
+                          _onSearchChanged();
+                        }
+                      },
+                      icon: Stack(
+                        alignment: Alignment.center,
+                        children: [
+                          Icon(
+                            Icons.calendar_today,
+                            color: Colors.white.withOpacity(0.5),
+                            size: 34,
+                          ),
+                          if (_dateController.text.isNotEmpty)
+                            Positioned(
+                              right: 0,
+                              top: 0,
+                              child: GestureDetector(
+                                onTap: () {
+                                  _dateController.text = "";
+                                  _onSearchChanged();
+                                },
+                                child: Container(
+                                  padding: EdgeInsets.all(4),
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    color: Colors
+                                        .red, // Pode ser uma cor que chame atenção
+                                  ),
+                                  child: Icon(
+                                    Icons.close,
+                                    color: Colors.white,
+                                    size: 12,
+                                  ),
+                                ),
+                              ),
+                            ),
+                        ],
+                      ),
+                    )
+                  ],
+                ),
               ),
               Row(
                 children: [
@@ -265,7 +374,7 @@ class _ManagePPScreenState extends State<ManagePPScreen> {
                                           fontWeight: FontWeight.bold),
                                     ),
                                     Text(
-                                      item.identificacao.dataNascimento,
+                                      item.createdAt.toString(),
                                       style: TextStyle(fontSize: 14),
                                     ),
                                   ],

@@ -82,15 +82,29 @@ class DatabaseService {
     required String nome,
     required String responsavelRecebimentoCpf,
     required String encaminhamento,
+    required String date,
   }) async {
-    var response = await SupabaseCredentials.supabaseClient
-        .from('pp')
-        .select()
+    var query = SupabaseCredentials.supabaseClient.from('pp').select();
+    if (date != '') {
+      DateTime selectedDate = DateFormat("yyyy-MM-dd").parse(date);
+
+      DateTime startDate = DateTime(
+          selectedDate.year, selectedDate.month, selectedDate.day, 0, 0, 0);
+      DateTime endDate = DateTime(selectedDate.year, selectedDate.month,
+          selectedDate.day, 23, 59, 59, 999);
+
+      query = query
+          .gte('created_at', startDate.toIso8601String())
+          .lte('created_at', endDate.toIso8601String());
+    }
+
+    query = query
         .ilike('identificacao->>nome', '%$nome%')
         .eq('recomendacoes->>encaminhamento', encaminhamento)
         .eq('recomendacoes->responsavelRecebimento->>cpf',
-            responsavelRecebimentoCpf)
-        .execute();
+            responsavelRecebimentoCpf);
+
+    var response = await query.execute();
     return response.data;
   }
 

@@ -171,7 +171,6 @@ class _SearchPPScreenState extends State<SearchPPScreen> {
                       labelText: 'Nome do paciente',
                       suffixIcon: Icon(Icons.person),
                     ),
-                    validator: FormValidators.required,
                   ),
                   spacingRow,
                   DatePickerTextField(
@@ -200,15 +199,16 @@ class _SearchPPScreenState extends State<SearchPPScreen> {
                         barrierDismissible: false,
                       );
 
-                      print(_nameController.text);
-                      print(_selectedResponsavel.toString().split('::'));
-                      print(_selectedHospital);
-
                       try {
                         var response = await databaseNotifier.filterPP(
                           nome: _nameController.text,
                           responsavelRecebimentoCpf: _selectedResponsavel!,
                           encaminhamento: _selectedHospital!.split('::')[1],
+                          date: _dateController.text
+                              .split('/')
+                              .reversed
+                              .join('-')
+                              .toString(),
                         );
 
                         if (response.isEmpty) {

@@ -24,13 +24,13 @@ class DatabaseNotifier extends ChangeNotifier {
   Future filterPP(
       {required String nome,
       required String responsavelRecebimentoCpf,
-      required String encaminhamento}) async {
+      required String encaminhamento,
+      required String date}) async {
     var data = await _databaseService.filterPP(
         nome: nome,
         responsavelRecebimentoCpf: responsavelRecebimentoCpf,
-        encaminhamento: encaminhamento);
-
-    data.map((e) => {print(e), PPModel.fromJson(e)}).toList();
+        encaminhamento: encaminhamento,
+        date: date);
 
     return data.map((e) => PPModel.fromJson(e)).toList();
   }

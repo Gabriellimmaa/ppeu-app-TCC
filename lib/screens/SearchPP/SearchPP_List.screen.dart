@@ -73,7 +73,7 @@ class _SearchPPListScreenState extends State<SearchPPListScreen> {
                               style: TextStyle(fontWeight: FontWeight.bold),
                             ),
                             Text(
-                              item.identificacao.dataNascimento,
+                              item.createdAt.toString(),
                               style: TextStyle(fontSize: 14),
                             ),
                           ],
@@ -84,7 +84,7 @@ class _SearchPPListScreenState extends State<SearchPPListScreen> {
                             children: [
                               Text('DN: ${item.identificacao.dataNascimento}'),
                               Text(
-                                  '- Unidade/hospital: ${item.identificacao.formaEncaminhamento}'),
+                                  ' - Unidade/hospital: ${item.identificacao.formaEncaminhamento}'),
                             ],
                           ),
                           Row(

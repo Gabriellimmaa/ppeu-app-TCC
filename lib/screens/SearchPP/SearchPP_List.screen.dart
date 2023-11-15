@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:ppue/models/PP.model.dart';
+import 'package:ppue/models/PPStatus.model.dart';
 import 'package:ppue/screens/ViewPP.screen.dart';
 import 'package:ppue/widgets/CustomPageContainer.widget.dart';
 import 'package:ppue/widgets/CustomScaffold.widget.dart';
@@ -7,23 +8,30 @@ import 'package:ppue/widgets/CustomScaffold.widget.dart';
 class SearchPPListScreen extends StatefulWidget {
   final List<dynamic> ppModels;
 
+  final String hospitalUnit;
+
   const SearchPPListScreen({
     Key? key,
     required this.ppModels,
+    required this.hospitalUnit,
   }) : super(key: key);
 
   @override
   // ignore: no_logic_in_create_state
   State<SearchPPListScreen> createState() => _SearchPPListScreenState(
         items: ppModels,
+        hospitalUnit: hospitalUnit,
       );
 }
 
 class _SearchPPListScreenState extends State<SearchPPListScreen> {
   final List<dynamic> items;
 
+  final String hospitalUnit;
+
   _SearchPPListScreenState({
     required this.items,
+    required this.hospitalUnit,
   });
 
   @override
@@ -65,6 +73,17 @@ class _SearchPPListScreenState extends State<SearchPPListScreen> {
                         //   height: 50,
                         //   fit: BoxFit.cover,
                         // ),
+                        trailing: Column(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Icon(Icons.list_alt),
+                            if (item.status == PPStatus.CONFIRMED)
+                              Icon(Icons.check_box, color: Colors.green),
+                            if (item.status == PPStatus.WAITING_CONFIRMATION)
+                              Icon(Icons.access_time_filled,
+                                  color: Colors.yellow.shade900),
+                          ],
+                        ),
                         title: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
@@ -83,14 +102,20 @@ class _SearchPPListScreenState extends State<SearchPPListScreen> {
                           Row(
                             children: [
                               Text('DN: ${item.identificacao.dataNascimento}'),
+                              Text(' - Sexo: ${item.identificacao.sexo}'),
+                            ],
+                          ),
+                          Row(
+                            children: [
+                              Text('UH: $hospitalUnit'),
                               Text(
-                                  ' - Unidade/hospital: ${item.identificacao.formaEncaminhamento}'),
+                                  ' - UM: ${item.identificacao.formaEncaminhamento}'),
                             ],
                           ),
                           Row(
                             children: [
                               Text(
-                                'Reponsável pelo encaminhamento: ${item.situacao.enfermeiroResponsavelTransferencia}',
+                                'Resp. Enc: ${item.situacao.enfermeiroResponsavelTransferencia}',
                               ),
                             ],
                           ),

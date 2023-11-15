@@ -408,7 +408,7 @@ class _ManagePPScreenState extends State<ManagePPScreen> {
                                         Row(
                                           children: [
                                             Text(
-                                              'Responsável: ${item.situacao.enfermeiroResponsavelTransferencia}',
+                                              'Resp. Enc.: ${item.situacao.enfermeiroResponsavelTransferencia}',
                                             ),
                                           ],
                                         ),

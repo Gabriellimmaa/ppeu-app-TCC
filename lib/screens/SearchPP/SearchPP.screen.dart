@@ -64,7 +64,7 @@ class _SearchPPScreenState extends State<SearchPPScreen> {
     List<dynamic> data = await hospitalUnitNotifier.fetchAll();
     _hospitalUnitDropdownItems = data.map((element) {
       return DropdownMenuItem<String>(
-        value: '${element.id.toString()}::${element.name}',
+        value: '${element.id.toString()}::${element.name}::${element.surname}',
         child: Text(
           limitCharacters(element.name, 30),
           style: TextStyle(
@@ -127,6 +127,12 @@ class _SearchPPScreenState extends State<SearchPPScreen> {
       });
     }
 
+    void checkValidFields() {
+      if (_formKey.currentState!.validate()) {
+        _formKey.currentState!.validate();
+      }
+    }
+
     return Padding(
       padding: EdgeInsets.all(16),
       child: Column(
@@ -149,6 +155,7 @@ class _SearchPPScreenState extends State<SearchPPScreen> {
                       setState(() {
                         _selectedHospital = value as String?;
                       });
+                      checkValidFields();
                     },
                     validator: FormValidators.required,
                   ),
@@ -160,7 +167,8 @@ class _SearchPPScreenState extends State<SearchPPScreen> {
                     onChanged: (value) => {
                       setState(() {
                         _selectedResponsavel = value.toString();
-                      })
+                      }),
+                      checkValidFields(),
                     },
                     validator: FormValidators.required,
                   ),
@@ -237,8 +245,10 @@ class _SearchPPScreenState extends State<SearchPPScreen> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) =>
-                                  SearchPPListScreen(ppModels: response),
+                              builder: (context) => SearchPPListScreen(
+                                  ppModels: response,
+                                  hospitalUnit:
+                                      _selectedHospital!.split('::')[2]),
                             ),
                           );
                         }

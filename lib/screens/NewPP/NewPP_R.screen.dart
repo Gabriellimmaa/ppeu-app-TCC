@@ -113,8 +113,8 @@ class _NewPP_RState extends State<NewPP_R> {
 
       _listFamiliarPresente = data!.recomendacoes.familiarPresente;
     } else {
-      // fetchHospitalUnitsAndBuildDropdown(context);
-      // fetchUsersAndBuildDropdown(context);
+      fetchHospitalUnitsAndBuildDropdown(context);
+      fetchUsersAndBuildDropdown(context);
     }
   }
 

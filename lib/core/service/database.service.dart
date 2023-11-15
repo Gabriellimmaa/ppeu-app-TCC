@@ -28,7 +28,32 @@ class DatabaseService {
         .insert(data.toJson())
         .execute();
     if (response.data != null) {
-      var data = response.data;
+      final responseQueryHospital = await SupabaseCredentials.supabaseClient
+          .from('hospital-unit')
+          .select('amount')
+          .eq('name', data.recomendacoes.encaminhamento)
+          .single()
+          .execute();
+
+      await SupabaseCredentials.supabaseClient
+          .from('hospital-unit')
+          .update({'amount': responseQueryHospital.data['amount'] + 1})
+          .eq('name', data.recomendacoes.encaminhamento)
+          .execute();
+
+      final responseQueryMobile = await SupabaseCredentials.supabaseClient
+          .from('mobile-unit')
+          .select('amount')
+          .eq('name', data.identificacao.formaEncaminhamento)
+          .single()
+          .execute();
+
+      await SupabaseCredentials.supabaseClient
+          .from('mobile-unit')
+          .update({'amount': responseQueryMobile.data['amount'] + 1})
+          .eq('name', data.identificacao.formaEncaminhamento)
+          .execute();
+
       // ignore: use_build_context_synchronously
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -36,7 +61,7 @@ class DatabaseService {
           backgroundColor: Colors.green,
         ),
       );
-      return data;
+      return response.data;
     } else {
       // ignore: use_build_context_synchronously
       ScaffoldMessenger.of(context).showSnackBar(

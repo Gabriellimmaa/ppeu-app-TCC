@@ -16,6 +16,7 @@ class ManagePPScreen extends StatefulWidget {
 }
 
 class _ManagePPScreenState extends State<ManagePPScreen> {
+  bool isLoading = true;
   DateTime selectedDate = DateTime.now();
   String buttonText = 'Selecione';
   String _selectedButtonIndex = 'all';
@@ -32,7 +33,9 @@ class _ManagePPScreenState extends State<ManagePPScreen> {
         Provider.of<DatabaseNotifier>(context, listen: false);
     var response = await databaseNotifier.fetchAll();
     data = response;
-    setState(() {});
+    setState(() {
+      isLoading = false;
+    });
   }
 
   @override
@@ -56,6 +59,7 @@ class _ManagePPScreenState extends State<ManagePPScreen> {
 
     _onSearchChanged() {
       if (_debounce?.isActive ?? false) _debounce?.cancel();
+      isLoading = true;
       _debounce = Timer(const Duration(milliseconds: 500), () async {
         showDialog(
           context: context,
@@ -66,7 +70,7 @@ class _ManagePPScreenState extends State<ManagePPScreen> {
           },
           barrierDismissible: false,
         );
-
+        isLoading = false;
         try {
           var response = await databaseNotifier.filterByStatus(
               status: _selectedButtonIndex,
@@ -109,11 +113,13 @@ class _ManagePPScreenState extends State<ManagePPScreen> {
     }
 
     Future<void> fetchFilterByStatus(String status) async {
+      isLoading = true;
       var response = await databaseNotifier.filterByStatus(
           status: status,
           name: _nameController.text,
           date: _dateController.text);
       setState(() {
+        isLoading = false;
         data = response;
       });
     }
@@ -314,108 +320,118 @@ class _ManagePPScreenState extends State<ManagePPScreen> {
                 ],
               ),
               SizedBox(height: 1),
-              Expanded(
-                child: Container(
-                  color: Colors.white,
-                  width: double.infinity,
-                  child: ListView.builder(
-                    padding: EdgeInsets.zero,
-                    itemCount: data.length,
-                    itemBuilder: (BuildContext context, int index) {
-                      PPModel item = data[index];
-                      return GestureDetector(
-                        onTap: () async {
-                          await Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => ViewPPScreen(
-                                data: item,
-                                canEditStatus: item.status == PPStatus.CONFIRMED
-                                    ? false
-                                    : true,
-                              ),
-                            ),
-                          ).then((value) =>
-                              fetchFilterByStatus(_selectedButtonIndex));
-                        },
-                        child: SizedBox(
-                          child: Column(
-                            children: [
-                              ListTile(
-                                contentPadding: EdgeInsets.symmetric(
-                                    vertical: 20, horizontal: 16),
-                                // leading: Image.network(
-                                //   item.imageUrl,
-                                //   width: 50,
-                                //   height: 50,
-                                //   fit: BoxFit.cover,
-                                // ),
-                                trailing: Column(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceAround,
-                                  children: [
-                                    Icon(Icons.list_alt),
-                                    if (item.status == PPStatus.CONFIRMED)
-                                      Icon(Icons.check_box,
-                                          color: Colors.green),
-                                    if (item.status ==
-                                        PPStatus.WAITING_CONFIRMATION)
-                                      Icon(Icons.access_time_filled,
-                                          color: Colors.yellow.shade900),
-                                  ],
-                                ),
-                                title: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Text(
-                                      item.identificacao.nome,
-                                      style: TextStyle(
-                                          fontWeight: FontWeight.bold),
-                                    ),
-                                    Text(
-                                      item.createdAt.toString(),
-                                      style: TextStyle(fontSize: 14),
-                                    ),
-                                  ],
-                                ),
-                                subtitle: Column(children: [
-                                  SizedBox(height: 5),
-                                  Row(
-                                    children: [
-                                      Text(
-                                          'DN: ${item.identificacao.dataNascimento}'),
-                                      Text(
-                                          '- Unidade/hospital: ${item.identificacao.formaEncaminhamento}'),
-                                    ],
-                                  ),
-                                  Row(
-                                    children: [
-                                      Text(
-                                        'Reponsável pelo encaminhamento: ${item.situacao.enfermeiroResponsavelTransferencia}',
-                                      ),
-                                    ],
-                                  ),
-                                ]),
-                              ),
-                              Container(
-                                decoration: BoxDecoration(
-                                  border: Border(
-                                    bottom: BorderSide(
-                                      color: Colors.grey,
-                                      width: 1.0,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
+              isLoading
+                  ? Expanded(
+                      child: Container(
+                        color: Colors.white,
+                        child: Center(
+                          child: CircularProgressIndicator(),
                         ),
-                      );
-                    },
-                  ),
-                ),
-              ),
+                      ),
+                    )
+                  : Expanded(
+                      child: Container(
+                        color: Colors.white,
+                        width: double.infinity,
+                        child: ListView.builder(
+                          padding: EdgeInsets.zero,
+                          itemCount: data.length,
+                          itemBuilder: (BuildContext context, int index) {
+                            PPModel item = data[index];
+                            return GestureDetector(
+                              onTap: () async {
+                                await Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => ViewPPScreen(
+                                      data: item,
+                                      canEditStatus:
+                                          item.status == PPStatus.CONFIRMED
+                                              ? false
+                                              : true,
+                                    ),
+                                  ),
+                                ).then((value) =>
+                                    fetchFilterByStatus(_selectedButtonIndex));
+                              },
+                              child: SizedBox(
+                                child: Column(
+                                  children: [
+                                    ListTile(
+                                      contentPadding: EdgeInsets.symmetric(
+                                          vertical: 20, horizontal: 16),
+                                      // leading: Image.network(
+                                      //   item.imageUrl,
+                                      //   width: 50,
+                                      //   height: 50,
+                                      //   fit: BoxFit.cover,
+                                      // ),
+                                      trailing: Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceAround,
+                                        children: [
+                                          Icon(Icons.list_alt),
+                                          if (item.status == PPStatus.CONFIRMED)
+                                            Icon(Icons.check_box,
+                                                color: Colors.green),
+                                          if (item.status ==
+                                              PPStatus.WAITING_CONFIRMATION)
+                                            Icon(Icons.access_time_filled,
+                                                color: Colors.yellow.shade900),
+                                        ],
+                                      ),
+                                      title: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Text(
+                                            item.identificacao.nome,
+                                            style: TextStyle(
+                                                fontWeight: FontWeight.bold),
+                                          ),
+                                          Text(
+                                            item.createdAt.toString(),
+                                            style: TextStyle(fontSize: 14),
+                                          ),
+                                        ],
+                                      ),
+                                      subtitle: Column(children: [
+                                        SizedBox(height: 5),
+                                        Row(
+                                          children: [
+                                            Text(
+                                                'DN: ${item.identificacao.dataNascimento}'),
+                                            Text(
+                                                ' - UM: ${item.identificacao.formaEncaminhamento}'),
+                                          ],
+                                        ),
+                                        Row(
+                                          children: [
+                                            Text(
+                                              'Responsável: ${item.situacao.enfermeiroResponsavelTransferencia}',
+                                            ),
+                                          ],
+                                        ),
+                                      ]),
+                                    ),
+                                    Container(
+                                      decoration: BoxDecoration(
+                                        border: Border(
+                                          bottom: BorderSide(
+                                            color: Colors.grey,
+                                            width: 1.0,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                    ),
             ],
           ),
         ));

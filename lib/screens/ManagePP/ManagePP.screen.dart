@@ -136,7 +136,7 @@ class _ManagePPScreenState extends State<ManagePPScreen> {
         body: gradientContainer(
           child: Column(
             children: [
-              SizedBox(height: 70),
+              SizedBox(height: 75),
               Padding(
                 padding: EdgeInsets.only(
                   left: 16,

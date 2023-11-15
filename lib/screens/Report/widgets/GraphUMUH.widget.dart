@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:ppue/core/notifier/database.notifier.dart';
+import 'package:ppue/core/notifier/hospitalUnit.notifier.dart';
+import 'package:ppue/core/notifier/mobileUnit.notifier.dart';
+import 'package:provider/provider.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 
 class ReportGraphUMUH extends StatefulWidget {
@@ -9,6 +13,52 @@ class ReportGraphUMUH extends StatefulWidget {
 }
 
 class _ReportGraphUMUHState extends State<ReportGraphUMUH> {
+  List<_PieData> _hospitalUnitGraph = [];
+  List<_PieData> _mobileUnitGraph = [];
+  int _amountPP = 0;
+
+  Future<void> fetchHospitalUnits(BuildContext context) async {
+    HospitalUnitNotifier hospitalUnitNotifier =
+        Provider.of<HospitalUnitNotifier>(context, listen: false);
+    List<dynamic> data = await hospitalUnitNotifier.fetchAll();
+    _hospitalUnitGraph = data.map((element) {
+      return _PieData(
+          element.surname, element.amount, element.surname.toString());
+    }).toList();
+    setState(() {}); // Força o rebuild do widget
+  }
+
+  Future<void> fetchMobileUnits(BuildContext context) async {
+    MobileUnitNotifier mobileUnitNotifier =
+        Provider.of<MobileUnitNotifier>(context, listen: false);
+    List<dynamic> data = await mobileUnitNotifier.fetchAll();
+    _mobileUnitGraph = data.map((element) {
+      return _PieData(element.name, element.amount, element.name.toString());
+    }).toList();
+    setState(() {}); //
+  }
+
+  Future<void> fetchCountAllPP(BuildContext context) async {
+    DatabaseNotifier database =
+        Provider.of<DatabaseNotifier>(context, listen: false);
+    int data = await database.fetchCountAll();
+    _amountPP = data;
+    setState(() {}); //
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    fetchMobileUnits(context);
+    fetchHospitalUnits(context);
+    fetchCountAllPP(context);
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -33,11 +83,7 @@ class _ReportGraphUMUHState extends State<ReportGraphUMUH> {
               ],
               series: <DoughnutSeries<_PieData, String>>[
                 DoughnutSeries<_PieData, String>(
-                    dataSource: <_PieData>[
-                      _PieData('SIATE', 100, 'SIATE'),
-                      _PieData('CONVÊNIOS', 75, 'CONVÊNIOS'),
-                      _PieData('SAMU', 50, 'SAMU'),
-                    ],
+                    dataSource: _mobileUnitGraph,
                     explodeIndex: 0,
                     xValueMapper: (_PieData data, _) => data.xData,
                     yValueMapper: (_PieData data, _) => data.yData,
@@ -66,11 +112,7 @@ class _ReportGraphUMUHState extends State<ReportGraphUMUH> {
               ],
               series: <DoughnutSeries<_PieData, String>>[
                 DoughnutSeries<_PieData, String>(
-                    dataSource: <_PieData>[
-                      _PieData('HU', 12, 'HU'),
-                      _PieData('HZN', 14, 'HZN'),
-                      _PieData('ISCAL', 74, 'ISCAL'),
-                    ],
+                    dataSource: _hospitalUnitGraph,
                     explodeIndex: 0,
                     xValueMapper: (_PieData data, _) => data.xData,
                     yValueMapper: (_PieData data, _) => data.yData,
@@ -111,7 +153,7 @@ class _ReportGraphUMUHState extends State<ReportGraphUMUH> {
               ),
               Expanded(
                 child: Text(
-                  '231 PPs',
+                  '$_amountPP PPs',
                   textAlign: TextAlign.center,
                   style: TextStyle(fontSize: 16),
                 ),

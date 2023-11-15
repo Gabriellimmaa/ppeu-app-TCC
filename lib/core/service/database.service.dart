@@ -19,6 +19,15 @@ class DatabaseService {
     return response.data;
   }
 
+  Future fetchCountAll() async {
+    var response = await SupabaseCredentials.supabaseClient
+        .from('pp')
+        .select('*')
+        .execute();
+
+    return response.data.toList().length;
+  }
+
   Future<PostgrestResponse?> addPP({
     required BuildContext context,
     required PPModel data,

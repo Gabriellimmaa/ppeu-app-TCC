@@ -6,6 +6,7 @@ class HospitalUnitModel {
   bool status;
   int id;
   String image;
+  int amount;
   final AddressModel address;
 
   HospitalUnitModel({
@@ -15,6 +16,7 @@ class HospitalUnitModel {
     required this.id,
     required this.address,
     required this.image,
+    required this.amount,
   });
 
   Map<String, dynamic> toJson() {
@@ -24,6 +26,7 @@ class HospitalUnitModel {
       'status': status,
       'id': id,
       'image': image,
+      'amount': amount,
     };
   }
 
@@ -35,6 +38,7 @@ class HospitalUnitModel {
       status: json['status'],
       id: json['id'],
       image: json['image'],
+      amount: json['amount'],
     );
   }
 

@@ -16,6 +16,11 @@ class DatabaseNotifier extends ChangeNotifier {
     return data.map((e) => PPModel.fromJson(e)).toList();
   }
 
+  Future<int> fetchCountAll() async {
+    var data = await _databaseService.fetchCountAll();
+    return data;
+  }
+
   Future<PostgrestResponse?> addPP(
       {required BuildContext context, required PPModel data}) async {
     await _databaseService.addPP(context: context, data: data);

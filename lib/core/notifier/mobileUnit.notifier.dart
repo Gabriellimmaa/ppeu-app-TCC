@@ -5,8 +5,13 @@ import 'package:ppue/models/MobileUnit.model.dart';
 class MobileUnitNotifier extends ChangeNotifier {
   final MobileUnitService _databaseService = MobileUnitService();
 
-  Future fetchAll() async {
-    var data = await _databaseService.fetchAll();
-    return data.map((e) => MobileUnitModel.fromJson(e)).toList();
+  Future<List<MobileUnitModel>> fetchAll() async {
+    List<dynamic> rawData = await _databaseService.fetchAll();
+
+    List<Map<String, dynamic>> data = List<Map<String, dynamic>>.from(rawData);
+
+    List<MobileUnitModel> response =
+        data.map((e) => MobileUnitModel.fromJson(e)).toList();
+    return response;
   }
 }

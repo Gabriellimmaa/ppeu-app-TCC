@@ -11,16 +11,19 @@ class DatabaseNotifier extends ChangeNotifier {
     return data.map((e) => PPModel.fromJson(e)).toList();
   }
 
-  Future fetchStartDateEndDate({
+  Future<List<PPModel>> fetchStartDateEndDate({
     required DateTime startDate,
     required DateTime endDate,
   }) async {
-    var data = await _databaseService.fetchStartDateEndDate(
+    List<dynamic> rawData = await _databaseService.fetchStartDateEndDate(
       startDate: startDate,
       endDate: endDate,
     );
 
-    return data.map((e) => PPModel.fromJson(e)).toList();
+    List<Map<String, dynamic>> data = List<Map<String, dynamic>>.from(rawData);
+
+    List<PPModel> reponse = data.map((e) => PPModel.fromJson(e)).toList();
+    return reponse;
   }
 
   Future fetchAll() async {

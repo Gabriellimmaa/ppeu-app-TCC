@@ -30,7 +30,7 @@ List<String> optionsClinica = [
   'Cardíaco',
   'Metabólico',
   'Neurológico',
-  'Pulmonar/respiratório',
+  'Pulmonar/Respiratório',
   'Outros',
 ];
 List<String> optionsCataterGastrico = [

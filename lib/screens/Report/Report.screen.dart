@@ -5,9 +5,7 @@ import 'package:ppue/screens/Report/widgets/Graphs.widget.dart';
 import 'package:ppue/screens/Report/widgets/ListNominal.widget.dart';
 import 'package:ppue/screens/Report/widgets/ModalReportFilters.widget.dart';
 import 'package:ppue/screens/Report/widgets/TableNumeric.widget.dart';
-
 import 'package:ppue/widgets/GradientContainer.widget.dart';
-import 'package:ppue/widgets/inputs/DatePickerTextField.widget.dart';
 
 class ReportScreen extends StatefulWidget {
   const ReportScreen({Key? key}) : super(key: key);
@@ -33,81 +31,43 @@ class _ReportScreenState extends State<ReportScreen> {
   bool vertical = false;
   List<Widget> fruits = <Widget>[Text('Apple'), Text('Banana'), Text('Orange')];
 
-  final _dateStartController = TextEditingController();
-  final _dateEndController = TextEditingController();
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: Text('RELATÓRIOS',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+          title: Text(
+            'RELATÓRIOS',
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          ),
           centerTitle: true,
           backgroundColor: Colors.transparent,
           elevation: 0,
+          actions: [
+            Padding(
+              padding: const EdgeInsets.only(right: 16.0),
+              child: IconButton(
+                onPressed: () {
+                  showDialog(
+                    context: context,
+                    builder: (_) => ModalReportFilters(
+                      onChanged: (p0) => print(p0),
+                    ),
+                  );
+                },
+                icon: Icon(
+                  Icons.filter_alt,
+                  color: Colors.white.withOpacity(0.5),
+                  size: 34,
+                ),
+              ),
+            ),
+          ],
         ),
         extendBodyBehindAppBar: true,
         body: gradientContainer(
           child: Column(
             children: [
-              SizedBox(height: 70),
-              Padding(
-                padding: EdgeInsets.only(
-                  left: 16,
-                  right: 16,
-                  top: 8,
-                  bottom: 16,
-                ),
-                child: Row(children: [
-                  Expanded(
-                    child: DatePickerTextField(
-                      controller: _dateStartController,
-                      decoration: InputDecoration(
-                        labelText: 'Data Inicial',
-                        labelStyle: TextStyle(color: Colors.grey[800]),
-                        suffixIcon: Icon(Icons.calendar_today),
-                        filled: true,
-                        fillColor: Colors.white.withOpacity(0.5),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
-                          borderSide: BorderSide.none,
-                        ),
-                      ),
-                    ),
-                  ),
-                  SizedBox(width: 8),
-                  Expanded(
-                    child: DatePickerTextField(
-                      controller: _dateEndController,
-                      decoration: InputDecoration(
-                        labelText: 'Data Final',
-                        labelStyle: TextStyle(color: Colors.grey[800]),
-                        suffixIcon: Icon(Icons.calendar_today),
-                        filled: true,
-                        fillColor: Colors.white.withOpacity(0.5),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
-                          borderSide: BorderSide.none,
-                        ),
-                      ),
-                    ),
-                  ),
-                  IconButton(
-                    onPressed: () {
-                      showDialog(
-                          context: context,
-                          builder: (_) => ModalReportFilters(
-                                onChanged: (p0) => print(p0),
-                              ));
-                    },
-                    icon: Icon(
-                      Icons.filter_alt,
-                      color: Colors.white.withOpacity(0.5),
-                      size: 34,
-                    ),
-                  )
-                ]),
-              ),
+              SizedBox(height: 90),
               Row(
                 children: [
                   Expanded(

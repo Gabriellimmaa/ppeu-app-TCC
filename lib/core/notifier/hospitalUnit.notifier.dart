@@ -5,8 +5,13 @@ import 'package:ppue/models/HospitalUnit.model.dart';
 class HospitalUnitNotifier extends ChangeNotifier {
   final HospitalUnitService _databaseService = HospitalUnitService();
 
-  Future fetchAll() async {
-    var data = await _databaseService.fetchAll();
-    return data.map((e) => HospitalUnitModel.fromJson(e)).toList();
+  Future<List<HospitalUnitModel>> fetchAll() async {
+    List<dynamic> rawData = await _databaseService.fetchAll();
+
+    List<Map<String, dynamic>> data = List<Map<String, dynamic>>.from(rawData);
+
+    List<HospitalUnitModel> hospitalUnits =
+        data.map((e) => HospitalUnitModel.fromJson(e)).toList();
+    return hospitalUnits;
   }
 }

@@ -28,6 +28,20 @@ class DatabaseService {
     return response.data.toList().length;
   }
 
+  Future fetchStartDateEndDate({
+    required DateTime startDate,
+    required DateTime endDate,
+  }) async {
+    var response = await SupabaseCredentials.supabaseClient
+        .from('pp')
+        .select()
+        .gte('created_at', startDate.toIso8601String())
+        .lte('created_at', endDate.toIso8601String())
+        .execute();
+
+    return response.data;
+  }
+
   Future<PostgrestResponse?> addPP({
     required BuildContext context,
     required PPModel data,

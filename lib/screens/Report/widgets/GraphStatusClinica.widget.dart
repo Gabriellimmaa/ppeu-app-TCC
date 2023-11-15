@@ -1,40 +1,75 @@
 import 'package:flutter/material.dart';
 import 'package:ppue/core/notifier/database.notifier.dart';
-import 'package:ppue/core/notifier/hospitalUnit.notifier.dart';
-import 'package:ppue/core/notifier/mobileUnit.notifier.dart';
+import 'package:ppue/models/PPStatus.model.dart';
 import 'package:provider/provider.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 
-class ReportGraphUMUH extends StatefulWidget {
-  const ReportGraphUMUH({Key? key}) : super(key: key);
+class ReportGraphStatusClinica extends StatefulWidget {
+  const ReportGraphStatusClinica({Key? key}) : super(key: key);
 
   @override
-  State<ReportGraphUMUH> createState() => _ReportGraphUMUHState();
+  State<ReportGraphStatusClinica> createState() =>
+      _ReportGraphStatusClinicaState();
 }
 
-class _ReportGraphUMUHState extends State<ReportGraphUMUH> {
-  List<_PieData> _hospitalUnitGraph = [];
-  List<_PieData> _mobileUnitGraph = [];
+class _ReportGraphStatusClinicaState extends State<ReportGraphStatusClinica> {
+  bool isLoading = true;
+  List<_PieData> _dataISBAR = [];
+  List<_PieData> _dataStatus = [];
   int _amountPP = 0;
 
-  Future<void> fetchHospitalUnits(BuildContext context) async {
-    HospitalUnitNotifier hospitalUnitNotifier =
-        Provider.of<HospitalUnitNotifier>(context, listen: false);
-    List<dynamic> data = await hospitalUnitNotifier.fetchAll();
-    _hospitalUnitGraph = data.map((element) {
-      return _PieData(
-          element.surname, element.amount, element.surname.toString());
-    }).toList();
+  Future<void> fetchISBAR(BuildContext context) async {
+    DatabaseNotifier databasePP =
+        Provider.of<DatabaseNotifier>(context, listen: false);
+
+    var responsePP = await databasePP.fetchStartDateEndDate(
+      startDate: DateTime.now().subtract(Duration(days: 30)),
+      endDate: DateTime.now().add(Duration(days: 1)),
+    );
+
+    Map<String, int> tempData = {};
+    for (var element in responsePP) {
+      String value = element.situacao.clinica;
+      if (tempData[value] == null) {
+        tempData[value] = 0;
+      }
+      tempData[value] = tempData[value]! + 1;
+    }
+
+    _dataISBAR = tempData
+        .map((key, value) {
+          return MapEntry(key, _PieData(key, value, key));
+        })
+        .values
+        .toList();
     setState(() {});
   }
 
-  Future<void> fetchMobileUnits(BuildContext context) async {
-    MobileUnitNotifier mobileUnitNotifier =
-        Provider.of<MobileUnitNotifier>(context, listen: false);
-    List<dynamic> data = await mobileUnitNotifier.fetchAll();
-    _mobileUnitGraph = data.map((element) {
-      return _PieData(element.name, element.amount, element.name.toString());
-    }).toList();
+  Future<void> fetchStatus(BuildContext context) async {
+    DatabaseNotifier databasePP =
+        Provider.of<DatabaseNotifier>(context, listen: false);
+
+    var responsePP = await databasePP.fetchStartDateEndDate(
+      startDate: DateTime.now().subtract(Duration(days: 30)),
+      endDate: DateTime.now().add(Duration(days: 1)),
+    );
+
+    Map<String, int> tempData = {};
+    for (var element in responsePP) {
+      String value = element.status!;
+      if (tempData[value] == null) {
+        tempData[value] = 0;
+      }
+      tempData[value] = tempData[value]! + 1;
+    }
+
+    _dataStatus = [
+      _PieData('Aguardando', tempData[PPStatus.WAITING_CONFIRMATION] ?? 0,
+          'Aguardando'),
+      _PieData(
+          'Recepcionado', tempData[PPStatus.CONFIRMED] ?? 0, 'Recepcionado'),
+    ];
+
     setState(() {});
   }
 
@@ -46,12 +81,22 @@ class _ReportGraphUMUHState extends State<ReportGraphUMUH> {
     setState(() {});
   }
 
+  Future<void> fetchData(BuildContext context) async {
+    await Future.wait([
+      fetchStatus(context),
+      fetchISBAR(context),
+      fetchCountAllPP(context),
+    ]);
+
+    setState(() {
+      isLoading = false;
+    });
+  }
+
   @override
   void initState() {
     super.initState();
-    fetchMobileUnits(context);
-    fetchHospitalUnits(context);
-    fetchCountAllPP(context);
+    fetchData(context);
   }
 
   @override
@@ -67,28 +112,21 @@ class _ReportGraphUMUHState extends State<ReportGraphUMUH> {
             child: SingleChildScrollView(
           scrollDirection: Axis.vertical,
           child: Column(children: [
-            SfCircularChart(
+            SfCartesianChart(
               title: ChartTitle(
-                  text: 'Unidade Móvel Encaminhadora',
+                  text: 'Unidade Móvel / Unidade Hospitalar',
                   textStyle:
                       TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
               legend: Legend(
                 isVisible: true,
                 position: LegendPosition.bottom,
               ),
-              palette: const [
-                Colors.blue,
-                Colors.orange,
-                Colors.grey,
-              ],
-              series: <DoughnutSeries<_PieData, String>>[
-                DoughnutSeries<_PieData, String>(
-                    dataSource: _mobileUnitGraph,
-                    explodeIndex: 0,
+              primaryXAxis: CategoryAxis(),
+              series: <ChartSeries<_PieData, String>>[
+                ColumnSeries<_PieData, String>(
+                    dataSource: _dataStatus,
                     xValueMapper: (_PieData data, _) => data.xData,
                     yValueMapper: (_PieData data, _) => data.yData,
-                    dataLabelMapper: (_PieData data, _) =>
-                        '${data.text}\n${(data.yData / _amountPP * 100).toStringAsFixed(2)}%',
                     dataLabelSettings: DataLabelSettings(isVisible: true)),
               ],
               tooltipBehavior: TooltipBehavior(
@@ -98,7 +136,7 @@ class _ReportGraphUMUHState extends State<ReportGraphUMUH> {
             ),
             SfCircularChart(
               title: ChartTitle(
-                  text: 'Unidade Hospitalar Receptora',
+                  text: 'Situação Clínica ISBAR',
                   textStyle:
                       TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
               legend: Legend(
@@ -112,7 +150,7 @@ class _ReportGraphUMUHState extends State<ReportGraphUMUH> {
               ],
               series: <DoughnutSeries<_PieData, String>>[
                 DoughnutSeries<_PieData, String>(
-                    dataSource: _hospitalUnitGraph,
+                    dataSource: _dataISBAR,
                     explodeIndex: 0,
                     xValueMapper: (_PieData data, _) => data.xData,
                     yValueMapper: (_PieData data, _) => data.yData,

@@ -45,9 +45,8 @@ class PPModel {
   factory PPModel.fromJson(Map<String, dynamic> json) {
     String dateString = json['created_at'];
 
-    DateFormat format = DateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSSSSZ");
-
-    DateTime createdAt = format.parse(dateString);
+    String datePart = dateString.substring(0, 10);
+    DateTime createdAt = DateTime.parse(datePart);
     return PPModel(
       identificacao: IdentificacaoModel.fromJson(json['identificacao']),
       situacao: SituacaoModel.fromJson(json['situacao']),

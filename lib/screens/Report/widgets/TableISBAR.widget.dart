@@ -14,7 +14,7 @@ class TableISBAR extends StatefulWidget {
 
 class TableISBARState extends State<TableISBAR> {
   bool isLoading = true;
-  List<DataRow> _data = [];
+  final List<DataRow> _data = [];
   final List<DataColumn> _column = [
     DataColumn(label: Text('Data PP')),
   ];
@@ -46,20 +46,23 @@ class TableISBARState extends State<TableISBAR> {
     }
 
     setState(() {
-      _data = tempData
-          .map((key, value) => MapEntry(
-              key,
-              DataRow(cells: [
-                DataCell(Text(key)),
-                ..._column.sublist(1).map((e) {
-                  return DataCell(Text(
-                      value[e.label.toString().toLowerCase()] != null
-                          ? value[e.label.toString().toLowerCase()].toString()
-                          : '0'));
-                }).toList()
-              ])))
-          .values
-          .toList();
+      _data.addAll(
+        tempData.keys.map((element) {
+          List<DataCell> temp = [DataCell(Text(element))];
+          temp.addAll(
+            optionsClinica.map((option) {
+              return DataCell(
+                Text(
+                  tempData[element]![option] != null
+                      ? tempData[element]![option].toString()
+                      : '0',
+                ),
+              );
+            }).toList(),
+          );
+          return DataRow(cells: temp);
+        }).toList(),
+      );
       isLoading = false;
     });
   }

@@ -12,5 +12,5 @@ class CustomPageContainer extends Container {
             height: height,
             child: child,
             padding: padding,
-            margin: EdgeInsets.only(top: 10));
+            margin: EdgeInsets.only(top: 5));
 }

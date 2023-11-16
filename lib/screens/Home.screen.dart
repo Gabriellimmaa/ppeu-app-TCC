@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:ppue/core/notifier/user.notifier.dart';
+import 'package:ppue/core/notifier/authentication.notifier.dart';
 import 'package:ppue/screens/ManagePP/ManagePP.screen.dart';
 import 'package:ppue/screens/NewPP/NewPP.screen.dart';
 import 'package:ppue/screens/Report/Report.screen.dart';
@@ -18,7 +18,8 @@ class HomeScreen extends StatelessWidget {
     String formattedDate = DateFormat('EEEE d MMMM yyyy', 'pt_BR').format(now);
     String formattedTime = DateFormat('HH:mm').format(now);
 
-    UserNotifier userNotifier = Provider.of<UserNotifier>(
+    AuthenticationNotifier authenticationNotifier =
+        Provider.of<AuthenticationNotifier>(
       context,
       listen: false,
     );
@@ -30,7 +31,7 @@ class HomeScreen extends StatelessWidget {
           IconButton(
             icon: Icon(Icons.logout),
             onPressed: () {
-              // Ação de logout
+              authenticationNotifier.logout(context: context);
             },
           ),
         ],
@@ -49,14 +50,18 @@ class HomeScreen extends StatelessWidget {
             Padding(
               padding: EdgeInsets.only(bottom: 120, top: 16),
               child: Column(
-                children: const [
+                children: [
                   Text(
-                    'Bem Vindo(a) Gabriel!',
-                    style: TextStyle(fontSize: 20, color: Colors.white),
+                    'Bem Vindo(a) ${authenticationNotifier.name}!',
+                    style: TextStyle(fontSize: 18, color: Colors.white),
                   ),
                   Text(
-                    'UM - SAMU Londrina',
-                    style: TextStyle(fontSize: 24, color: Colors.white),
+                    authenticationNotifier.hospitalUnit,
+                    style: TextStyle(
+                      fontSize: 20,
+                      color: Colors.white,
+                    ),
+                    textAlign: TextAlign.center,
                   ),
                 ],
               ),
@@ -178,7 +183,7 @@ class HomeScreen extends StatelessWidget {
                       children: [
                         GradientButton(
                           onPressed: () {
-                            userNotifier.isMovel
+                            authenticationNotifier.isMovel
                                 ? Navigator.push(
                                     context,
                                     MaterialPageRoute(
@@ -202,7 +207,7 @@ class HomeScreen extends StatelessWidget {
                                   alignment: Alignment.center,
                                   heightFactor: 3,
                                   child: Text(
-                                    userNotifier.isMovel
+                                    authenticationNotifier.isMovel
                                         ? 'Cadastrar nova PP '
                                         : 'Gerenciamento de PP',
                                     style: TextStyle(color: Colors.white),

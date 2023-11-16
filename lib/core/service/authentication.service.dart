@@ -3,82 +3,43 @@ import 'package:supabase/supabase.dart';
 import 'package:ppue/credentials/supabase.credentials.dart';
 
 class AuthenticationService {
-  Future<String?> singup({
+  Future<GotrueSessionResponse> singup({
+    required BuildContext context,
+    required String email,
+    required String password,
+    required String name,
+    required String taxId,
+  }) async {
+    GotrueSessionResponse response =
+        await SupabaseCredentials.supabaseClient.auth.signUp(
+      email,
+      password,
+      userMetadata: {
+        'name': name,
+        'taxId': taxId,
+      },
+    );
+    return response;
+  }
+
+  Future<GotrueSessionResponse> login({
     required BuildContext context,
     required String email,
     required String password,
   }) async {
-    GotrueSessionResponse response =
-        await SupabaseCredentials.supabaseClient.auth.signUp(email, password);
+    GotrueSessionResponse response = await SupabaseCredentials
+        .supabaseClient.auth
+        .signIn(email: email, password: password);
 
-    if (response.error == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Cadastro realizado com sucesso!'),
-          backgroundColor: Colors.green,
-        ),
-      );
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(response.error!.message),
-          backgroundColor: Colors.red,
-        ),
-      );
-    }
-    return null;
+    return response;
   }
 
-  Future<String?> login({
-    required BuildContext context,
-    required String email,
-    required String password,
-  }) async {
-    GotrueSessionResponse response =
-        await SupabaseCredentials.supabaseClient.auth.signIn(
-            email: email,
-            password: password,
-            options: AuthOptions(redirectTo: SupabaseCredentials.APIURL));
-
-    if (response.error == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Login realizado com sucesso!'),
-          backgroundColor: Colors.green,
-        ),
-      );
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(response.error!.message),
-          backgroundColor: Colors.red,
-        ),
-      );
-    }
-    return null;
-  }
-
-  Future<String?> logout({
+  Future<GotrueResponse> logout({
     required BuildContext context,
   }) async {
     GotrueResponse response =
         await SupabaseCredentials.supabaseClient.auth.signOut();
 
-    if (response.error == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Logout realizado com sucesso!'),
-          backgroundColor: Colors.green,
-        ),
-      );
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(response.error!.message),
-          backgroundColor: Colors.red,
-        ),
-      );
-    }
-    return null;
+    return response;
   }
 }

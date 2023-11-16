@@ -1,8 +1,8 @@
+// ignore_for_file: use_build_context_synchronously
 import 'package:flutter/material.dart';
 import 'package:ppue/constants/constants.dart';
 import 'package:ppue/core/notifier/authentication.notifier.dart';
-import 'package:ppue/core/notifier/user.notifier.dart';
-import 'package:ppue/screens/Home.screen.dart';
+import 'package:ppue/core/notifier/hospitalUnit.notifier.dart';
 import 'package:ppue/widgets/CustomPageContainer.widget.dart';
 import 'package:ppue/widgets/CustomScaffold.widget.dart';
 import 'package:ppue/widgets/GradientButton.widget.dart';
@@ -16,6 +16,39 @@ class SelectUserScreen extends StatefulWidget {
 }
 
 class _SelectUserScreenState extends State<SelectUserScreen> {
+  bool isLoading = true;
+  String selectedMobileUnit = '';
+
+  final List<DropdownMenuItem<String>> _mobileUnitData = [
+    DropdownMenuItem(
+      value: '',
+      child: Text('Selecione'),
+    )
+  ];
+
+  Future<void> fetchMobileUnits(BuildContext context) async {
+    HospitalUnitNotifier databaseHospital =
+        Provider.of<HospitalUnitNotifier>(context, listen: false);
+
+    var data = await databaseHospital.fetchAll();
+
+    setState(() {
+      for (var element in data) {
+        _mobileUnitData.add(DropdownMenuItem(
+          value: element.name.toString(),
+          child: Text(element.name.toString()),
+        ));
+      }
+      isLoading = false;
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    fetchMobileUnits(context);
+  }
+
   @override
   Widget build(BuildContext context) {
     AuthenticationNotifier authenticationNotifier =
@@ -23,10 +56,11 @@ class _SelectUserScreenState extends State<SelectUserScreen> {
       context,
       listen: false,
     );
-    UserNotifier userNotifier = Provider.of<UserNotifier>(
+    AuthenticationNotifier userNotifier = Provider.of<AuthenticationNotifier>(
       context,
       listen: false,
     );
+
     return CustomScaffold(
         appBar: AppBar(
           title: Text('PPEU'),
@@ -49,69 +83,59 @@ class _SelectUserScreenState extends State<SelectUserScreen> {
             spacingRow,
             Expanded(
                 child: CustomPageContainer(
-              child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: [
-                    Column(
+              child: isLoading
+                  ? Center(child: CircularProgressIndicator())
+                  : Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
-                        Text('Estabelecimento de saúde'),
-                        DropdownButton(
-                            value: 'mobileHu',
-                            items: const [
-                              DropdownMenuItem(
-                                value: 'mobileHu',
-                                child: Text('Hospitalar - HU Londrina'),
+                          Column(
+                            children: [
+                              Text('Estabelecimento de saúde'),
+                              SizedBox(
+                                height: 10,
                               ),
-                              DropdownMenuItem(
-                                value: 'hospitalHzn',
-                                child: Text('Hospitalar - HZN'),
-                              ),
-                              DropdownMenuItem(
-                                value: 'hospitalIscal',
-                                child: Text('Hospitalar - ISCAL'),
-                              ),
-                              DropdownMenuItem(
-                                value: 'samuLondrina',
-                                child: Text('Móvel - SAMU/Londrina'),
-                              )
+                              DropdownButton(
+                                  value: selectedMobileUnit,
+                                  items: _mobileUnitData,
+                                  onChanged: (value) {
+                                    setState(() {
+                                      selectedMobileUnit = value.toString();
+                                    });
+                                  }),
                             ],
-                            onChanged: (value) {}),
-                      ],
-                    ),
-                    Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 16),
-                        child: Column(
-                          children: [
-                            SizedBox(
-                              width: double.infinity,
-                              child: GradientButton(
-                                onPressed: () {
-                                  userNotifier.setType(1);
-                                  Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) => HomeScreen()));
-                                },
-                                text: 'Logar como unidade móvel',
-                              ),
-                            ),
-                            spacingRow,
-                            SizedBox(
-                              width: double.infinity,
-                              child: GradientButton(
-                                onPressed: () {
-                                  userNotifier.setType(2);
-                                  Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) => HomeScreen()));
-                                },
-                                text: 'Logar como unidade hospitalar',
-                              ),
-                            )
-                          ],
-                        ))
-                  ]),
+                          ),
+                          Padding(
+                              padding: EdgeInsets.symmetric(horizontal: 16),
+                              child: Column(
+                                children: [
+                                  SizedBox(
+                                    width: double.infinity,
+                                    child: GradientButton(
+                                      onPressed: () {
+                                        userNotifier.setUser(
+                                            type: UserType.MOBILE_UNIT,
+                                            hospitalUnit: selectedMobileUnit,
+                                            context: context);
+                                      },
+                                      text: 'Logar como unidade móvel',
+                                    ),
+                                  ),
+                                  spacingRow,
+                                  SizedBox(
+                                    width: double.infinity,
+                                    child: GradientButton(
+                                      onPressed: () async {
+                                        userNotifier.setUser(
+                                            type: UserType.HOSPITAL_UNIT,
+                                            hospitalUnit: selectedMobileUnit,
+                                            context: context);
+                                      },
+                                      text: 'Logar como unidade hospitalar',
+                                    ),
+                                  )
+                                ],
+                              ))
+                        ]),
             ))
           ],
         ));

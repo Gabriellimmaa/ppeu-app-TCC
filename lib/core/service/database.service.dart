@@ -42,7 +42,7 @@ class DatabaseService {
     return response.data;
   }
 
-  Future<PostgrestResponse?> addPP({
+  Future<PostgrestResponse> addPP({
     required BuildContext context,
     required PPModel data,
   }) async {
@@ -50,53 +50,37 @@ class DatabaseService {
         .from('pp')
         .insert(data.toJson())
         .execute();
-    if (response.data != null) {
-      final responseQueryHospital = await SupabaseCredentials.supabaseClient
-          .from('hospital-unit')
-          .select('amount')
-          .eq('name', data.recomendacoes.encaminhamento)
-          .single()
-          .execute();
 
-      await SupabaseCredentials.supabaseClient
-          .from('hospital-unit')
-          .update({'amount': responseQueryHospital.data['amount'] + 1})
-          .eq('name', data.recomendacoes.encaminhamento)
-          .execute();
+    final responseQueryHospital = await SupabaseCredentials.supabaseClient
+        .from('hospital-unit')
+        .select('amount')
+        .eq('name', data.recomendacoes.encaminhamento)
+        .single()
+        .execute();
 
-      final responseQueryMobile = await SupabaseCredentials.supabaseClient
-          .from('mobile-unit')
-          .select('amount')
-          .eq('name', data.identificacao.formaEncaminhamento)
-          .single()
-          .execute();
+    await SupabaseCredentials.supabaseClient
+        .from('hospital-unit')
+        .update({'amount': responseQueryHospital.data['amount'] + 1})
+        .eq('name', data.recomendacoes.encaminhamento)
+        .execute();
 
-      await SupabaseCredentials.supabaseClient
-          .from('mobile-unit')
-          .update({'amount': responseQueryMobile.data['amount'] + 1})
-          .eq('name', data.identificacao.formaEncaminhamento)
-          .execute();
+    final responseQueryMobile = await SupabaseCredentials.supabaseClient
+        .from('mobile-unit')
+        .select('amount')
+        .eq('name', data.identificacao.formaEncaminhamento)
+        .single()
+        .execute();
 
-      // ignore: use_build_context_synchronously
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('PP cadastrado com sucesso!'),
-          backgroundColor: Colors.green,
-        ),
-      );
-      return response.data;
-    } else {
-      // ignore: use_build_context_synchronously
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(response.error!.message),
-          backgroundColor: Colors.red,
-        ),
-      );
-    }
+    await SupabaseCredentials.supabaseClient
+        .from('mobile-unit')
+        .update({'amount': responseQueryMobile.data['amount'] + 1})
+        .eq('name', data.identificacao.formaEncaminhamento)
+        .execute();
+
+    return response.data;
   }
 
-  Future<bool> changeStatusToConfirmed({
+  Future<PostgrestResponse> changeStatusToConfirmed({
     required BuildContext context,
     required int id,
   }) async {
@@ -105,25 +89,8 @@ class DatabaseService {
         .update({'status': PPStatus.CONFIRMED})
         .eq('id', id)
         .execute();
-    if (!response.hasError) {
-      // ignore: use_build_context_synchronously
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('PP recebida com sucesso!'),
-          backgroundColor: Colors.green,
-        ),
-      );
-      return true;
-    } else {
-      // ignore: use_build_context_synchronously
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(response.error!.message),
-          backgroundColor: Colors.red,
-        ),
-      );
-      return false;
-    }
+
+    return response;
   }
 
   Future filterPP({
@@ -156,12 +123,15 @@ class DatabaseService {
     return response.data;
   }
 
-  Future filterByStatus({
-    required String status,
-    required String name,
-    required String date,
-  }) async {
-    var query = SupabaseCredentials.supabaseClient.from('pp').select();
+  Future filterByStatus(
+      {required String status,
+      required String name,
+      required String date,
+      required String hospitalUnit}) async {
+    var query = SupabaseCredentials.supabaseClient
+        .from('pp')
+        .select()
+        .eq('recomendacoes->>encaminhamento', hospitalUnit);
 
     if (status != 'all') {
       query = query.eq('status', status);
@@ -183,9 +153,7 @@ class DatabaseService {
           .gte('created_at', startDate.toIso8601String())
           .lte('created_at', endDate.toIso8601String());
     }
-    print(name);
-    print(status);
-    print(date);
+
     var response = await query.execute();
 
     return response.data;

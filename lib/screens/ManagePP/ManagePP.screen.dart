@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:ppue/core/notifier/authentication.notifier.dart';
 import 'package:ppue/core/notifier/database.notifier.dart';
 import 'package:ppue/models/PP.model.dart';
 import 'package:ppue/models/PPStatus.model.dart';
@@ -31,7 +32,16 @@ class _ManagePPScreenState extends State<ManagePPScreen> {
   Future<void> fetchAllPP(BuildContext context) async {
     DatabaseNotifier databaseNotifier =
         Provider.of<DatabaseNotifier>(context, listen: false);
-    var response = await databaseNotifier.fetchAll();
+    AuthenticationNotifier userNotifier = Provider.of<AuthenticationNotifier>(
+      context,
+      listen: false,
+    );
+    var response = await databaseNotifier.filterByStatus(
+      status: 'all',
+      name: '',
+      date: '',
+      hospitalUnit: userNotifier.hospitalUnit,
+    );
     data = response;
     setState(() {
       isLoading = false;
@@ -56,6 +66,10 @@ class _ManagePPScreenState extends State<ManagePPScreen> {
   Widget build(BuildContext context) {
     DatabaseNotifier databaseNotifier =
         Provider.of<DatabaseNotifier>(context, listen: false);
+    AuthenticationNotifier userNotifier = Provider.of<AuthenticationNotifier>(
+      context,
+      listen: false,
+    );
 
     _onSearchChanged() {
       if (_debounce?.isActive ?? false) _debounce?.cancel();
@@ -75,7 +89,8 @@ class _ManagePPScreenState extends State<ManagePPScreen> {
           var response = await databaseNotifier.filterByStatus(
               status: _selectedButtonIndex,
               name: _nameController.text,
-              date: _dateController.text);
+              date: _dateController.text,
+              hospitalUnit: userNotifier.hospitalUnit);
 
           if (response.isEmpty) {
             // ignore: use_build_context_synchronously
@@ -117,7 +132,8 @@ class _ManagePPScreenState extends State<ManagePPScreen> {
       var response = await databaseNotifier.filterByStatus(
           status: status,
           name: _nameController.text,
-          date: _dateController.text);
+          date: _dateController.text,
+          hospitalUnit: userNotifier.hospitalUnit);
       setState(() {
         isLoading = false;
         data = response;

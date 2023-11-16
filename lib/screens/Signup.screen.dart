@@ -196,7 +196,11 @@ class _SignupScreenState extends State<SignupScreen> {
                       String password = _passwordController.text;
 
                       await authenticationNotifier.singup(
-                          context: context, email: email, password: password);
+                          context: context,
+                          email: email,
+                          password: password,
+                          name: _nameController.text,
+                          taxId: _cpfController.text);
                     }
                   },
                 ),

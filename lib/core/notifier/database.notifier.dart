@@ -1,7 +1,7 @@
+// ignore_for_file: use_build_context_synchronously
 import 'package:flutter/material.dart';
 import 'package:ppue/core/service/database.service.dart';
 import 'package:ppue/models/PP.model.dart';
-import 'package:supabase/supabase.dart';
 
 class DatabaseNotifier extends ChangeNotifier {
   final DatabaseService _databaseService = DatabaseService();
@@ -36,9 +36,24 @@ class DatabaseNotifier extends ChangeNotifier {
     return data;
   }
 
-  Future<PostgrestResponse?> addPP(
-      {required BuildContext context, required PPModel data}) async {
-    await _databaseService.addPP(context: context, data: data);
+  Future addPP({required BuildContext context, required PPModel data}) async {
+    var response = await _databaseService.addPP(context: context, data: data);
+    if (!response.hasError) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('PP cadastrado com sucesso!'),
+          backgroundColor: Colors.green,
+        ),
+      );
+      return response;
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(response.error!.message),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
   }
 
   Future filterPP(
@@ -55,14 +70,17 @@ class DatabaseNotifier extends ChangeNotifier {
     return data.map((e) => PPModel.fromJson(e)).toList();
   }
 
-  Future filterByStatus(
-      {required String status,
-      required String name,
-      required String date}) async {
+  Future filterByStatus({
+    required String status,
+    required String name,
+    required String date,
+    required String hospitalUnit,
+  }) async {
     var data = await _databaseService.filterByStatus(
       status: status,
       name: name,
       date: date,
+      hospitalUnit: hospitalUnit,
     );
 
     return data.map((e) => PPModel.fromJson(e)).toList();
@@ -76,6 +94,22 @@ class DatabaseNotifier extends ChangeNotifier {
       context: context,
       id: id,
     );
-    return response;
+    if (!response.hasError) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('PP recebida com sucesso!'),
+          backgroundColor: Colors.green,
+        ),
+      );
+      return true;
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(response.error!.message),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return false;
+    }
   }
 }

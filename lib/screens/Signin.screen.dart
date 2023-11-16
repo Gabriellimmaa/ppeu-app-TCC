@@ -36,7 +36,7 @@ class _SigninScreenState extends State<SigninScreen> {
 
     return CustomScaffold(
         appBar: AppBar(
-          title: Text('LOGIN'),
+          title: Text('ENTRAR'),
           centerTitle: true,
         ),
         body: CustomPageContainer(

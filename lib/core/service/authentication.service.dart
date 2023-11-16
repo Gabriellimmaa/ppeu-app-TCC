@@ -7,7 +7,8 @@ class AuthenticationService {
     required BuildContext context,
     required String email,
     required String password,
-    required String name,
+    required String firstName,
+    required String lastName,
     required String taxId,
   }) async {
     GotrueSessionResponse response =
@@ -15,7 +16,8 @@ class AuthenticationService {
       email,
       password,
       userMetadata: {
-        'name': name,
+        'firstName': firstName,
+        'lastName': lastName,
         'taxId': taxId,
       },
     );

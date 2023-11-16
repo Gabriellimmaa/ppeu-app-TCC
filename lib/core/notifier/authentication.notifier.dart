@@ -10,11 +10,13 @@ class AuthenticationNotifier extends ChangeNotifier {
 
   String? _type;
   String _hospitalUnit = '';
-  String _name = '';
+  String _firstName = '';
+  String _lastName = '';
   String _taxId = '';
   String? get type => _type;
   String get hospitalUnit => _hospitalUnit;
-  String get name => _name;
+  String get firstName => _firstName;
+  String get lastName => _lastName;
   String get taxId => _taxId;
   bool get isMovel => _type == UserType.MOBILE_UNIT;
   bool get isHospital => _type == UserType.HOSPITAL_UNIT;
@@ -45,14 +47,17 @@ class AuthenticationNotifier extends ChangeNotifier {
   }
 
   void setUserMetadata({
-    required String name,
+    required String firstName,
+    required String lastName,
     required String taxId,
   }) {
-    _name = name;
+    _firstName = firstName;
+    _lastName = lastName;
     _taxId = taxId;
 
     SharedPreferences.getInstance().then((prefs) {
-      prefs.setString('name', name);
+      prefs.setString('firstName', firstName);
+      prefs.setString('lastName', lastName);
       prefs.setString('taxId', taxId);
     });
 
@@ -63,14 +68,16 @@ class AuthenticationNotifier extends ChangeNotifier {
     required BuildContext context,
     required String email,
     required String password,
-    required String name,
+    required String firstName,
+    required String lastName,
     required String taxId,
   }) async {
     var response = await _authenticationService.singup(
         context: context,
         email: email,
         password: password,
-        name: name,
+        firstName: firstName,
+        lastName: lastName,
         taxId: taxId);
 
     if (response.error == null) {
@@ -103,7 +110,8 @@ class AuthenticationNotifier extends ChangeNotifier {
 
     if (response.error == null) {
       setUserMetadata(
-        name: response.data!.user!.userMetadata['name'],
+        firstName: response.data!.user!.userMetadata['firstName'],
+        lastName: response.data!.user!.userMetadata['lastName'],
         taxId: response.data!.user!.userMetadata['taxId'],
       );
       ScaffoldMessenger.of(context).showSnackBar(

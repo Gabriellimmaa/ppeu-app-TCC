@@ -52,7 +52,7 @@ class HomeScreen extends StatelessWidget {
               child: Column(
                 children: [
                   Text(
-                    'Bem Vindo(a) ${authenticationNotifier.name}!',
+                    'Bem Vindo(a) ${authenticationNotifier.firstName}!',
                     style: TextStyle(fontSize: 18, color: Colors.white),
                   ),
                   Text(

@@ -20,7 +20,8 @@ class SignupScreen extends StatefulWidget {
 
 class _SignupScreenState extends State<SignupScreen> {
   final _formKey = GlobalKey<FormState>();
-  final _nameController = TextEditingController();
+  final _firstNameController = TextEditingController();
+  final _lastNameController = TextEditingController();
   final _cpfController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
@@ -81,8 +82,16 @@ class _SignupScreenState extends State<SignupScreen> {
                   children: [
                     spacingRow,
                     TextFormField(
-                      controller: _nameController,
+                      controller: _firstNameController,
                       decoration: InputDecoration(labelText: 'Nome'),
+                      validator: (value) =>
+                          value!.isEmpty ? 'Campo obrigatório' : null,
+                      textInputAction: TextInputAction.next,
+                    ),
+                    spacingRow,
+                    TextFormField(
+                      controller: _lastNameController,
+                      decoration: InputDecoration(labelText: 'Sobrenome'),
                       validator: (value) =>
                           value!.isEmpty ? 'Campo obrigatório' : null,
                       textInputAction: TextInputAction.next,
@@ -199,7 +208,8 @@ class _SignupScreenState extends State<SignupScreen> {
                           context: context,
                           email: email,
                           password: password,
-                          name: _nameController.text,
+                          firstName: _firstNameController.text,
+                          lastName: _lastNameController.text,
                           taxId: _cpfController.text);
                     }
                   },
@@ -209,7 +219,7 @@ class _SignupScreenState extends State<SignupScreen> {
                 width: double.infinity,
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    primary: Colors.transparent,
+                    backgroundColor: Colors.transparent,
                     elevation: 0,
                   ),
                   child: Text(

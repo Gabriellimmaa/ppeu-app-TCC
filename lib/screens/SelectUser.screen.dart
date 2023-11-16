@@ -90,7 +90,7 @@ class _SelectUserScreenState extends State<SelectUserScreen> {
                       children: [
                           Column(
                             children: [
-                              Text('Estabelecimento de saúde'),
+                              Text('Estabelecimento de Saúde'),
                               SizedBox(
                                 height: 10,
                               ),
@@ -117,7 +117,7 @@ class _SelectUserScreenState extends State<SelectUserScreen> {
                                             hospitalUnit: selectedMobileUnit,
                                             context: context);
                                       },
-                                      text: 'Logar como unidade móvel',
+                                      text: 'Entrar como unidade móvel',
                                     ),
                                   ),
                                   spacingRow,
@@ -130,7 +130,7 @@ class _SelectUserScreenState extends State<SelectUserScreen> {
                                             hospitalUnit: selectedMobileUnit,
                                             context: context);
                                       },
-                                      text: 'Logar como unidade hospitalar',
+                                      text: 'Entrar como unidade hospitalar',
                                     ),
                                   )
                                 ],

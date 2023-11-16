@@ -94,30 +94,36 @@ class DatabaseService {
   }
 
   Future filterPP({
-    required String nome,
-    required String responsavelRecebimentoCpf,
-    required String encaminhamento,
-    required String date,
+    String? nome,
+    String? responsavelRecebimentoCpf,
+    required String hospitalUnit,
+    String? mobileUnit,
+    DateTime? startDate,
+    DateTime? endDate,
   }) async {
     var query = SupabaseCredentials.supabaseClient.from('pp').select();
-    if (date != '') {
-      DateTime selectedDate = DateFormat("yyyy-MM-dd").parse(date);
-
-      DateTime startDate = DateTime(
-          selectedDate.year, selectedDate.month, selectedDate.day, 0, 0, 0);
-      DateTime endDate = DateTime(selectedDate.year, selectedDate.month,
-          selectedDate.day, 23, 59, 59, 999);
-
-      query = query
-          .gte('created_at', startDate.toIso8601String())
-          .lte('created_at', endDate.toIso8601String());
+    if (startDate != null) {
+      query = query.gte('created_at', startDate.toIso8601String());
     }
 
-    query = query
-        .ilike('identificacao->>nome', '%$nome%')
-        .eq('recomendacoes->>encaminhamento', encaminhamento)
-        .eq('recomendacoes->responsavelRecebimento->>cpf',
-            responsavelRecebimentoCpf);
+    if (endDate != null) {
+      query = query.lte('created_at', endDate.toIso8601String());
+    }
+
+    if (mobileUnit != null) {
+      query = query.eq('identificacao->>formaEncaminhamento', mobileUnit);
+    }
+
+    if (nome != null && nome != '') {
+      query = query.ilike('identificacao->>nome', '%$nome%');
+    }
+
+    if (responsavelRecebimentoCpf != null && responsavelRecebimentoCpf != '') {
+      query = query.eq('recomendacoes->responsavelRecebimento->>cpf',
+          responsavelRecebimentoCpf);
+    }
+
+    query = query.eq('recomendacoes->>encaminhamento', hospitalUnit);
 
     var response = await query.execute();
     return response.data;

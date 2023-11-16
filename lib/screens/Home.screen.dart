@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:ppue/core/notifier/authentication.notifier.dart';
+import 'package:ppue/core/notifier/database.notifier.dart';
+import 'package:ppue/core/notifier/hospitalUnit.notifier.dart';
 import 'package:ppue/screens/ManagePP/ManagePP.screen.dart';
 import 'package:ppue/screens/NewPP/NewPP.screen.dart';
 import 'package:ppue/screens/Report/Report.screen.dart';
@@ -9,8 +11,66 @@ import 'package:ppue/widgets/CustomScaffold.widget.dart';
 import 'package:ppue/widgets/GradientButton.widget.dart';
 import 'package:provider/provider.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
+
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  bool isLoading = true;
+  List<ListTile> data = [];
+
+  Future fetchData() async {
+    HospitalUnitNotifier hospitalUnitNotifier =
+        Provider.of<HospitalUnitNotifier>(
+      context,
+      listen: false,
+    );
+    DatabaseNotifier databaseNotifier = Provider.of<DatabaseNotifier>(
+      context,
+      listen: false,
+    );
+
+    var responseHospitalUnit = await hospitalUnitNotifier.fetchAll();
+
+    for (var element in responseHospitalUnit) {
+      var response = await databaseNotifier.filterPP(
+        nome: null,
+        responsavelRecebimentoCpf: null,
+        hospitalUnit: element.name,
+        startDate: DateTime.now(),
+        endDate: DateTime.now().add(Duration(days: 1)),
+      );
+
+      data.add(
+        ListTile(
+          title: Text(element.name),
+          leading: Icon(Icons.person),
+          onTap: () {
+            Navigator.pushNamed(context, '/login');
+          },
+          subtitle: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text('${response.length} pacientes'),
+            ],
+          ),
+        ),
+      );
+    }
+
+    setState(() {
+      isLoading = false;
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    fetchData();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -83,80 +143,16 @@ class HomeScreen extends StatelessWidget {
                         ),
                       ),
                       Expanded(
-                        child: SingleChildScrollView(
-                          child: ListView(
-                            shrinkWrap: true,
-                            padding: const EdgeInsets.all(0),
-                            physics: NeverScrollableScrollPhysics(),
-                            children: [
-                              ListTile(
-                                title: Text('HU - Londrina'),
-                                leading: Icon(Icons.person),
-                                onTap: () {
-                                  Navigator.pushNamed(context, '/login');
-                                },
-                                subtitle: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: const [
-                                    Text('2 pacientes'),
-                                  ],
+                        child: isLoading
+                            ? Center(child: CircularProgressIndicator())
+                            : SingleChildScrollView(
+                                child: ListView(
+                                  shrinkWrap: true,
+                                  padding: const EdgeInsets.all(0),
+                                  physics: NeverScrollableScrollPhysics(),
+                                  children: data,
                                 ),
                               ),
-                              ListTile(
-                                title: Text('HZN'),
-                                leading: Icon(Icons.person),
-                                onTap: () {
-                                  Navigator.pushNamed(context, '/login');
-                                },
-                                subtitle: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: const [
-                                    Text('2 pacientes'),
-                                  ],
-                                ),
-                              ),
-                              ListTile(
-                                title: Text('ISCAL - Santa Casa de Londrina'),
-                                leading: Icon(Icons.person),
-                                onTap: () {
-                                  Navigator.pushNamed(context, '/login');
-                                },
-                                subtitle: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: const [
-                                    Text('2 pacientes'),
-                                  ],
-                                ),
-                              ),
-                              ListTile(
-                                title: Text('SAMU - Londrina'),
-                                leading: Icon(Icons.person),
-                                onTap: () {
-                                  Navigator.pushNamed(context, '/login');
-                                },
-                                subtitle: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: const [
-                                    Text('2 pacientes'),
-                                  ],
-                                ),
-                              ),
-                              ListTile(
-                                title: Text('SAMU - Londrina'),
-                                leading: Icon(Icons.person),
-                                onTap: () {
-                                  Navigator.pushNamed(context, '/login');
-                                },
-                                subtitle: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: const [
-                                    Text('2 pacientes'),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
                       )
                     ],
                   )),

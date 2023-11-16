@@ -1,31 +1,45 @@
 import 'package:flutter/material.dart';
 
 class DatePickerTextField extends StatefulWidget {
-  final TextEditingController controller;
+  final DateTime? value;
+  final ValueChanged<DateTime?>? onChanged;
   final String? Function(String?)? validator;
   final String? labelText;
   final InputDecoration? decoration;
 
   const DatePickerTextField({
     Key? key,
-    required this.controller,
+    required this.value,
+    this.onChanged,
     this.validator,
     this.labelText,
     this.decoration,
   }) : super(key: key);
 
   @override
-  _DatePickerTextFieldState createState() => _DatePickerTextFieldState();
+  DatePickerTextFieldState createState() => DatePickerTextFieldState();
 }
 
-class _DatePickerTextFieldState extends State<DatePickerTextField> {
+class DatePickerTextFieldState extends State<DatePickerTextField> {
+  TextEditingController _dateController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    _dateController = TextEditingController(
+      text: widget.value != null
+          ? '${widget.value?.day}/${widget.value?.month}/${widget.value?.year}'
+          : '',
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Row(
       children: [
         Expanded(
           child: TextField(
-            controller: widget.controller,
+            controller: _dateController,
             readOnly: true,
             onTap: () {
               _selectDate(context);
@@ -38,7 +52,7 @@ class _DatePickerTextFieldState extends State<DatePickerTextField> {
           ),
         ),
         Visibility(
-          visible: widget.controller.text.isNotEmpty,
+          visible: _dateController.text.isNotEmpty,
           child: IconButton(
             icon: Container(
               decoration: BoxDecoration(
@@ -54,7 +68,8 @@ class _DatePickerTextFieldState extends State<DatePickerTextField> {
             ),
             onPressed: () {
               setState(() {
-                widget.controller.text = '';
+                _dateController.text = '';
+                widget.onChanged?.call(null);
               });
             },
           ),
@@ -66,18 +81,19 @@ class _DatePickerTextFieldState extends State<DatePickerTextField> {
   Future<void> _selectDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
       context: context,
-      initialDate: DateTime.now(),
+      initialDate: widget.value ?? DateTime.now(),
       firstDate: DateTime(2010),
       lastDate: DateTime(2030),
     );
 
     if (picked != null) {
-      String formattedDate = '${picked.day}/${picked.month}/${picked.year}';
       setState(() {
-        widget.controller.text = formattedDate;
+        widget.onChanged?.call(picked);
+        _dateController.text = '${picked.day}/${picked.month}/${picked.year}';
       });
       if (widget.validator != null) {
-        String? validationMessage = widget.validator!(formattedDate);
+        String? validationMessage =
+            widget.validator!(picked.toString().substring(0, 10));
         if (validationMessage != null) {
           // Faça algo com a mensagem de validação, se necessário
           print(validationMessage);

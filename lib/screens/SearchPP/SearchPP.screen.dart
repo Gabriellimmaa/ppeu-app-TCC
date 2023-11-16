@@ -27,14 +27,13 @@ class _SearchPPScreenState extends State<SearchPPScreen> {
   String? _selectedHospital;
   String? _selectedResponsavel;
   String buttonText = 'Selecione';
-  final TextEditingController _dateController = TextEditingController();
+  DateTime? _selectedDate;
   final TextEditingController _nameController = TextEditingController();
   List<DropdownMenuItem<String>> _hospitalUnitDropdownItems = [];
   List<DropdownMenuItem<String>> _usersDropdownItems = [];
 
   @override
   void dispose() {
-    _dateController.dispose();
     _nameController.dispose();
     super.dispose();
   }
@@ -182,7 +181,12 @@ class _SearchPPScreenState extends State<SearchPPScreen> {
                   ),
                   spacingRow,
                   DatePickerTextField(
-                    controller: _dateController,
+                    value: _selectedDate,
+                    onChanged: (value) {
+                      setState(() {
+                        _selectedDate = value;
+                      });
+                    },
                   ),
                 ],
               ),
@@ -208,15 +212,14 @@ class _SearchPPScreenState extends State<SearchPPScreen> {
                       );
 
                       try {
+                        print('_selectedDate');
+                        print(_selectedDate);
                         var response = await databaseNotifier.filterPP(
                           nome: _nameController.text,
                           responsavelRecebimentoCpf: _selectedResponsavel!,
-                          encaminhamento: _selectedHospital!.split('::')[1],
-                          date: _dateController.text
-                              .split('/')
-                              .reversed
-                              .join('-')
-                              .toString(),
+                          hospitalUnit: _selectedHospital!.split('::')[1],
+                          startDate: _selectedDate,
+                          endDate: _selectedDate?.add(Duration(days: 1)),
                         );
 
                         if (response.isEmpty) {

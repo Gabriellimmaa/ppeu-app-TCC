@@ -32,8 +32,8 @@ class _ModalReportFiltersState extends State<ModalReportFilters> {
       child: Text('Selecione'),
     ),
   ];
-  final _dateStartController = TextEditingController();
-  final _dateEndController = TextEditingController();
+  DateTime? _endDateSelected;
+  DateTime? _startDateSelected;
   String _unMovel = '';
   String _unEnc = '';
   String _stRecep = '';
@@ -82,8 +82,6 @@ class _ModalReportFiltersState extends State<ModalReportFilters> {
   @override
   void dispose() {
     _nomeController.dispose();
-    _dateStartController.dispose();
-    _dateEndController.dispose();
     super.dispose();
   }
 
@@ -125,7 +123,7 @@ class _ModalReportFiltersState extends State<ModalReportFilters> {
                         SizedBox(
                           height: 50,
                           child: DatePickerTextField(
-                            controller: _dateStartController,
+                            value: _startDateSelected,
                             decoration: InputDecoration(
                               labelText: 'Data Inicial',
                               suffixIcon: Icon(Icons.calendar_today),
@@ -136,7 +134,7 @@ class _ModalReportFiltersState extends State<ModalReportFilters> {
                         SizedBox(
                           height: 50,
                           child: DatePickerTextField(
-                            controller: _dateEndController,
+                            value: _endDateSelected,
                             decoration: InputDecoration(
                               labelText: 'Data Final',
                               suffixIcon: Icon(Icons.calendar_today),

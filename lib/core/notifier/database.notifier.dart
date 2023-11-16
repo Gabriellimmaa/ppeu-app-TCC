@@ -56,18 +56,27 @@ class DatabaseNotifier extends ChangeNotifier {
     }
   }
 
-  Future filterPP(
-      {required String nome,
-      required String responsavelRecebimentoCpf,
-      required String encaminhamento,
-      required String date}) async {
-    var data = await _databaseService.filterPP(
+  Future<List<PPModel>> filterPP({
+    String? nome,
+    String? responsavelRecebimentoCpf,
+    required String hospitalUnit,
+    String? mobileUnit,
+    DateTime? startDate,
+    DateTime? endDate,
+  }) async {
+    List<dynamic> rawData = await _databaseService.filterPP(
         nome: nome,
         responsavelRecebimentoCpf: responsavelRecebimentoCpf,
-        encaminhamento: encaminhamento,
-        date: date);
+        hospitalUnit: hospitalUnit,
+        startDate: startDate,
+        mobileUnit: mobileUnit,
+        endDate: endDate);
 
-    return data.map((e) => PPModel.fromJson(e)).toList();
+    List<Map<String, dynamic>> data = List<Map<String, dynamic>>.from(rawData);
+
+    List<PPModel> response = data.map((e) => PPModel.fromJson(e)).toList();
+
+    return response;
   }
 
   Future filterByStatus({

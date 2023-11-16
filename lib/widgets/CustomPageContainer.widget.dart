@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 class CustomPageContainer extends Container {
   CustomPageContainer(
-      {Widget? child, double? height, EdgeInsetsGeometry? padding})
+      {super.key, Widget? child, double? height, EdgeInsetsGeometry? padding})
       : super(
             decoration: BoxDecoration(
                 color: Colors.white,

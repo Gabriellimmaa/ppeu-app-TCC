@@ -1,45 +1,29 @@
 import 'package:flutter/material.dart';
-import 'package:ppue/core/notifier/database.notifier.dart';
-import 'package:ppue/core/notifier/mobileUnit.notifier.dart';
-import 'package:provider/provider.dart';
+import 'package:ppue/models/MobileUnit.model.dart';
+import 'package:ppue/models/PP.model.dart';
 
 class TableUM extends StatefulWidget {
-  const TableUM({
-    Key? key,
-  }) : super(key: key);
+  final List<PPModel> data;
+  final List<MobileUnitModel> mobileData;
+  const TableUM({Key? key, required this.data, required this.mobileData})
+      : super(key: key);
 
   @override
   TableUMState createState() => TableUMState();
 }
 
 class TableUMState extends State<TableUM> {
-  bool isLoading = true;
   List<DataRow> _mobileUnitData = [];
   List<DataColumn> _mobileUnitColumn = [];
 
   Future<void> fetchMobileUnits(BuildContext context) async {
-    setState(() {
-      isLoading = true;
-    });
-    MobileUnitNotifier mobileUnitNotifier =
-        Provider.of<MobileUnitNotifier>(context, listen: false);
-    DatabaseNotifier databasePP =
-        Provider.of<DatabaseNotifier>(context, listen: false);
-
-    List<dynamic> data = await mobileUnitNotifier.fetchAll();
-
     List<DataColumn> temp = [DataColumn(label: Text('Data'))];
-    temp.addAll(data.map((element) {
+    temp.addAll(widget.mobileData.map((element) {
       return DataColumn(label: Text(element.name.toString()));
     }).toList());
 
-    var responsePP = await databasePP.fetchStartDateEndDate(
-      startDate: DateTime.now().subtract(Duration(days: 30)),
-      endDate: DateTime.now().add(Duration(days: 1)),
-    );
-
     Map<String, Map<String, int>> somasPorDataEUnidade = {};
-    for (var element in responsePP) {
+    for (var element in widget.data) {
       if (somasPorDataEUnidade[element.createdAt!] == null) {
         somasPorDataEUnidade[element.createdAt!] = {};
       }
@@ -62,7 +46,7 @@ class TableUMState extends State<TableUM> {
               key,
               DataRow(cells: [
                 DataCell(Text(key)),
-                ...data.map((element) {
+                ...widget.mobileData.map((element) {
                   return DataCell(Text(value[element.name] != null
                       ? value[element.name].toString()
                       : "0"));
@@ -70,8 +54,15 @@ class TableUMState extends State<TableUM> {
               ])))
           .values
           .toList();
-      isLoading = false;
     });
+  }
+
+  @override
+  void didUpdateWidget(TableUM oldWidget) {
+    if (widget.data != oldWidget.data) {
+      fetchMobileUnits(context);
+    }
+    super.didUpdateWidget(oldWidget);
   }
 
   @override
@@ -87,8 +78,6 @@ class TableUMState extends State<TableUM> {
 
   @override
   Widget build(BuildContext context) {
-    if (isLoading) return Center(child: CircularProgressIndicator());
-
     return SingleChildScrollView(
         scrollDirection: Axis.horizontal,
         child: DataTable(columns: _mobileUnitColumn, rows: _mobileUnitData));

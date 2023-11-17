@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:ppue/core/notifier/database.notifier.dart';
-import 'package:ppue/core/notifier/hospitalUnit.notifier.dart';
-import 'package:provider/provider.dart';
+import 'package:ppue/models/HospitalUnit.model.dart';
+import 'package:ppue/models/PP.model.dart';
 
 class TableUH extends StatefulWidget {
-  const TableUH({
-    Key? key,
-  }) : super(key: key);
+  final List<PPModel> data;
+  final List<HospitalUnitModel> hospitalData;
+  const TableUH({Key? key, required this.data, required this.hospitalData})
+      : super(key: key);
 
   @override
   TableUHState createState() => TableUHState();
@@ -18,28 +18,13 @@ class TableUHState extends State<TableUH> {
   List<DataColumn> _mobileUnitColumn = [];
 
   Future<void> fetchMobileUnits(BuildContext context) async {
-    setState(() {
-      isLoading = true;
-    });
-    HospitalUnitNotifier databaseHospital =
-        Provider.of<HospitalUnitNotifier>(context, listen: false);
-    DatabaseNotifier databasePP =
-        Provider.of<DatabaseNotifier>(context, listen: false);
-
-    var data = await databaseHospital.fetchAll();
-
     List<DataColumn> temp = [DataColumn(label: Text('Data'))];
-    temp.addAll(data.map((element) {
+    temp.addAll(widget.hospitalData.map((element) {
       return DataColumn(label: Text(element.surname.toString()));
     }).toList());
 
-    var responsePP = await databasePP.fetchStartDateEndDate(
-      startDate: DateTime.now().subtract(Duration(days: 30)),
-      endDate: DateTime.now().add(Duration(days: 1)),
-    );
-
     Map<String, Map<String, int>> somasPorDataEUnidade = {};
-    for (var element in responsePP) {
+    for (var element in widget.data) {
       if (somasPorDataEUnidade[element.createdAt!] == null) {
         somasPorDataEUnidade[element.createdAt!] = {};
       }
@@ -62,7 +47,7 @@ class TableUHState extends State<TableUH> {
               key,
               DataRow(cells: [
                 DataCell(Text(key)),
-                ...data.map((element) {
+                ...widget.hospitalData.map((element) {
                   return DataCell(Text(value[element.name] != null
                       ? value[element.name].toString()
                       : "0"));
@@ -70,8 +55,15 @@ class TableUHState extends State<TableUH> {
               ])))
           .values
           .toList();
-      isLoading = false;
     });
+  }
+
+  @override
+  void didUpdateWidget(TableUH oldWidget) {
+    if (widget.data != oldWidget.data) {
+      fetchMobileUnits(context);
+    }
+    super.didUpdateWidget(oldWidget);
   }
 
   @override
@@ -87,8 +79,6 @@ class TableUHState extends State<TableUH> {
 
   @override
   Widget build(BuildContext context) {
-    if (isLoading) return Center(child: CircularProgressIndicator());
-
     return SingleChildScrollView(
         scrollDirection: Axis.horizontal,
         child: DataTable(columns: _mobileUnitColumn, rows: _mobileUnitData));

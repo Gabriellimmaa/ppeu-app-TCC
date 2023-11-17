@@ -1,12 +1,20 @@
 import 'package:flutter/material.dart';
-import 'package:ppue/core/notifier/database.notifier.dart';
-import 'package:ppue/core/notifier/hospitalUnit.notifier.dart';
-import 'package:ppue/core/notifier/mobileUnit.notifier.dart';
-import 'package:provider/provider.dart';
+import 'package:ppue/models/HospitalUnit.model.dart';
+import 'package:ppue/models/MobileUnit.model.dart';
+import 'package:ppue/models/PP.model.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 
 class ReportGraphUMUH extends StatefulWidget {
-  const ReportGraphUMUH({Key? key}) : super(key: key);
+  final List<PPModel> data;
+  final List<HospitalUnitModel> hospitalData;
+  final List<MobileUnitModel> mobileData;
+
+  const ReportGraphUMUH(
+      {Key? key,
+      required this.data,
+      required this.hospitalData,
+      required this.mobileData})
+      : super(key: key);
 
   @override
   State<ReportGraphUMUH> createState() => _ReportGraphUMUHState();
@@ -18,10 +26,7 @@ class _ReportGraphUMUHState extends State<ReportGraphUMUH> {
   int _amountPP = 0;
 
   Future<void> fetchHospitalUnits(BuildContext context) async {
-    HospitalUnitNotifier hospitalUnitNotifier =
-        Provider.of<HospitalUnitNotifier>(context, listen: false);
-    List<dynamic> data = await hospitalUnitNotifier.fetchAll();
-    _hospitalUnitGraph = data.map((element) {
+    _hospitalUnitGraph = widget.hospitalData.map((element) {
       return _PieData(
           element.surname, element.amount, element.surname.toString());
     }).toList();
@@ -29,21 +34,32 @@ class _ReportGraphUMUHState extends State<ReportGraphUMUH> {
   }
 
   Future<void> fetchMobileUnits(BuildContext context) async {
-    MobileUnitNotifier mobileUnitNotifier =
-        Provider.of<MobileUnitNotifier>(context, listen: false);
-    List<dynamic> data = await mobileUnitNotifier.fetchAll();
-    _mobileUnitGraph = data.map((element) {
+    _mobileUnitGraph = widget.mobileData.map((element) {
       return _PieData(element.name, element.amount, element.name.toString());
     }).toList();
     setState(() {});
   }
 
   Future<void> fetchCountAllPP(BuildContext context) async {
-    DatabaseNotifier database =
-        Provider.of<DatabaseNotifier>(context, listen: false);
-    int data = await database.fetchCountAll();
-    _amountPP = data;
+    _amountPP = widget.data.length;
     setState(() {});
+  }
+
+  @override
+  void didUpdateWidget(ReportGraphUMUH oldWidget) {
+    if (widget.mobileData != oldWidget.mobileData) {
+      fetchMobileUnits(context);
+    }
+
+    if (widget.hospitalData != oldWidget.hospitalData) {
+      fetchHospitalUnits(context);
+    }
+
+    if (widget.data != oldWidget.data) {
+      fetchCountAllPP(context);
+    }
+
+    super.didUpdateWidget(oldWidget);
   }
 
   @override

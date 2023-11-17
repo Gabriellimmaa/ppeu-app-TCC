@@ -1,19 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:ppue/core/notifier/database.notifier.dart';
+import 'package:ppue/models/PP.model.dart';
 import 'package:ppue/models/PPStatus.model.dart';
-import 'package:provider/provider.dart';
 
 class TableStatus extends StatefulWidget {
-  const TableStatus({
-    Key? key,
-  }) : super(key: key);
+  final List<PPModel> data;
+  const TableStatus({Key? key, required this.data}) : super(key: key);
 
   @override
   TableStatusState createState() => TableStatusState();
 }
 
 class TableStatusState extends State<TableStatus> {
-  bool isLoading = true;
   List<DataRow> _mobileUnitData = [];
   final List<DataColumn> _column = [
     DataColumn(label: Text('Data')),
@@ -22,20 +19,8 @@ class TableStatusState extends State<TableStatus> {
   ];
 
   Future<void> fetchMobileUnits(BuildContext context) async {
-    setState(() {
-      isLoading = true;
-    });
-
-    DatabaseNotifier databasePP =
-        Provider.of<DatabaseNotifier>(context, listen: false);
-
-    var responsePP = await databasePP.fetchStartDateEndDate(
-      startDate: DateTime.now().subtract(Duration(days: 30)),
-      endDate: DateTime.now().add(Duration(days: 1)),
-    );
-
     Map<String, Map<String, int>> tempData = {};
-    for (var element in responsePP) {
+    for (var element in widget.data) {
       String createdAt = element.createdAt!;
       String value = element.status!;
       if (tempData[createdAt] == null) {
@@ -62,8 +47,15 @@ class TableStatusState extends State<TableStatus> {
               ])))
           .values
           .toList();
-      isLoading = false;
     });
+  }
+
+  @override
+  void didUpdateWidget(TableStatus oldWidget) {
+    if (widget.data != oldWidget.data) {
+      fetchMobileUnits(context);
+    }
+    super.didUpdateWidget(oldWidget);
   }
 
   @override
@@ -79,8 +71,6 @@ class TableStatusState extends State<TableStatus> {
 
   @override
   Widget build(BuildContext context) {
-    if (isLoading) return Center(child: CircularProgressIndicator());
-
     return SingleChildScrollView(
         scrollDirection: Axis.horizontal,
         child: DataTable(columns: _column, rows: _mobileUnitData));

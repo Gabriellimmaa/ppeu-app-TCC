@@ -1,39 +1,24 @@
 import 'package:flutter/material.dart';
-import 'package:ppue/core/notifier/database.notifier.dart';
-import 'package:provider/provider.dart';
-import '../../../constants/constants.dart';
+import 'package:ppue/constants/constants.dart';
+import 'package:ppue/models/PP.model.dart';
 
 class TableISBAR extends StatefulWidget {
-  const TableISBAR({
-    Key? key,
-  }) : super(key: key);
+  final List<PPModel> data;
+  const TableISBAR({Key? key, required this.data}) : super(key: key);
 
   @override
   TableISBARState createState() => TableISBARState();
 }
 
 class TableISBARState extends State<TableISBAR> {
-  bool isLoading = true;
   final List<DataRow> _data = [];
   final List<DataColumn> _column = [
     DataColumn(label: Text('Data PP')),
   ];
 
   Future<void> fetchMobileUnits(BuildContext context) async {
-    setState(() {
-      isLoading = true;
-    });
-
-    DatabaseNotifier databasePP =
-        Provider.of<DatabaseNotifier>(context, listen: false);
-
-    var responsePP = await databasePP.fetchStartDateEndDate(
-      startDate: DateTime.now().subtract(Duration(days: 30)),
-      endDate: DateTime.now().add(Duration(days: 1)),
-    );
-
     Map<String, Map<String, int>> tempData = {};
-    for (var element in responsePP) {
+    for (var element in widget.data) {
       String createdAt = element.createdAt!;
       String value = element.situacao.clinica;
       if (tempData[createdAt] == null) {
@@ -63,8 +48,15 @@ class TableISBARState extends State<TableISBAR> {
           return DataRow(cells: temp);
         }).toList(),
       );
-      isLoading = false;
     });
+  }
+
+  @override
+  void didUpdateWidget(TableISBAR oldWidget) {
+    if (widget.data != oldWidget.data) {
+      fetchMobileUnits(context);
+    }
+    super.didUpdateWidget(oldWidget);
   }
 
   @override
@@ -83,8 +75,6 @@ class TableISBARState extends State<TableISBAR> {
 
   @override
   Widget build(BuildContext context) {
-    if (isLoading) return Center(child: CircularProgressIndicator());
-
     return SingleChildScrollView(
         scrollDirection: Axis.horizontal,
         child: DataTable(columns: _column, rows: _data));

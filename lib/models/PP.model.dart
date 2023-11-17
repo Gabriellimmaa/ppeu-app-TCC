@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'package:intl/intl.dart';
 import 'package:ppue/models/PP/Acesso.model.dart';
 import 'package:ppue/models/PP/CateterGastrico.model.dart';
 import 'package:ppue/models/PP/CateterVesical.model.dart';

@@ -6,34 +6,9 @@ import 'package:ppue/models/PP.model.dart';
 class DatabaseNotifier extends ChangeNotifier {
   final DatabaseService _databaseService = DatabaseService();
 
-  Future fetchPP() async {
-    var data = await _databaseService.fetchPP();
-    return data.map((e) => PPModel.fromJson(e)).toList();
-  }
-
-  Future<List<PPModel>> fetchStartDateEndDate({
-    required DateTime startDate,
-    required DateTime endDate,
-  }) async {
-    List<dynamic> rawData = await _databaseService.fetchStartDateEndDate(
-      startDate: startDate,
-      endDate: endDate,
-    );
-
-    List<Map<String, dynamic>> data = List<Map<String, dynamic>>.from(rawData);
-
-    List<PPModel> reponse = data.map((e) => PPModel.fromJson(e)).toList();
-    return reponse;
-  }
-
   Future fetchAll() async {
     var data = await _databaseService.fetchAll();
     return data.map((e) => PPModel.fromJson(e)).toList();
-  }
-
-  Future<int> fetchCountAll() async {
-    var data = await _databaseService.fetchCountAll();
-    return data;
   }
 
   Future addPP({required BuildContext context, required PPModel data}) async {
@@ -59,10 +34,11 @@ class DatabaseNotifier extends ChangeNotifier {
   Future<List<PPModel>> filterPP({
     String? nome,
     String? responsavelRecebimentoCpf,
-    required String hospitalUnit,
+    String? hospitalUnit,
     String? mobileUnit,
     DateTime? startDate,
     DateTime? endDate,
+    String? status,
   }) async {
     List<dynamic> rawData = await _databaseService.filterPP(
         nome: nome,
@@ -70,7 +46,8 @@ class DatabaseNotifier extends ChangeNotifier {
         hospitalUnit: hospitalUnit,
         startDate: startDate,
         mobileUnit: mobileUnit,
-        endDate: endDate);
+        endDate: endDate,
+        status: status);
 
     List<Map<String, dynamic>> data = List<Map<String, dynamic>>.from(rawData);
 

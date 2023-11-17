@@ -1,12 +1,19 @@
 import 'package:flutter/material.dart';
-import 'package:ppue/core/notifier/database.notifier.dart';
-import 'package:ppue/core/notifier/hospitalUnit.notifier.dart';
-import 'package:ppue/core/notifier/mobileUnit.notifier.dart';
-import 'package:provider/provider.dart';
+import 'package:ppue/models/HospitalUnit.model.dart';
+import 'package:ppue/models/MobileUnit.model.dart';
+import 'package:ppue/models/PP.model.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 
 class ReportGraphEncRecep extends StatefulWidget {
-  const ReportGraphEncRecep({Key? key}) : super(key: key);
+  final List<PPModel> data;
+  final List<HospitalUnitModel> hospitalData;
+  final List<MobileUnitModel> mobileData;
+  const ReportGraphEncRecep(
+      {Key? key,
+      required this.data,
+      required this.hospitalData,
+      required this.mobileData})
+      : super(key: key);
 
   @override
   State<ReportGraphEncRecep> createState() => _ReportGraphEncRecepState();
@@ -23,20 +30,9 @@ class _ReportGraphEncRecepState extends State<ReportGraphEncRecep> {
     setState(() {
       isLoading = true;
     });
-    MobileUnitNotifier mobileUnitNotifier =
-        Provider.of<MobileUnitNotifier>(context, listen: false);
-    DatabaseNotifier databasePP =
-        Provider.of<DatabaseNotifier>(context, listen: false);
-
-    List<dynamic> data = await mobileUnitNotifier.fetchAll();
-
-    var responsePP = await databasePP.fetchStartDateEndDate(
-      startDate: DateTime.now().subtract(Duration(days: 30)),
-      endDate: DateTime.now().add(Duration(days: 1)),
-    );
 
     Map<String, Map<String, int>> sumData = {};
-    for (var element in responsePP) {
+    for (var element in widget.data) {
       if (sumData[element.createdAt!] == null) {
         sumData[element.createdAt!] = {};
       }
@@ -53,7 +49,7 @@ class _ReportGraphEncRecepState extends State<ReportGraphEncRecep> {
     }
 
     setState(() {
-      for (var element in data) {
+      for (var element in widget.mobileData) {
         _mobileUnitData.add(
           StackedColumnSeries<_PieData, String>(
             dataSource: sumData
@@ -86,20 +82,9 @@ class _ReportGraphEncRecepState extends State<ReportGraphEncRecep> {
     setState(() {
       isLoading = true;
     });
-    HospitalUnitNotifier hospitalUnitNotifier =
-        Provider.of<HospitalUnitNotifier>(context, listen: false);
-    DatabaseNotifier databasePP =
-        Provider.of<DatabaseNotifier>(context, listen: false);
-
-    var data = await hospitalUnitNotifier.fetchAll();
-
-    var responsePP = await databasePP.fetchStartDateEndDate(
-      startDate: DateTime.now().subtract(Duration(days: 30)),
-      endDate: DateTime.now().add(Duration(days: 1)),
-    );
 
     Map<String, Map<String, int>> sumData = {};
-    for (var element in responsePP) {
+    for (var element in widget.data) {
       if (sumData[element.createdAt!] == null) {
         sumData[element.createdAt!] = {};
       }
@@ -113,7 +98,7 @@ class _ReportGraphEncRecepState extends State<ReportGraphEncRecep> {
     }
 
     setState(() {
-      for (var element in data) {
+      for (var element in widget.hospitalData) {
         _hospitalUnitData.add(
           StackedColumnSeries<_PieData, String>(
             dataSource: sumData
@@ -143,10 +128,7 @@ class _ReportGraphEncRecepState extends State<ReportGraphEncRecep> {
   }
 
   Future<void> fetchCountAllPP(BuildContext context) async {
-    DatabaseNotifier database =
-        Provider.of<DatabaseNotifier>(context, listen: false);
-    int data = await database.fetchCountAll();
-    _amountPP = data;
+    _amountPP = widget.data.length;
     setState(() {});
   }
 
@@ -160,6 +142,14 @@ class _ReportGraphEncRecepState extends State<ReportGraphEncRecep> {
     setState(() {
       isLoading = false;
     });
+  }
+
+  @override
+  void didUpdateWidget(ReportGraphEncRecep oldWidget) {
+    if (widget.data != oldWidget.data) {
+      fetchMobileUnits(context);
+    }
+    super.didUpdateWidget(oldWidget);
   }
 
   @override

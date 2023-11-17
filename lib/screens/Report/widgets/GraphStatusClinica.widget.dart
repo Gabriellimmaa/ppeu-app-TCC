@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:ppue/core/notifier/database.notifier.dart';
+import 'package:ppue/models/PP.model.dart';
 import 'package:ppue/models/PPStatus.model.dart';
-import 'package:provider/provider.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 
 class ReportGraphStatusClinica extends StatefulWidget {
-  const ReportGraphStatusClinica({Key? key}) : super(key: key);
+  final List<PPModel> data;
+  const ReportGraphStatusClinica({Key? key, required this.data})
+      : super(key: key);
 
   @override
   State<ReportGraphStatusClinica> createState() =>
@@ -19,16 +20,8 @@ class _ReportGraphStatusClinicaState extends State<ReportGraphStatusClinica> {
   int _amountPP = 0;
 
   Future<void> fetchISBAR(BuildContext context) async {
-    DatabaseNotifier databasePP =
-        Provider.of<DatabaseNotifier>(context, listen: false);
-
-    var responsePP = await databasePP.fetchStartDateEndDate(
-      startDate: DateTime.now().subtract(Duration(days: 30)),
-      endDate: DateTime.now().add(Duration(days: 1)),
-    );
-
     Map<String, int> tempData = {};
-    for (var element in responsePP) {
+    for (var element in widget.data) {
       String value = element.situacao.clinica;
       if (tempData[value] == null) {
         tempData[value] = 0;
@@ -46,16 +39,8 @@ class _ReportGraphStatusClinicaState extends State<ReportGraphStatusClinica> {
   }
 
   Future<void> fetchStatus(BuildContext context) async {
-    DatabaseNotifier databasePP =
-        Provider.of<DatabaseNotifier>(context, listen: false);
-
-    var responsePP = await databasePP.fetchStartDateEndDate(
-      startDate: DateTime.now().subtract(Duration(days: 30)),
-      endDate: DateTime.now().add(Duration(days: 1)),
-    );
-
     Map<String, int> tempData = {};
-    for (var element in responsePP) {
+    for (var element in widget.data) {
       String value = element.status!;
       if (tempData[value] == null) {
         tempData[value] = 0;
@@ -74,10 +59,7 @@ class _ReportGraphStatusClinicaState extends State<ReportGraphStatusClinica> {
   }
 
   Future<void> fetchCountAllPP(BuildContext context) async {
-    DatabaseNotifier database =
-        Provider.of<DatabaseNotifier>(context, listen: false);
-    int data = await database.fetchCountAll();
-    _amountPP = data;
+    _amountPP = widget.data.length;
     setState(() {});
   }
 
@@ -91,6 +73,14 @@ class _ReportGraphStatusClinicaState extends State<ReportGraphStatusClinica> {
     setState(() {
       isLoading = false;
     });
+  }
+
+  @override
+  void didUpdateWidget(ReportGraphStatusClinica oldWidget) {
+    if (widget.data != oldWidget.data) {
+      fetchData(context);
+    }
+    super.didUpdateWidget(oldWidget);
   }
 
   @override

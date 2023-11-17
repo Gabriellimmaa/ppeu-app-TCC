@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:ppue/constants/constants.dart';
-import 'package:ppue/models/PP.model.dart';
 import 'package:ppue/screens/Report/widgets/Graphs.widget.dart';
-import 'package:ppue/screens/Report/widgets/ListNominal.widget.dart';
+import 'package:ppue/screens/Report/widgets/Nominal.widget.dart';
 import 'package:ppue/screens/Report/widgets/ModalReportFilters.widget.dart';
 import 'package:ppue/screens/Report/widgets/TableNumeric.widget.dart';
 import 'package:ppue/widgets/GradientContainer.widget.dart';
@@ -16,20 +14,14 @@ class ReportScreen extends StatefulWidget {
 
 class _ReportScreenState extends State<ReportScreen> {
   DateTime selectedDate = DateTime.now();
+  ReportFilters? _selectedFilters;
   String buttonText = 'Selecione';
   int _selectedButtonIndex = 0;
-  final List<PPModel> items = [
-    examplePP,
-    examplePP,
-    examplePP,
-    examplePP,
-    examplePP,
-    examplePP,
-    examplePP
-  ];
 
-  bool vertical = false;
-  List<Widget> fruits = <Widget>[Text('Apple'), Text('Banana'), Text('Orange')];
+  @override
+  void initState() {
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -50,7 +42,13 @@ class _ReportScreenState extends State<ReportScreen> {
                   showDialog(
                     context: context,
                     builder: (_) => ModalReportFilters(
-                      onChanged: (p0) => print(p0),
+                      indexPage: _selectedButtonIndex,
+                      filters: _selectedFilters,
+                      onSubmit: (p0) => {
+                        setState(() {
+                          _selectedFilters = p0;
+                        }),
+                      },
                     ),
                   );
                 },
@@ -174,12 +172,16 @@ class _ReportScreenState extends State<ReportScreen> {
                   color: Colors.white,
                   width: double.infinity,
                   child: _selectedButtonIndex == 0
-                      ? ListNominal(
-                          items: items,
+                      ? Nominal(
+                          filter: _selectedFilters,
                         )
                       : _selectedButtonIndex == 1
-                          ? TableNumeric()
-                          : ReportGraphs(),
+                          ? TableNumeric(
+                              filter: _selectedFilters,
+                            )
+                          : ReportGraphs(
+                              filter: _selectedFilters,
+                            ),
                 ),
               ),
             ],

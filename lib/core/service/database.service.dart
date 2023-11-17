@@ -6,38 +6,9 @@ import 'package:ppue/models/PPStatus.model.dart';
 import 'package:supabase/supabase.dart';
 
 class DatabaseService {
-  Future fetchPP() async {
-    var response =
-        await SupabaseCredentials.supabaseClient.from('pp').select().execute();
-    return response.data;
-  }
-
   Future fetchAll() async {
     var response =
         await SupabaseCredentials.supabaseClient.from('pp').select().execute();
-
-    return response.data;
-  }
-
-  Future fetchCountAll() async {
-    var response = await SupabaseCredentials.supabaseClient
-        .from('pp')
-        .select('*')
-        .execute();
-
-    return response.data.toList().length;
-  }
-
-  Future fetchStartDateEndDate({
-    required DateTime startDate,
-    required DateTime endDate,
-  }) async {
-    var response = await SupabaseCredentials.supabaseClient
-        .from('pp')
-        .select()
-        .gte('created_at', startDate.toIso8601String())
-        .lte('created_at', endDate.toIso8601String())
-        .execute();
 
     return response.data;
   }
@@ -96,8 +67,9 @@ class DatabaseService {
   Future filterPP({
     String? nome,
     String? responsavelRecebimentoCpf,
-    required String hospitalUnit,
+    String? hospitalUnit,
     String? mobileUnit,
+    String? status,
     DateTime? startDate,
     DateTime? endDate,
   }) async {
@@ -107,7 +79,8 @@ class DatabaseService {
     }
 
     if (endDate != null) {
-      query = query.lte('created_at', endDate.toIso8601String());
+      query = query.lte(
+          'created_at', endDate.add(Duration(days: 1)).toIso8601String());
     }
 
     if (mobileUnit != null) {
@@ -118,12 +91,18 @@ class DatabaseService {
       query = query.ilike('identificacao->>nome', '%$nome%');
     }
 
+    if (status != null && status != '') {
+      query = query.eq('status', status);
+    }
+
     if (responsavelRecebimentoCpf != null && responsavelRecebimentoCpf != '') {
       query = query.eq('recomendacoes->responsavelRecebimento->>cpf',
           responsavelRecebimentoCpf);
     }
 
-    query = query.eq('recomendacoes->>encaminhamento', hospitalUnit);
+    if (hospitalUnit != null && hospitalUnit != '') {
+      query = query.eq('recomendacoes->>encaminhamento', hospitalUnit);
+    }
 
     var response = await query.execute();
     return response.data;

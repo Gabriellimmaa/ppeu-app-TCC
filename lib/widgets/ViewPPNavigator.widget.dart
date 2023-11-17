@@ -64,7 +64,7 @@ class ViewPPNavigator extends StatelessWidget {
             gradient: LinearGradient(
               colors: const [
                 Color.fromARGB(255, 2, 189, 189),
-                Colors.blue,
+                Color.fromARGB(255, 87, 167, 233),
               ],
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,

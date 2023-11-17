@@ -65,6 +65,7 @@ class _NewPP_AState extends State<NewPP_A> {
   double _rm = 1.0;
   String? _avdi;
   String? _pupilas;
+  double? _pupilasTamanho;
 
   final _intubacaoHorarioController = TextEditingController();
   final _intubacaoNumeroTuboController = TextEditingController();
@@ -93,7 +94,7 @@ class _NewPP_AState extends State<NewPP_A> {
 
   final _acessoIntraosseoProfissionalController = TextEditingController();
   final _acessoIntraosseoHorarioController = TextEditingController();
-  final _acessoIntraosseoLocalController = TextEditingController();
+  String? _acessoIntraosseoLocal;
   final _acessoIntraosseoLocalFocusNode = FocusNode();
   final _acessoIntraosseoHorarioFocusNode = FocusNode();
   final _acessoIntraosseoProfissionalFocusNode = FocusNode();
@@ -116,12 +117,14 @@ class _NewPP_AState extends State<NewPP_A> {
   final _pcrCiclosController = TextEditingController();
   final _pcrMedicacoesController = TextEditingController();
   final _pcrMedicacoesHorariosController = TextEditingController();
-  bool? _selectedPCRCardioversaoDesfribilacao;
+  bool _selectedPCRCardioversaoDesfribilacao = false;
+  double? _quantidadeCardioversaoDesfribilacao = null;
   final List<PCRMedicacao> _listPCRMedicacoes = [];
 
   final _ecgController = TextEditingController();
   final _ecgFocusNode = FocusNode();
   final _outrasAnotacoesController = TextEditingController();
+  final _avaliacaoTraumasController = TextEditingController();
 
   @override
   void initState() {
@@ -138,7 +141,7 @@ class _NewPP_AState extends State<NewPP_A> {
       bool hasEspecieMedicacao = data!.avaliacao.nomeMedicacao != null;
       bool hasDrenoTorax = data!.avaliacao.drenoTorax != null;
       bool hasCateterVesical = data!.avaliacao.cateterVesical != null;
-      // bool hasPCR = data!.avaliacao.pcr != null;
+      bool hasPCR = data!.avaliacao.pcr != null;
       bool hasECG = data!.avaliacao.ecg != null;
       bool hasAcessoCentral = data!.avaliacao.acesso.central != null;
       bool hasAcessoPeriferico = data!.avaliacao.acesso.periferico != null;
@@ -155,6 +158,7 @@ class _NewPP_AState extends State<NewPP_A> {
       _rm = data!.avaliacao.rm;
       _avdi = data!.avaliacao.avdi;
       _pupilas = data!.avaliacao.pupilas;
+      _pupilasTamanho = data!.avaliacao.pupilasTamanho;
 
       if (hasAcessoCentral) {
         _selectedAcessoCentral = hasAcessoCentral ? true : false;
@@ -178,8 +182,7 @@ class _NewPP_AState extends State<NewPP_A> {
       }
       if (hasAcessoIntraosseo) {
         _selectedAcessoIntraosseo = hasAcessoIntraosseo ? true : false;
-        _acessoIntraosseoLocalController.text =
-            data!.avaliacao.acesso.intraosseo!.local;
+        _acessoIntraosseoLocal = data!.avaliacao.acesso.intraosseo!.local;
         _acessoIntraosseoProfissionalController.text =
             data!.avaliacao.acesso.intraosseo!.profissional;
         _acessoIntraosseoHorarioController.text =
@@ -207,7 +210,7 @@ class _NewPP_AState extends State<NewPP_A> {
         _drenoToraxProfissionalController.text =
             data!.avaliacao.drenoTorax!.profissional;
       }
-      // ignore: unrelated_type_equality_checks
+
       _selectedCateterGastrico = data?.avaliacao.cateterGastrico != null
           ? data?.avaliacao.cateterGastrico!.tipo
           : 'Não';
@@ -223,15 +226,16 @@ class _NewPP_AState extends State<NewPP_A> {
             data!.avaliacao.cateterVesical!.profissional;
       }
 
-      // if (hasPCR) {
-      //   _pcrCiclosController.text = data!.avaliacao.pcr!.ciclos;
-      //   _pcrMedicacoesController.text =
-      //       data!.avaliacao.pcr?.medicacoes!.horario ?? '';
-      //   _pcrMedicacoesHorariosController.text =
-      //       data!.avaliacao.pcr?.medicacoes!.horario ?? '';
-      //   _selectedPCRCardioversaoDesfribilacao =
-      //       data!.avaliacao.pcr!.cardioversaoOuDesfribilacao;
-      // }
+      if (hasPCR) {
+        _pcrCiclosController.text = data!.avaliacao.pcr!.ciclos;
+        _listPCRMedicacoes.addAll(data!.avaliacao.pcr!.medicacoes);
+        _selectedPCRCardioversaoDesfribilacao =
+            data!.avaliacao.pcr!.cardioversaoOuDesfribilacao;
+        if (_selectedPCRCardioversaoDesfribilacao == true) {
+          _quantidadeCardioversaoDesfribilacao =
+              data!.avaliacao.pcr!.quantidadeCardioversaoDesfribilacao;
+        }
+      }
 
       if (hasDor) {
         _dorLocalController.text = data!.avaliacao.dor!.local;
@@ -239,12 +243,13 @@ class _NewPP_AState extends State<NewPP_A> {
       }
 
       _ecgController.text = data!.avaliacao.ecg ?? '';
+      _avaliacaoTraumasController.text = data!.avaliacao.avaliacaoTraumas;
       _outrasAnotacoesController.text = data!.avaliacao.outrasAnotacoes;
 
       _selectedDor = hasDor ? true : false;
       _selectedIntubacao = hasIntubacao ? true : false;
       _selectedDrenoTorax = hasDrenoTorax ? true : false;
-      // _selectedPCR = hasPCR ? true : false;
+      _selectedPCR = hasPCR ? true : false;
       _selectedECG = hasECG ? true : false;
       _selectedCateterVesical = hasCateterVesical ? true : false;
       _selectecNomeMedicacao = hasEspecieMedicacao ? true : false;
@@ -261,7 +266,6 @@ class _NewPP_AState extends State<NewPP_A> {
     _acessoPerifericoLocalController.dispose();
     _acessoPerifericoProfissionalController.dispose();
     _acessoPerifericoHorarioController.dispose();
-    _acessoIntraosseoLocalController.dispose();
     _acessoIntraosseoProfissionalController.dispose();
     _acessoIntraosseoHorarioController.dispose();
     _intubacaoHorarioController.dispose();
@@ -306,14 +310,6 @@ class _NewPP_AState extends State<NewPP_A> {
     super.dispose();
   }
 
-  int _somaPadraoNeurologico = 0;
-
-  void _calcularPadraoNeurologico() {
-    setState(() {
-      _somaPadraoNeurologico = (_rm + _rv + _ao) as int;
-    });
-  }
-
   void checkValidFields() {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.validate();
@@ -328,10 +324,10 @@ class _NewPP_AState extends State<NewPP_A> {
     void updateFormData() {
       bool hasDor = _selectedDor == true;
       bool hasIntubacao = _selectedIntubacao == true;
-      bool hasOxigenio = _selectedOxigenio == true;
+      bool hasOxigenio = _selectedOxigenio != null;
       bool hasDrenoTorax = _selectedDrenoTorax == true;
       bool hasCateterVesical = _selectedCateterVesical == true;
-      // bool hasPCR = _selectedPCR == true;
+      bool hasPCR = _selectedPCR == true;
       bool hasECG = _selectedECG == true;
       bool hasAcessoCentral = _selectedAcessoCentral == true;
       bool hasAcessoPeriferico = _selectedAcessoPeriferico == true;
@@ -349,7 +345,7 @@ class _NewPP_AState extends State<NewPP_A> {
           intraosseo: hasAcessoIntraosseo
               ? AcessoIntraosseo(
                   horario: _acessoIntraosseoHorarioController.text,
-                  local: _acessoIntraosseoLocalController.text,
+                  local: _acessoIntraosseoLocal ?? '',
                   profissional: _acessoIntraosseoProfissionalController.text,
                 )
               : null,
@@ -398,12 +394,18 @@ class _NewPP_AState extends State<NewPP_A> {
               )
             : null,
         glicemia: _glicemiaController.text,
-        // pcr: PcrModel(
-        //   ciclos: _pcrCiclosController.text,
-        //   medicacoes: _pcrMedicacoesController.text,
-        //   medicacoesHorarios: _pcrMedicacoesHorariosController.text,
-        // ),
+        pcr: hasPCR
+            ? PCRModel(
+                ciclos: _pcrCiclosController.text,
+                medicacoes: _listPCRMedicacoes,
+                cardioversaoOuDesfribilacao:
+                    _selectedPCRCardioversaoDesfribilacao,
+                quantidadeCardioversaoDesfribilacao:
+                    _quantidadeCardioversaoDesfribilacao,
+              )
+            : null,
         outrasAnotacoes: _outrasAnotacoesController.text,
+        avaliacaoTraumas: _avaliacaoTraumasController.text,
         fc: _fcController.text,
         fr: _frController.text,
         sp02: _sp02Controller.text,
@@ -414,6 +416,7 @@ class _NewPP_AState extends State<NewPP_A> {
         ao: _ao,
         avdi: _avdi ?? '',
         pupilas: _pupilas ?? '',
+        pupilasTamanho: _pupilasTamanho,
         nomeMedicacao: _nomeMedicacaoController.text == ''
             ? null
             : _nomeMedicacaoController.text,
@@ -713,16 +716,6 @@ class _NewPP_AState extends State<NewPP_A> {
                                   })
                             ]),
                           ),
-                          // TextFormField(
-                          //     readOnly: data != null,
-                          //     controller: _rvController,
-                          //     decoration: InputDecoration(
-                          //       labelText: 'RV',
-                          //     ),
-                          //     keyboardType: TextInputType.number,
-                          //     onChanged: (value) =>
-                          //         _calcularPadraoNeurologico(),
-                          //   )
                         ],
                       ),
                       spacingRow,
@@ -806,6 +799,26 @@ class _NewPP_AState extends State<NewPP_A> {
                         validator: FormValidators.required,
                       ),
                       spacingRow,
+                      if (_pupilas == 'Fotorreagente') ...[
+                        spacingRow,
+                        Column(children: [
+                          Text('Tamanho das pupilas em mm'),
+                          Slider(
+                              value: _pupilasTamanho ?? 1.0,
+                              min: 1.0,
+                              max: 9.0,
+                              divisions: 8,
+                              label: _pupilasTamanho?.toInt().toString() ?? '1',
+                              onChanged: (value) {
+                                if (data != null) {
+                                  return;
+                                }
+                                setState(() {
+                                  _pupilasTamanho = value;
+                                });
+                              })
+                        ]),
+                      ],
                     ]),
                   ),
                   Text(
@@ -1324,20 +1337,32 @@ class _NewPP_AState extends State<NewPP_A> {
                     Padding(
                       padding: EdgeInsets.symmetric(horizontal: 16),
                       child: Column(children: [
-                        TextFormField(
-                          readOnly: data != null,
-                          controller: _acessoIntraosseoLocalController,
-                          focusNode: _acessoIntraosseoLocalFocusNode,
-                          decoration: InputDecoration(
-                            labelText: 'Local',
-                          ),
-                          textInputAction: TextInputAction.next,
-                          onFieldSubmitted: (value) => FocusScope.of(context)
-                              .requestFocus(
-                                  _acessoIntraosseoProfissionalFocusNode),
+                        DropdownButtonFormField(
+                          value: _acessoIntraosseoLocal,
+                          decoration: InputDecoration(labelText: 'Local'),
+                          items: optionsAcessoIntraosseo.map((e) {
+                            return DropdownMenuItem(
+                              value: e,
+                              child: Text(e,
+                                  style: TextStyle(
+                                    color: Colors.black,
+                                  )),
+                            );
+                          }).toList(),
+                          onSaved: (value) {
+                            FocusScope.of(context).requestFocus(
+                                _acessoIntraosseoProfissionalFocusNode);
+                          },
+                          onChanged: data != null
+                              ? null
+                              : (value) {
+                                  setState(() {
+                                    checkValidFields();
+                                    _acessoIntraosseoLocal = value as String;
+                                  });
+                                },
                           validator: (value) => FormValidators.required(value,
                               condition: _selectedAcessoIntraosseo),
-                          onChanged: (_) => checkValidFields(),
                         ),
                         spacingRow,
                         TextFormField(
@@ -1779,6 +1804,26 @@ class _NewPP_AState extends State<NewPP_A> {
                             ),
                           ],
                         ),
+                        if (_selectedPCRCardioversaoDesfribilacao) ...[
+                          spacingRow,
+                          Text('Quantidade realizada:',
+                              style: TextStyle(
+                                fontSize: 16,
+                              )),
+                          Slider(
+                            value: _quantidadeCardioversaoDesfribilacao ?? 1.0,
+                            min: 1.0,
+                            max: 10.0,
+                            divisions: 9,
+                            label:
+                                _quantidadeCardioversaoDesfribilacao.toString(),
+                            onChanged: (double value) {
+                              setState(() {
+                                _quantidadeCardioversaoDesfribilacao = value;
+                              });
+                            },
+                          ),
+                        ],
                         spacingRow,
                         Row(
                           children: [
@@ -1817,61 +1862,70 @@ class _NewPP_AState extends State<NewPP_A> {
                             ),
                           ],
                         ),
-                        ListView.builder(
-                            shrinkWrap: true,
-                            itemCount: _listPCRMedicacoes.length,
-                            itemBuilder: (BuildContext context, int index) {
-                              return ListTile(
-                                title: Text(
-                                  '${_listPCRMedicacoes[index].nome} - ${_listPCRMedicacoes[index].dose} - ${_listPCRMedicacoes[index].horario}',
-                                ),
-                                trailing: data != null
-                                    ? null
-                                    : IconButton(
-                                        icon: Icon(Icons.delete),
-                                        color: Colors.red,
-                                        onPressed: () {
-                                          showDialog(
-                                            context: context,
-                                            builder: (context) => AlertDialog(
-                                              title: Text('Confirmação',
+                        Column(
+                          children: _listPCRMedicacoes.map((medicacao) {
+                            return Column(
+                              children: [
+                                ListTile(
+                                  title: Text(
+                                    '${medicacao.nome}, ${medicacao.dose} doses às ${medicacao.horario}',
+                                  ),
+                                  trailing: data != null
+                                      ? null
+                                      : IconButton(
+                                          icon: Icon(Icons.delete),
+                                          color: Colors.red,
+                                          onPressed: () {
+                                            showDialog(
+                                              context: context,
+                                              builder: (context) => AlertDialog(
+                                                title: Text(
+                                                  'Confirmação',
                                                   style: TextStyle(
                                                       fontWeight:
-                                                          FontWeight.bold)),
-                                              content: Text(
-                                                  'Deseja remover medicação: ${_listPCRMedicacoes[index].nome}?'),
-                                              actions: [
-                                                TextButton(
-                                                  child: Text('Cancelar'),
-                                                  onPressed: () {
-                                                    Navigator.of(context).pop();
-                                                  },
+                                                          FontWeight.bold),
                                                 ),
-                                                TextButton(
-                                                  child: Text('Remover'),
-                                                  onPressed: () {
-                                                    setState(() {
-                                                      _listPCRMedicacoes
-                                                          .removeAt(index);
-                                                    });
-                                                    ScaffoldMessenger.of(
-                                                            context)
-                                                        .showSnackBar(
-                                                      SnackBar(
-                                                        content: Text(
-                                                            'Item removido'),
-                                                      ),
-                                                    );
-                                                    Navigator.of(context).pop();
-                                                  },
+                                                content: Text(
+                                                  'Deseja remover medicação: ${medicacao.nome}?',
                                                 ),
-                                              ],
-                                            ),
-                                          );
-                                        },
-                                      ),
-                              );
-                            }),
+                                                actions: [
+                                                  TextButton(
+                                                    child: Text('Cancelar'),
+                                                    onPressed: () {
+                                                      Navigator.of(context)
+                                                          .pop();
+                                                    },
+                                                  ),
+                                                  TextButton(
+                                                    child: Text('Remover'),
+                                                    onPressed: () {
+                                                      setState(() {
+                                                        _listPCRMedicacoes
+                                                            .remove(medicacao);
+                                                      });
+                                                      ScaffoldMessenger.of(
+                                                              context)
+                                                          .showSnackBar(
+                                                        SnackBar(
+                                                          content: Text(
+                                                              'Item removido'),
+                                                        ),
+                                                      );
+                                                      Navigator.of(context)
+                                                          .pop();
+                                                    },
+                                                  ),
+                                                ],
+                                              ),
+                                            );
+                                          },
+                                        ),
+                                ),
+                                Divider(), // Add a divider between items if needed
+                              ],
+                            );
+                          }).toList(),
+                        ),
                         spacingRow,
                       ]
                     ]),
@@ -1942,6 +1996,30 @@ class _NewPP_AState extends State<NewPP_A> {
                       ]
                     ]),
                   ),
+                  Text(
+                    'AVALIAÇÃO DE TRAUMAS',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(fontSize: 16),
+                  ),
+                  Divider(
+                    height: 10,
+                    thickness: 2,
+                    color: Colors.green,
+                  ),
+                  spacingRow,
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 16),
+                    child: TextFormField(
+                      readOnly: data != null,
+                      controller: _avaliacaoTraumasController,
+                      decoration: InputDecoration(
+                        labelText: 'Avaliação de traumas',
+                      ),
+                      maxLines: null,
+                      textInputAction: TextInputAction.done,
+                    ),
+                  ),
+                  spacingRow,
                   Text(
                     'OUTROS',
                     textAlign: TextAlign.center,

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:ppue/constants/constants.dart';
 import 'package:ppue/utils/validation/FormValidators.validation.dart';
+import 'package:ppue/widgets/GradientButton.widget.dart';
 
 class ModalAddEncaminhamento extends StatefulWidget {
   final Function(String) onChanged;
@@ -25,56 +26,62 @@ class _ModalAddEncaminhamentoState extends State<ModalAddEncaminhamento> {
   @override
   Widget build(BuildContext context) {
     return Dialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(8),
+        ),
         child: SingleChildScrollView(
-      child: Padding(
-          padding: EdgeInsets.all(16),
-          child: Form(
-            key: _formKey,
-            child: Column(
-                mainAxisSize: MainAxisSize.min,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          child: Padding(
+              padding: EdgeInsets.all(16),
+              child: Form(
+                key: _formKey,
+                child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Expanded(
-                        child: Text(
-                          'Adicionar Encaminhamento',
-                          style: TextStyle(
-                              fontSize: 18, fontWeight: FontWeight.bold),
-                        ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Expanded(
+                            child: Text(
+                              'Adicionar Encaminhamento',
+                              style: TextStyle(
+                                  fontSize: 18, fontWeight: FontWeight.bold),
+                            ),
+                          ),
+                          IconButton(
+                            onPressed: () {
+                              Navigator.pop(context);
+                            },
+                            icon: Icon(
+                              Icons.close,
+                            ),
+                            splashRadius: 20,
+                          )
+                        ],
                       ),
-                      IconButton(
-                        onPressed: () {
-                          Navigator.pop(context);
-                        },
-                        icon: Icon(
-                          Icons.close,
+                      spacingRow,
+                      TextFormField(
+                        controller: _nomeController,
+                        decoration: InputDecoration(
+                            labelText: 'Nome do local de encaminhamento'),
+                        validator: FormValidators.required,
+                      ),
+                      spacingRow,
+                      SizedBox(
+                        width: double.infinity,
+                        child: GradientButton(
+                          onPressed: () {
+                            if (!_formKey.currentState!.validate()) return;
+                            widget.onChanged(_nomeController.text);
+                            Navigator.pop(context);
+                          },
+                          height: 40,
+                          child: Text('Adicionar',
+                              style: TextStyle(color: Colors.white)),
                         ),
                       )
-                    ],
-                  ),
-                  spacingRow,
-                  TextFormField(
-                    controller: _nomeController,
-                    decoration: InputDecoration(
-                        labelText: 'Nome do local de encaminhamento'),
-                    validator: FormValidators.required,
-                  ),
-                  spacingRow,
-                  SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton(
-                      onPressed: () {
-                        if (!_formKey.currentState!.validate()) return;
-                        widget.onChanged(_nomeController.text);
-                        Navigator.pop(context);
-                      },
-                      child: Text('Adicionar'),
-                    ),
-                  )
-                ]),
-          )),
-    ));
+                    ]),
+              )),
+        ));
   }
 }

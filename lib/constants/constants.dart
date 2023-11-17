@@ -3,11 +3,9 @@ import 'package:ppue/models/PP.model.dart';
 import 'package:ppue/models/PP/Acesso.model.dart';
 import 'package:ppue/models/PP/CateterVesical.model.dart';
 import 'package:ppue/models/PP/DrenoTorax.model.dart';
-import 'package:ppue/models/PP/FamiliarPresente.model.dart';
 import 'package:ppue/models/PP/Gestante.model.dart';
 import 'package:ppue/models/PP/Intubacao.model.dart';
 import 'package:ppue/models/PP/Oxigenio.model.dart';
-import 'package:ppue/models/PP/PCR.model.dart';
 import 'package:ppue/models/PP/Pertences.model.dart';
 import 'package:ppue/models/PP/ResponsavelRecebimento.model.dart';
 import 'package:ppue/models/PP/Sintomas.model.dart';
@@ -47,12 +45,29 @@ List<String> optionsAVDI = [
   'Sem alteração'
 ];
 List<String> optionsPupilas = [
+  'Fotorreagente',
   'Isocóricas',
   'Mitióticas',
   'Midriáticas',
   'Anisocóricas',
   'D>E',
   'E>D'
+];
+List<String> optionsAcidenteTransito = [
+  'Atropelamento',
+  'Auto -> Auto',
+  'Auto -> Moto',
+  'Auto -> Anteparo',
+  'Auto -> Caminhão',
+  'Outros',
+];
+List<String> optionsAcessoIntraosseo = [
+  'Rádio D',
+  'Rádio E',
+  'Tíbia D',
+  'Tíbia E',
+  'Úmero D',
+  'Úmero E'
 ];
 List<String> optionsOxigenio = ['MAF', 'Catéter', 'Não'];
 List<String> optionsAcessoCentralLocal = ['JE', 'JD', 'SCD', 'SCE', 'RID'];
@@ -80,6 +95,7 @@ PPModel examplePP = PPModel(
     ),
     clinica: "asdasdasd",
     trauma: "Agressão",
+    traumaDescricao: null,
     gestante: GestanteModel(
       bcf: "bcf",
       ig: "ig",
@@ -115,6 +131,7 @@ PPModel examplePP = PPModel(
     rm: 2,
     avdi: "Inconciente",
     pupilas: "Midriáticas",
+    pupilasTamanho: null,
     intubacao: IntubacaoModel(
       horario: "12:00",
       numeroTubo: '123',
@@ -141,8 +158,9 @@ PPModel examplePP = PPModel(
     cateterGastrico: null,
     cateterVesical: CateterVesicalModel(
         tamanho: 16.0, horario: '23:30', profissional: 'Gabriel Lima'),
-    // pcr: null,
+    pcr: null,
     ecg: "Normal",
+    avaliacaoTraumas: "Nenhuma",
     outrasAnotacoes: "Paciente alérgico a amoxicilina.",
   ),
   recomendacoes: RecomendacoesModel(

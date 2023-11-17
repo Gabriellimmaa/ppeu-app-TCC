@@ -222,6 +222,7 @@ class _NewPP_RState extends State<NewPP_R> {
                           onChanged: data != null
                               ? null
                               : (value) {
+                                  checkValidFields();
                                   updateUsersDropdown(int.parse(value
                                       .toString()
                                       .split('::')[0]

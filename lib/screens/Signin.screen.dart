@@ -10,10 +10,10 @@ class SigninScreen extends StatefulWidget {
   const SigninScreen({Key? key}) : super(key: key);
 
   @override
-  _SigninScreenState createState() => _SigninScreenState();
+  SigninScreenState createState() => SigninScreenState();
 }
 
-class _SigninScreenState extends State<SigninScreen> {
+class SigninScreenState extends State<SigninScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
@@ -28,7 +28,7 @@ class _SigninScreenState extends State<SigninScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final AuthenticationNotifier _authenticationNotifier =
+    final AuthenticationNotifier authenticationNotifier =
         Provider.of<AuthenticationNotifier>(
       context,
       listen: false,
@@ -76,7 +76,7 @@ class _SigninScreenState extends State<SigninScreen> {
                     String email = _emailController.text;
                     String password = _passwordController.text;
 
-                    await _authenticationNotifier.login(
+                    await authenticationNotifier.login(
                         context: context, email: email, password: password);
                   },
                 ),

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:ppue/core/notifier/authentication.notifier.dart';
 import 'package:ppue/core/notifier/database.notifier.dart';
 import 'package:ppue/models/PP.model.dart';
 import 'package:ppue/models/PPStatus.model.dart';
@@ -23,8 +22,6 @@ class NominalState extends State<Nominal> {
       isLoading = true;
     });
 
-    AuthenticationNotifier user =
-        Provider.of<AuthenticationNotifier>(context, listen: false);
     DatabaseNotifier databasePP =
         Provider.of<DatabaseNotifier>(context, listen: false);
 
@@ -32,7 +29,7 @@ class NominalState extends State<Nominal> {
       startDate: widget.filter?.startDate ??
           DateTime.now().subtract(Duration(days: 10)),
       endDate: widget.filter?.endDate ?? DateTime.now().add(Duration(days: 1)),
-      hospitalUnit: widget.filter?.hospitalUnit ?? user.hospitalUnit,
+      hospitalUnit: widget.filter?.hospitalUnit,
       mobileUnit: widget.filter?.mobileUnit,
       status: widget.filter?.status,
     );

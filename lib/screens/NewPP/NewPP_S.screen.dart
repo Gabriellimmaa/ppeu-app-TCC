@@ -26,6 +26,7 @@ class _NewPP_SState extends State<NewPP_S> {
   late GlobalKey<FormState> _formKey;
   String? _selectedOrigem;
   String? _selectedCausasExternas;
+  String? _selectedCausasExternasDescricao;
   String? _selectedClinica;
   bool _showTransferField = false;
   bool _showTraumaField = false;
@@ -69,6 +70,7 @@ class _NewPP_SState extends State<NewPP_S> {
     if (data != null) {
       _selectedOrigem = data!.situacao.origem;
       _selectedCausasExternas = data!.situacao.trauma;
+      _selectedCausasExternasDescricao = data!.situacao.traumaDescricao;
       _selectedClinica = data!.situacao.clinica;
       _selectedGestante = data!.situacao.gestante != null;
       _clinicaController.text = data!.situacao.clinica;
@@ -121,6 +123,7 @@ class _NewPP_SState extends State<NewPP_S> {
       newPPNotifier.situacao = SituacaoModel(
         origem: _selectedOrigem ?? '',
         trauma: _selectedCausasExternas ?? '',
+        traumaDescricao: _selectedCausasExternasDescricao,
         clinica: _selectedClinica ?? '',
         sintomas: SintomasModel(
           horario: _sintomasHorarioController.text,
@@ -435,19 +438,49 @@ class _NewPP_SState extends State<NewPP_S> {
                                       ),
                                     ))
                                 .toList(),
-                            validator: FormValidators.required,
                             onChanged: data != null
                                 ? null
                                 : (value) {
-                                    checkValidFields();
                                     setState(() {
                                       _selectedCausasExternas =
                                           value as String?;
                                       _showTraumaField = value == 'Outros' ||
                                           value == 'Queimadura';
+                                      checkValidFields();
                                     });
                                   },
                           ),
+                          if (_selectedCausasExternas ==
+                              'Acidente de trânsito') ...[
+                            spacingRow,
+                            DropdownButtonFormField(
+                              value: _selectedCausasExternasDescricao,
+                              decoration:
+                                  InputDecoration(labelText: 'Detalhes'),
+                              items: optionsAcidenteTransito
+                                  .map((e) => DropdownMenuItem(
+                                        value: e,
+                                        child: Text(e,
+                                            style: TextStyle(
+                                              color: Colors.black,
+                                            )),
+                                      ))
+                                  .toList(),
+                              validator: (value) => FormValidators.required(
+                                  value,
+                                  condition: _selectedCausasExternas ==
+                                      'Acidente de trânsito'),
+                              onChanged: data != null
+                                  ? null
+                                  : (value) {
+                                      setState(() {
+                                        checkValidFields();
+                                        _selectedCausasExternasDescricao =
+                                            value as String;
+                                      });
+                                    },
+                            ),
+                          ],
                           if (_showTraumaField) ...[
                             spacingRow,
                             TextFormField(
@@ -459,6 +492,13 @@ class _NewPP_SState extends State<NewPP_S> {
                               keyboardType: _selectedCausasExternas == 'Outros'
                                   ? TextInputType.text
                                   : TextInputType.number,
+                              onChanged: (value) {
+                                checkValidFields();
+                                _selectedCausasExternasDescricao = value;
+                              },
+                              validator: (value) => FormValidators.required(
+                                  value,
+                                  condition: _showTraumaField),
                             )
                           ],
                           spacingRow,
@@ -550,11 +590,21 @@ class _NewPP_SState extends State<NewPP_S> {
                               items: const [
                                 DropdownMenuItem(
                                   value: true,
-                                  child: Text('Sim'),
+                                  child: Text(
+                                    'Sim',
+                                    style: TextStyle(
+                                      color: Colors.black,
+                                    ),
+                                  ),
                                 ),
                                 DropdownMenuItem(
                                   value: false,
-                                  child: Text('Não'),
+                                  child: Text(
+                                    'Não',
+                                    style: TextStyle(
+                                      color: Colors.black,
+                                    ),
+                                  ),
                                 ),
                               ],
                               validator: (value) => FormValidators.required(

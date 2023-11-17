@@ -7,6 +7,7 @@ import 'package:ppue/models/PP/DrenoTorax.model.dart';
 import 'package:ppue/models/PP/Gestante.model.dart';
 import 'package:ppue/models/PP/Intubacao.model.dart';
 import 'package:ppue/models/PP/Oxigenio.model.dart';
+import 'package:ppue/models/PP/PCR.model.dart';
 import 'package:ppue/models/PP/Pertences.model.dart';
 import 'package:ppue/models/PP/ResponsavelRecebimento.model.dart';
 import 'package:ppue/models/PP/Sintomas.model.dart';
@@ -113,6 +114,7 @@ class SituacaoModel {
   final SintomasModel sintomas;
   final String clinica;
   final String trauma;
+  final String? traumaDescricao;
   final GestanteModel? gestante;
   final String hipoteseDiagnostico;
   final String enfermeiroResponsavelTransferencia;
@@ -122,6 +124,7 @@ class SituacaoModel {
     required this.sintomas,
     required this.clinica,
     required this.trauma,
+    required this.traumaDescricao,
     required this.gestante,
     required this.hipoteseDiagnostico,
     required this.enfermeiroResponsavelTransferencia,
@@ -133,6 +136,7 @@ class SituacaoModel {
       sintomas: SintomasModel.fromJson(json['sintomas']),
       clinica: json['clinica'],
       trauma: json['trauma'],
+      traumaDescricao: json['traumaDescricao'],
       gestante: json['gestante'] == null
           ? null
           : GestanteModel.fromJson(json['gestante']),
@@ -236,6 +240,7 @@ class AvaliacaoModel {
   final double rm;
   final String avdi;
   final String pupilas;
+  final double? pupilasTamanho;
   final IntubacaoModel? intubacao;
   final OxigenioModel? oxigenio;
   final String? nomeMedicacao;
@@ -243,8 +248,9 @@ class AvaliacaoModel {
   final DrenoToraxModel? drenoTorax;
   final CateterGastricoModel? cateterGastrico;
   final CateterVesicalModel? cateterVesical;
-  // final PCRModel? pcr;
+  final PCRModel? pcr;
   final String? ecg;
+  final String avaliacaoTraumas;
   final String outrasAnotacoes;
 
   AvaliacaoModel({
@@ -260,6 +266,7 @@ class AvaliacaoModel {
     required this.rm,
     required this.avdi,
     required this.pupilas,
+    required this.pupilasTamanho,
     required this.intubacao,
     required this.oxigenio,
     required this.nomeMedicacao,
@@ -267,8 +274,9 @@ class AvaliacaoModel {
     required this.drenoTorax,
     required this.cateterGastrico,
     required this.cateterVesical,
-    // required this.pcr,
+    required this.pcr,
     required this.ecg,
+    required this.avaliacaoTraumas,
     required this.outrasAnotacoes,
   });
 
@@ -286,6 +294,7 @@ class AvaliacaoModel {
       rm: json['rm'],
       avdi: json['avdi'],
       pupilas: json['pupilas'],
+      pupilasTamanho: json['pupilasTamanho'],
       intubacao: json['intubacao'] == null
           ? null
           : IntubacaoModel.fromJson(json['intubacao']),
@@ -303,8 +312,9 @@ class AvaliacaoModel {
       cateterVesical: json['cateterVesical'] == null
           ? null
           : CateterVesicalModel.fromJson(json['cateterVesical']),
-      // pcr: PCRModel.fromJson(json['pcr']),
+      pcr: PCRModel.fromJson(json['pcr']),
       ecg: json['ecg'],
+      avaliacaoTraumas: json['avaliacaoTraumas'],
       outrasAnotacoes: json['outrasAnotacoes'],
     );
   }
@@ -323,6 +333,7 @@ class AvaliacaoModel {
       'rm': rm,
       'avdi': avdi,
       'pupilas': pupilas,
+      'pupilasTamanho': pupilasTamanho,
       'intubacao': intubacao?.toJson(),
       'oxigenio': oxigenio?.toJson(),
       'nomeMedicao': nomeMedicacao,
@@ -330,8 +341,9 @@ class AvaliacaoModel {
       'drenoTorax': drenoTorax?.toJson(),
       'cateterGastrico': cateterGastrico,
       'cateterVesical': cateterVesical?.toJson(),
-      // 'pcr': pcr?.toJson(),
+      'pcr': pcr?.toJson(),
       'ecg': ecg,
+      'avaliacaoTraumas': avaliacaoTraumas,
       'outrasAnotacoes': outrasAnotacoes,
     };
   }

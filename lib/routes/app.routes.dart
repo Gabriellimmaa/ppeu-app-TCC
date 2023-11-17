@@ -1,8 +1,8 @@
-import 'package:ppue/screens/Home.screen.dart';
-import 'package:ppue/screens/SelectUser.screen.dart';
-import 'package:ppue/screens/Signin.screen.dart';
-import 'package:ppue/screens/Signup.screen.dart';
-import 'package:ppue/screens/Welcome.screen.dart';
+import 'package:ppeu/screens/Home.screen.dart';
+import 'package:ppeu/screens/SelectUser.screen.dart';
+import 'package:ppeu/screens/Signin.screen.dart';
+import 'package:ppeu/screens/Signup.screen.dart';
+import 'package:ppeu/screens/Welcome.screen.dart';
 
 class AppRoutes {
   static const String SelectUserRoute = "/select_user";

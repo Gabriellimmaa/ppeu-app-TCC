@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:ppue/models/PP.model.dart';
+import 'package:ppeu/models/PP.model.dart';
 
 class NewPPNotifier extends ChangeNotifier {
   // Responsabilidades voltadas a identificação

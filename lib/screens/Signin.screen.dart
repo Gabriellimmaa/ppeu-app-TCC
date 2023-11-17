@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:ppue/constants/constants.dart';
-import 'package:ppue/core/notifier/authentication.notifier.dart';
-import 'package:ppue/widgets/CustomPageContainer.widget.dart';
-import 'package:ppue/widgets/CustomScaffold.widget.dart';
-import 'package:ppue/widgets/GradientButton.widget.dart';
+import 'package:ppeu/constants/constants.dart';
+import 'package:ppeu/core/notifier/authentication.notifier.dart';
+import 'package:ppeu/widgets/CustomPageContainer.widget.dart';
+import 'package:ppeu/widgets/CustomScaffold.widget.dart';
+import 'package:ppeu/widgets/GradientButton.widget.dart';
 import 'package:provider/provider.dart';
 
 class SigninScreen extends StatefulWidget {

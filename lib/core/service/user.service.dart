@@ -1,4 +1,4 @@
-import 'package:ppue/credentials/supabase.credentials.dart';
+import 'package:ppeu/credentials/supabase.credentials.dart';
 
 class UserService {
   Future fetchAll() async {

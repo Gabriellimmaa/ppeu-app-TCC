@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:supabase/supabase.dart';
-import 'package:ppue/credentials/supabase.credentials.dart';
+import 'package:ppeu/credentials/supabase.credentials.dart';
 
 class AuthenticationService {
   Future<GotrueSessionResponse> singup({

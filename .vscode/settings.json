@@ -1,0 +1,12 @@
+{
+    "files.associations": {
+        "*.g4": "antlr",
+        "*.tsx": "typescriptreact",
+        "initializer_list": "cpp",
+        "type_traits": "cpp",
+        "vector": "cpp",
+        "xhash": "cpp",
+        "xstring": "cpp",
+        "xutility": "cpp"
+    }
+}

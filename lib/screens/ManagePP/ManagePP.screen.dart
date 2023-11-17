@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:ppue/core/notifier/authentication.notifier.dart';
-import 'package:ppue/core/notifier/database.notifier.dart';
-import 'package:ppue/models/PP.model.dart';
-import 'package:ppue/models/PPStatus.model.dart';
-import 'package:ppue/screens/ViewPP.screen.dart';
-import 'package:ppue/widgets/GradientContainer.widget.dart';
+import 'package:ppeu/core/notifier/authentication.notifier.dart';
+import 'package:ppeu/core/notifier/database.notifier.dart';
+import 'package:ppeu/models/PP.model.dart';
+import 'package:ppeu/models/PPStatus.model.dart';
+import 'package:ppeu/screens/ViewPP.screen.dart';
+import 'package:ppeu/widgets/GradientContainer.widget.dart';
 import 'package:provider/provider.dart';
 import 'dart:async';
 

@@ -1,8 +1,8 @@
 // ignore_for_file: use_build_context_synchronously
 import 'package:flutter/material.dart';
-import 'package:ppue/core/service/authentication.service.dart';
-import 'package:ppue/routes/app.routes.dart';
-import 'package:ppue/screens/Home.screen.dart';
+import 'package:ppeu/core/service/authentication.service.dart';
+import 'package:ppeu/routes/app.routes.dart';
+import 'package:ppeu/screens/Home.screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthenticationNotifier extends ChangeNotifier {

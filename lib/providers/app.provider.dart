@@ -1,9 +1,9 @@
-import 'package:ppue/core/notifier/authentication.notifier.dart';
-import 'package:ppue/core/notifier/database.notifier.dart';
-import 'package:ppue/core/notifier/hospitalUnit.notifier.dart';
-import 'package:ppue/core/notifier/mobileUnit.notifier.dart';
-import 'package:ppue/core/notifier/newPP.notifier.dart';
-import 'package:ppue/core/notifier/user.notifier.dart';
+import 'package:ppeu/core/notifier/authentication.notifier.dart';
+import 'package:ppeu/core/notifier/database.notifier.dart';
+import 'package:ppeu/core/notifier/hospitalUnit.notifier.dart';
+import 'package:ppeu/core/notifier/mobileUnit.notifier.dart';
+import 'package:ppeu/core/notifier/newPP.notifier.dart';
+import 'package:ppeu/core/notifier/user.notifier.dart';
 import 'package:provider/provider.dart';
 import 'package:provider/single_child_widget.dart';
 

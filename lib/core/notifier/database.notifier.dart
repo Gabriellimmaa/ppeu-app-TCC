@@ -1,7 +1,7 @@
 // ignore_for_file: use_build_context_synchronously
 import 'package:flutter/material.dart';
-import 'package:ppue/core/service/database.service.dart';
-import 'package:ppue/models/PP.model.dart';
+import 'package:ppeu/core/service/database.service.dart';
+import 'package:ppeu/models/PP.model.dart';
 
 class DatabaseNotifier extends ChangeNotifier {
   final DatabaseService _databaseService = DatabaseService();

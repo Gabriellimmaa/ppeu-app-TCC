@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:ppue/widgets/GradientContainer.widget.dart';
+import 'package:ppeu/widgets/GradientContainer.widget.dart';
 
 class CustomScaffold extends Scaffold {
   CustomScaffold(

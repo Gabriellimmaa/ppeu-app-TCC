@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:ppue/models/MobileUnit.model.dart';
-import 'package:ppue/models/PP.model.dart';
+import 'package:ppeu/models/MobileUnit.model.dart';
+import 'package:ppeu/models/PP.model.dart';
 
 class TableUM extends StatefulWidget {
   final List<PPModel> data;

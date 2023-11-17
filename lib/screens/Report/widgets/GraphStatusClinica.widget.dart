@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:ppue/models/PP.model.dart';
-import 'package:ppue/models/PPStatus.model.dart';
+import 'package:ppeu/models/PP.model.dart';
+import 'package:ppeu/models/PPStatus.model.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 
 class ReportGraphStatusClinica extends StatefulWidget {

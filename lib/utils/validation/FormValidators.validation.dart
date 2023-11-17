@@ -1,5 +1,5 @@
-import 'package:ppue/utils/validation/cpf.validation.dart';
-import 'package:ppue/utils/validation/email.validation.dart';
+import 'package:ppeu/utils/validation/cpf.validation.dart';
+import 'package:ppeu/utils/validation/email.validation.dart';
 
 class FormValidators {
   static String? Function(String?) compose(

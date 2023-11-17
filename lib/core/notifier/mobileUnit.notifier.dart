@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:ppue/core/service/mobileUnit.service.dart';
-import 'package:ppue/models/MobileUnit.model.dart';
+import 'package:ppeu/core/service/mobileUnit.service.dart';
+import 'package:ppeu/models/MobileUnit.model.dart';
 
 class MobileUnitNotifier extends ChangeNotifier {
   final MobileUnitService _databaseService = MobileUnitService();

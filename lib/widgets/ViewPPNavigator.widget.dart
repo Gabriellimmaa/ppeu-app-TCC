@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:ppue/core/notifier/database.notifier.dart';
-import 'package:ppue/models/PP.model.dart';
-import 'package:ppue/widgets/CustomPageContainer.widget.dart';
-import 'package:ppue/widgets/CustomScaffold.widget.dart';
+import 'package:ppeu/core/notifier/database.notifier.dart';
+import 'package:ppeu/models/PP.model.dart';
+import 'package:ppeu/widgets/CustomPageContainer.widget.dart';
+import 'package:ppeu/widgets/CustomScaffold.widget.dart';
 import 'package:provider/provider.dart';
 
 class ViewPPNavigator extends StatelessWidget {

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:ppue/constants/constants.dart';
-import 'package:ppue/routes/app.routes.dart';
-import 'package:ppue/widgets/CustomPageContainer.widget.dart';
-import 'package:ppue/widgets/CustomScaffold.widget.dart';
-import 'package:ppue/widgets/GradientButton.widget.dart';
+import 'package:ppeu/constants/constants.dart';
+import 'package:ppeu/routes/app.routes.dart';
+import 'package:ppeu/widgets/CustomPageContainer.widget.dart';
+import 'package:ppeu/widgets/CustomScaffold.widget.dart';
+import 'package:ppeu/widgets/GradientButton.widget.dart';
 
 class WelcomeScreen extends StatefulWidget {
   const WelcomeScreen({Key? key}) : super(key: key);

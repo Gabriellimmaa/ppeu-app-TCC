@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:ppue/core/service/hospitalUnit.service.dart';
-import 'package:ppue/models/HospitalUnit.model.dart';
+import 'package:ppeu/core/service/hospitalUnit.service.dart';
+import 'package:ppeu/models/HospitalUnit.model.dart';
 
 class HospitalUnitNotifier extends ChangeNotifier {
   final HospitalUnitService _databaseService = HospitalUnitService();

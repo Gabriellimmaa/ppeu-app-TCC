@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:ppue/constants/constants.dart';
-import 'package:ppue/core/notifier/newPP.notifier.dart';
-import 'package:ppue/models/PP.model.dart';
-import 'package:ppue/models/PP/Gestante.model.dart';
-import 'package:ppue/models/PP/Sintomas.model.dart';
-import 'package:ppue/utils/validation/FormValidators.validation.dart';
-import 'package:ppue/widgets/inputs/TimePickerTextField.widget.dart';
+import 'package:ppeu/constants/constants.dart';
+import 'package:ppeu/core/notifier/newPP.notifier.dart';
+import 'package:ppeu/models/PP.model.dart';
+import 'package:ppeu/models/PP/Gestante.model.dart';
+import 'package:ppeu/models/PP/Sintomas.model.dart';
+import 'package:ppeu/utils/validation/FormValidators.validation.dart';
+import 'package:ppeu/widgets/inputs/TimePickerTextField.widget.dart';
 import 'package:provider/provider.dart';
 
 class NewPP_S extends StatefulWidget {

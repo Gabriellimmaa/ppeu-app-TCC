@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:ppue/routes/app.routes.dart';
+import 'package:ppeu/routes/app.routes.dart';
 
 import 'screens/Welcome.screen.dart';
 

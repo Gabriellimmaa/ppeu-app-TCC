@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:ppue/constants/constants.dart';
-import 'package:ppue/models/PP/ResponsavelRecebimento.model.dart';
-import 'package:ppue/utils/inputMask/cpf.mask.dart';
-import 'package:ppue/utils/validation/FormValidators.validation.dart';
-import 'package:ppue/widgets/GradientButton.widget.dart';
+import 'package:ppeu/constants/constants.dart';
+import 'package:ppeu/models/PP/ResponsavelRecebimento.model.dart';
+import 'package:ppeu/utils/inputMask/cpf.mask.dart';
+import 'package:ppeu/utils/validation/FormValidators.validation.dart';
+import 'package:ppeu/widgets/GradientButton.widget.dart';
 
 class ModalAddResponsavelRecebimento extends StatefulWidget {
   final Function(ResponsavelRecebimentoModel) onChanged;

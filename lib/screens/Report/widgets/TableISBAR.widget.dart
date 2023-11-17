@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:ppue/constants/constants.dart';
-import 'package:ppue/models/PP.model.dart';
+import 'package:ppeu/constants/constants.dart';
+import 'package:ppeu/models/PP.model.dart';
 
 class TableISBAR extends StatefulWidget {
   final List<PPModel> data;

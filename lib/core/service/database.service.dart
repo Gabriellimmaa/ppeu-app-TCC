@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:ppue/credentials/supabase.credentials.dart';
-import 'package:ppue/models/PP.model.dart';
-import 'package:ppue/models/PPStatus.model.dart';
+import 'package:ppeu/credentials/supabase.credentials.dart';
+import 'package:ppeu/models/PP.model.dart';
+import 'package:ppeu/models/PPStatus.model.dart';
 import 'package:supabase/supabase.dart';
 
 class DatabaseService {

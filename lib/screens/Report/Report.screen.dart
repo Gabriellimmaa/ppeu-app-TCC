@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:ppue/screens/Report/widgets/Graphs.widget.dart';
-import 'package:ppue/screens/Report/widgets/Nominal.widget.dart';
-import 'package:ppue/screens/Report/widgets/ModalReportFilters.widget.dart';
-import 'package:ppue/screens/Report/widgets/TableNumeric.widget.dart';
-import 'package:ppue/widgets/GradientContainer.widget.dart';
+import 'package:ppeu/screens/Report/widgets/Graphs.widget.dart';
+import 'package:ppeu/screens/Report/widgets/Nominal.widget.dart';
+import 'package:ppeu/screens/Report/widgets/ModalReportFilters.widget.dart';
+import 'package:ppeu/screens/Report/widgets/TableNumeric.widget.dart';
+import 'package:ppeu/widgets/GradientContainer.widget.dart';
 
 class ReportScreen extends StatefulWidget {
   const ReportScreen({Key? key}) : super(key: key);

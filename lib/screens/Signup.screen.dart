@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
-import 'package:ppue/constants/constants.dart';
-import 'package:ppue/core/notifier/authentication.notifier.dart';
-import 'package:ppue/screens/Signin.screen.dart';
-import 'package:ppue/utils/inputMask/cpf.mask.dart';
-import 'package:ppue/utils/validation/cpf.validation.dart';
-import 'package:ppue/utils/validation/email.validation.dart';
-import 'package:ppue/widgets/CustomPageContainer.widget.dart';
-import 'package:ppue/widgets/CustomScaffold.widget.dart';
-import 'package:ppue/widgets/GradientButton.widget.dart';
+import 'package:ppeu/constants/constants.dart';
+import 'package:ppeu/core/notifier/authentication.notifier.dart';
+import 'package:ppeu/screens/Signin.screen.dart';
+import 'package:ppeu/utils/inputMask/cpf.mask.dart';
+import 'package:ppeu/utils/validation/cpf.validation.dart';
+import 'package:ppeu/utils/validation/email.validation.dart';
+import 'package:ppeu/widgets/CustomPageContainer.widget.dart';
+import 'package:ppeu/widgets/CustomScaffold.widget.dart';
+import 'package:ppeu/widgets/GradientButton.widget.dart';
 import 'package:provider/provider.dart';
 
 class SignupScreen extends StatefulWidget {

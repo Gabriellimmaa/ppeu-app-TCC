@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:ppue/models/PP.model.dart';
-import 'package:ppue/models/PPStatus.model.dart';
-import 'package:ppue/screens/ViewPP.screen.dart';
-import 'package:ppue/widgets/CustomPageContainer.widget.dart';
-import 'package:ppue/widgets/CustomScaffold.widget.dart';
+import 'package:ppeu/models/PP.model.dart';
+import 'package:ppeu/models/PPStatus.model.dart';
+import 'package:ppeu/screens/ViewPP.screen.dart';
+import 'package:ppeu/widgets/CustomPageContainer.widget.dart';
+import 'package:ppeu/widgets/CustomScaffold.widget.dart';
 
 class SearchPPListScreen extends StatefulWidget {
   final List<dynamic> ppModels;

@@ -1,8 +1,8 @@
-import 'package:ppue/core/notifier/newPP.notifier.dart';
+import 'package:ppeu/core/notifier/newPP.notifier.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
-import 'package:ppue/constants/constants.dart';
-import 'package:ppue/models/PP.model.dart';
+import 'package:ppeu/constants/constants.dart';
+import 'package:ppeu/models/PP.model.dart';
 
 import '../../utils/validation/FormValidators.validation.dart';
 

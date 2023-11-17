@@ -1,9 +1,8 @@
 // ignore_for_file: unrelated_type_equality_checks
 
 import 'package:flutter/material.dart';
-import 'package:ppue/core/service/user.service.dart';
-import 'package:ppue/models/User.model.dart';
-
+import 'package:ppeu/core/service/user.service.dart';
+import 'package:ppeu/models/User.model.dart';
 
 class UserNotifier extends ChangeNotifier {
   final UserService _databaseService = UserService();

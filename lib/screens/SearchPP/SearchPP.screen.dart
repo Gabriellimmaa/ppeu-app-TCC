@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:ppeu/constants/constants.dart';
+import 'package:ppeu/core/notifier/authentication.notifier.dart';
 import 'package:ppeu/core/notifier/database.notifier.dart';
 import 'package:ppeu/core/notifier/hospitalUnit.notifier.dart';
 import 'package:ppeu/core/notifier/user.notifier.dart';
@@ -58,22 +59,28 @@ class _SearchPPScreenState extends State<SearchPPScreen> {
   }
 
   Future<void> fetchHospitalUnitsAndBuildDropdown(BuildContext context) async {
+    AuthenticationNotifier user =
+        Provider.of<AuthenticationNotifier>(context, listen: false);
     HospitalUnitNotifier hospitalUnitNotifier =
         Provider.of<HospitalUnitNotifier>(context, listen: false);
     List<dynamic> data = await hospitalUnitNotifier.fetchAll();
-    _hospitalUnitDropdownItems = data.map((element) {
-      return DropdownMenuItem<String>(
-        value: '${element.id.toString()}::${element.name}::${element.surname}',
-        child: Text(
-          limitCharacters(element.name, 30),
-          style: TextStyle(
-            color: Colors.black,
-          ),
-        ),
-      );
-    }).toList();
 
-    setState(() {}); // Força o rebuild do widget
+    setState(() {
+      _hospitalUnitDropdownItems = data.map((element) {
+        return DropdownMenuItem<String>(
+          value:
+              '${element.id.toString()}::${element.name}::${element.surname}',
+          child: Text(
+            limitCharacters(element.name, 30),
+            style: TextStyle(
+              color: Colors.black,
+            ),
+          ),
+        );
+      }).toList();
+      _selectedHospital =
+          '${user.hospitalUnit!.id.toString()}::${user.hospitalUnit!.name}::${user.hospitalUnit!.surname}';
+    }); // Força o rebuild do widget
   }
 
   Future<void> fetchUsersAndBuildDropdown(BuildContext context) async {
@@ -98,6 +105,7 @@ class _SearchPPScreenState extends State<SearchPPScreen> {
   @override
   void initState() {
     super.initState();
+
     fetchHospitalUnitsAndBuildDropdown(context);
     fetchUsersAndBuildDropdown(context);
   }
@@ -169,7 +177,7 @@ class _SearchPPScreenState extends State<SearchPPScreen> {
                       }),
                       checkValidFields(),
                     },
-                    validator: FormValidators.required,
+                    // validator: FormValidators.required,
                   ),
                   spacingRow,
                   TextFormField(
@@ -212,11 +220,9 @@ class _SearchPPScreenState extends State<SearchPPScreen> {
                       );
 
                       try {
-                        print('_selectedDate');
-                        print(_selectedDate);
                         var response = await databaseNotifier.filterPP(
                           nome: _nameController.text,
-                          responsavelRecebimentoCpf: _selectedResponsavel!,
+                          responsavelRecebimentoCpf: _selectedResponsavel,
                           hospitalUnit: _selectedHospital!.split('::')[1],
                           startDate: _selectedDate,
                           endDate: _selectedDate?.add(Duration(days: 1)),

@@ -40,7 +40,7 @@ class _ManagePPScreenState extends State<ManagePPScreen> {
       status: 'all',
       name: '',
       date: '',
-      hospitalUnit: userNotifier.hospitalUnit,
+      hospitalUnit: userNotifier.hospitalUnit!.name,
     );
     data = response;
     setState(() {
@@ -90,7 +90,7 @@ class _ManagePPScreenState extends State<ManagePPScreen> {
               status: _selectedButtonIndex,
               name: _nameController.text,
               date: _dateController.text,
-              hospitalUnit: userNotifier.hospitalUnit);
+              hospitalUnit: userNotifier.hospitalUnit!.name);
 
           if (response.isEmpty) {
             // ignore: use_build_context_synchronously
@@ -133,7 +133,7 @@ class _ManagePPScreenState extends State<ManagePPScreen> {
           status: status,
           name: _nameController.text,
           date: _dateController.text,
-          hospitalUnit: userNotifier.hospitalUnit);
+          hospitalUnit: userNotifier.hospitalUnit!.name);
       setState(() {
         isLoading = false;
         data = response;

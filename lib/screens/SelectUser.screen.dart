@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:ppeu/constants/constants.dart';
 import 'package:ppeu/core/notifier/authentication.notifier.dart';
 import 'package:ppeu/core/notifier/hospitalUnit.notifier.dart';
+import 'package:ppeu/models/HospitalUnit.model.dart';
 import 'package:ppeu/widgets/CustomPageContainer.widget.dart';
 import 'package:ppeu/widgets/CustomScaffold.widget.dart';
 import 'package:ppeu/widgets/GradientButton.widget.dart';
@@ -35,7 +36,7 @@ class _SelectUserScreenState extends State<SelectUserScreen> {
     setState(() {
       for (var element in data) {
         _mobileUnitData.add(DropdownMenuItem(
-          value: element.name.toString(),
+          value: element.toJsonString(),
           child: Text(element.name.toString()),
         ));
       }
@@ -99,7 +100,8 @@ class _SelectUserScreenState extends State<SelectUserScreen> {
                                   items: _mobileUnitData,
                                   onChanged: (value) {
                                     setState(() {
-                                      selectedMobileUnit = value.toString();
+                                      print(value);
+                                      selectedMobileUnit = value as String;
                                     });
                                   }),
                             ],
@@ -112,9 +114,15 @@ class _SelectUserScreenState extends State<SelectUserScreen> {
                                     width: double.infinity,
                                     child: GradientButton(
                                       onPressed: () {
+                                        print(selectedMobileUnit);
+
+                                        HospitalUnitModel hospitalUnit =
+                                            HospitalUnitModel.fromJsonString(
+                                                selectedMobileUnit);
+                                        print(hospitalUnit);
                                         userNotifier.setUser(
                                             type: UserType.MOBILE_UNIT,
-                                            hospitalUnit: selectedMobileUnit,
+                                            hospitalUnit: hospitalUnit,
                                             context: context);
                                       },
                                       text: 'Entrar como unidade móvel',
@@ -125,9 +133,13 @@ class _SelectUserScreenState extends State<SelectUserScreen> {
                                     width: double.infinity,
                                     child: GradientButton(
                                       onPressed: () async {
+                                        HospitalUnitModel hospitalUnit =
+                                            HospitalUnitModel.fromJson(
+                                                selectedMobileUnit
+                                                    as Map<String, dynamic>);
                                         userNotifier.setUser(
                                             type: UserType.HOSPITAL_UNIT,
-                                            hospitalUnit: selectedMobileUnit,
+                                            hospitalUnit: hospitalUnit,
                                             context: context);
                                       },
                                       text: 'Entrar como unidade hospitalar',

@@ -1,6 +1,7 @@
 // ignore_for_file: use_build_context_synchronously
 import 'package:flutter/material.dart';
 import 'package:ppeu/core/service/authentication.service.dart';
+import 'package:ppeu/models/HospitalUnit.model.dart';
 import 'package:ppeu/routes/app.routes.dart';
 import 'package:ppeu/screens/Home.screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -9,12 +10,12 @@ class AuthenticationNotifier extends ChangeNotifier {
   final AuthenticationService _authenticationService = AuthenticationService();
 
   String? _type;
-  String _hospitalUnit = '';
+  HospitalUnitModel? _hospitalUnit;
   String _firstName = '';
   String _lastName = '';
   String _taxId = '';
   String? get type => _type;
-  String get hospitalUnit => _hospitalUnit;
+  HospitalUnitModel? get hospitalUnit => _hospitalUnit;
   String get firstName => _firstName;
   String get lastName => _lastName;
   String get taxId => _taxId;
@@ -23,22 +24,15 @@ class AuthenticationNotifier extends ChangeNotifier {
 
   void setUser({
     required String type,
-    required String hospitalUnit,
+    required HospitalUnitModel hospitalUnit,
     required BuildContext context,
   }) {
-    if (hospitalUnit == '') {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          backgroundColor: Colors.red,
-          content: Text('Selecione um estabelecimento de saúde')));
-      return;
-    }
-
     _type = type;
     _hospitalUnit = hospitalUnit;
 
     SharedPreferences.getInstance().then((prefs) {
       prefs.setString('type', type);
-      prefs.setString('hospitalUnit', hospitalUnit);
+      prefs.setString('hospitalUnit', hospitalUnit.toJsonString());
     });
 
     notifyListeners();

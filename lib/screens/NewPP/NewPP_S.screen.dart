@@ -122,7 +122,7 @@ class _NewPP_SState extends State<NewPP_S> {
     void updateFormData() {
       newPPNotifier.situacao = SituacaoModel(
         origem: _selectedOrigem ?? '',
-        trauma: _selectedCausasExternas ?? '',
+        trauma: _selectedCausasExternas,
         traumaDescricao: _selectedCausasExternasDescricao,
         clinica: _selectedClinica ?? '',
         sintomas: SintomasModel(

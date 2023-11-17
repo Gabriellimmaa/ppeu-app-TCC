@@ -66,6 +66,7 @@ class _NewPP_AState extends State<NewPP_A> {
   String? _avdi;
   String? _pupilas;
   double? _pupilasTamanho;
+  String? _pupilasAnisocoricas;
 
   final _intubacaoHorarioController = TextEditingController();
   final _intubacaoNumeroTuboController = TextEditingController();
@@ -118,7 +119,7 @@ class _NewPP_AState extends State<NewPP_A> {
   final _pcrMedicacoesController = TextEditingController();
   final _pcrMedicacoesHorariosController = TextEditingController();
   bool _selectedPCRCardioversaoDesfribilacao = false;
-  double? _quantidadeCardioversaoDesfribilacao = null;
+  double? _quantidadeCardioversaoDesfribilacao;
   final List<PCRMedicacao> _listPCRMedicacoes = [];
 
   final _ecgController = TextEditingController();
@@ -159,6 +160,7 @@ class _NewPP_AState extends State<NewPP_A> {
       _avdi = data!.avaliacao.avdi;
       _pupilas = data!.avaliacao.pupilas;
       _pupilasTamanho = data!.avaliacao.pupilasTamanho;
+      _pupilasAnisocoricas = data!.avaliacao.pupilasAnisocoricas;
 
       if (hasAcessoCentral) {
         _selectedAcessoCentral = hasAcessoCentral ? true : false;
@@ -417,6 +419,7 @@ class _NewPP_AState extends State<NewPP_A> {
         avdi: _avdi ?? '',
         pupilas: _pupilas ?? '',
         pupilasTamanho: _pupilasTamanho,
+        pupilasAnisocoricas: _pupilasAnisocoricas,
         nomeMedicacao: _nomeMedicacaoController.text == ''
             ? null
             : _nomeMedicacaoController.text,
@@ -799,6 +802,34 @@ class _NewPP_AState extends State<NewPP_A> {
                         validator: FormValidators.required,
                       ),
                       spacingRow,
+                      if (_pupilas == 'Anisocóricas') ...[
+                        spacingRow,
+                        DropdownButtonFormField(
+                          value: _pupilasAnisocoricas,
+                          decoration:
+                              InputDecoration(labelText: 'Qual pupila é maior'),
+                          items: optionsPupilasAnisocoricas
+                              .map((e) => DropdownMenuItem(
+                                    value: e,
+                                    child: Text(e,
+                                        style: TextStyle(
+                                          color: Colors.black,
+                                        )),
+                                  ))
+                              .toList(),
+                          onChanged: data != null
+                              ? null
+                              : (value) {
+                                  setState(() {
+                                    checkValidFields();
+                                    _pupilasAnisocoricas = value as String;
+                                  });
+                                },
+                          validator: (value) => FormValidators.required(value,
+                              condition: _pupilas == 'Anisocóricas'),
+                        ),
+                        spacingRow,
+                      ],
                       if (_pupilas == 'Fotorreagente') ...[
                         spacingRow,
                         Column(children: [
@@ -818,6 +849,7 @@ class _NewPP_AState extends State<NewPP_A> {
                                 });
                               })
                         ]),
+                        spacingRow,
                       ],
                     ]),
                   ),

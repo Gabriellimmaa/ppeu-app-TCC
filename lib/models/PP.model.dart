@@ -113,7 +113,7 @@ class SituacaoModel {
   final String origem;
   final SintomasModel sintomas;
   final String clinica;
-  final String trauma;
+  final String? trauma;
   final String? traumaDescricao;
   final GestanteModel? gestante;
   final String hipoteseDiagnostico;
@@ -241,6 +241,7 @@ class AvaliacaoModel {
   final String avdi;
   final String pupilas;
   final double? pupilasTamanho;
+  final String? pupilasAnisocoricas;
   final IntubacaoModel? intubacao;
   final OxigenioModel? oxigenio;
   final String? nomeMedicacao;
@@ -267,6 +268,7 @@ class AvaliacaoModel {
     required this.avdi,
     required this.pupilas,
     required this.pupilasTamanho,
+    required this.pupilasAnisocoricas,
     required this.intubacao,
     required this.oxigenio,
     required this.nomeMedicacao,
@@ -295,6 +297,7 @@ class AvaliacaoModel {
       avdi: json['avdi'],
       pupilas: json['pupilas'],
       pupilasTamanho: json['pupilasTamanho'],
+      pupilasAnisocoricas: json['pupilasAnisocoricas'],
       intubacao: json['intubacao'] == null
           ? null
           : IntubacaoModel.fromJson(json['intubacao']),
@@ -334,6 +337,7 @@ class AvaliacaoModel {
       'avdi': avdi,
       'pupilas': pupilas,
       'pupilasTamanho': pupilasTamanho,
+      'pupilasAnisocoricas': pupilasAnisocoricas,
       'intubacao': intubacao?.toJson(),
       'oxigenio': oxigenio?.toJson(),
       'nomeMedicao': nomeMedicacao,

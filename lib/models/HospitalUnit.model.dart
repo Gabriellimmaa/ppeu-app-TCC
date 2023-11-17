@@ -23,6 +23,7 @@ class HospitalUnitModel {
     return {
       'name': name,
       'surname': surname,
+      'address': address.toJson(),
       'status': status,
       'id': id,
       'image': image,
@@ -40,6 +41,10 @@ class HospitalUnitModel {
       image: json['image'],
       amount: json['amount'],
     );
+  }
+
+  factory HospitalUnitModel.fromJsonString(String jsonString) {
+    return HospitalUnitModel.fromJson(jsonDecode(jsonString));
   }
 
   String toJsonString() {

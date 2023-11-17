@@ -116,7 +116,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     style: TextStyle(fontSize: 18, color: Colors.white),
                   ),
                   Text(
-                    authenticationNotifier.hospitalUnit,
+                    authenticationNotifier.hospitalUnit!.name,
                     style: TextStyle(
                       fontSize: 20,
                       color: Colors.white,

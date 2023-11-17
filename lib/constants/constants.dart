@@ -49,10 +49,9 @@ List<String> optionsPupilas = [
   'Isocóricas',
   'Mitióticas',
   'Midriáticas',
-  'Anisocóricas',
-  'D>E',
-  'E>D'
+  'Anisocóricas'
 ];
+List<String> optionsPupilasAnisocoricas = ['D > E', 'E > D'];
 List<String> optionsAcidenteTransito = [
   'Atropelamento',
   'Auto -> Auto',
@@ -132,6 +131,7 @@ PPModel examplePP = PPModel(
     avdi: "Inconciente",
     pupilas: "Midriáticas",
     pupilasTamanho: null,
+    pupilasAnisocoricas: null,
     intubacao: IntubacaoModel(
       horario: "12:00",
       numeroTubo: '123',

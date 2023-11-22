@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:ppeu/constants/constants.dart';
-import 'package:ppeu/core/notifier/hospitalUnit.notifier.dart';
+import 'package:ppeu/core/notifier/authentication.notifier.dart';
 import 'package:ppeu/core/notifier/mobileUnit.notifier.dart';
 import 'package:ppeu/models/PPStatus.model.dart';
 import 'package:ppeu/widgets/GradientButton.widget.dart';
@@ -59,12 +59,7 @@ class _ModalReportFiltersState extends State<ModalReportFilters> {
       child: Text('Todos'),
     ),
   ];
-  final List<DropdownMenuItem<String>> _hospitalUnitList = [
-    DropdownMenuItem(
-      value: '',
-      child: Text('Todos'),
-    ),
-  ];
+  final List<DropdownMenuItem<String>> _hospitalUnitList = [];
   DateTime? _endDateSelected;
   DateTime? _startDateSelected;
   String _unMovel = '';
@@ -84,15 +79,18 @@ class _ModalReportFiltersState extends State<ModalReportFilters> {
   }
 
   Future<void> fetchHospitalUnits(BuildContext context) async {
-    HospitalUnitNotifier hospitalUnitNotifier =
-        Provider.of<HospitalUnitNotifier>(context, listen: false);
-    var data = await hospitalUnitNotifier.fetchAll();
-    for (var element in data) {
+    AuthenticationNotifier authentication =
+        Provider.of<AuthenticationNotifier>(context, listen: false);
+    for (var element in authentication.hospitalUnits) {
       _hospitalUnitList.add(DropdownMenuItem(
         value: element.name,
         child: Text(element.surname),
       ));
     }
+    setState(() {
+      _unEnc =
+          widget.filters?.hospitalUnit ?? authentication.hospitalUnit!.name;
+    });
   }
 
   Future<void> fetchData(BuildContext context) async {
@@ -117,7 +115,6 @@ class _ModalReportFiltersState extends State<ModalReportFilters> {
     _startDateSelected = widget.filters?.startDate;
     _endDateSelected = widget.filters?.endDate;
     _unMovel = widget.filters?.mobileUnit ?? '';
-    _unEnc = widget.filters?.hospitalUnit ?? '';
     _stRecep = widget.filters?.status ?? '';
   }
 

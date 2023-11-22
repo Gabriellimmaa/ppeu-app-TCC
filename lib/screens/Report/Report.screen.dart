@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:ppeu/core/notifier/authentication.notifier.dart';
 import 'package:ppeu/screens/Report/widgets/Graphs.widget.dart';
 import 'package:ppeu/screens/Report/widgets/Nominal.widget.dart';
 import 'package:ppeu/screens/Report/widgets/ModalReportFilters.widget.dart';
 import 'package:ppeu/screens/Report/widgets/TableNumeric.widget.dart';
 import 'package:ppeu/widgets/GradientContainer.widget.dart';
+import 'package:provider/provider.dart';
 
 class ReportScreen extends StatefulWidget {
   const ReportScreen({Key? key}) : super(key: key);
@@ -13,14 +15,30 @@ class ReportScreen extends StatefulWidget {
 }
 
 class _ReportScreenState extends State<ReportScreen> {
+  bool isLoading = true;
   DateTime selectedDate = DateTime.now();
   ReportFilters? _selectedFilters;
   String buttonText = 'Selecione';
   int _selectedButtonIndex = 0;
 
+  Future<void> fetchHospitalUnits(BuildContext context) async {
+    AuthenticationNotifier authentication =
+        Provider.of<AuthenticationNotifier>(context, listen: false);
+    setState(() {
+      _selectedFilters = ReportFilters(
+        endDate: null,
+        startDate: null,
+        mobileUnit: null,
+        status: null,
+        hospitalUnit: authentication.hospitalUnits[0].name,
+      );
+    });
+  }
+
   @override
   void initState() {
     super.initState();
+    fetchHospitalUnits(context);
   }
 
   @override

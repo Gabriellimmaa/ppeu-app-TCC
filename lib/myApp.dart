@@ -11,7 +11,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(
-        primaryColor: Color(0xFF00cccb),
+        primaryColor: Color.fromARGB(255, 100, 177, 240),
         appBarTheme: AppBarTheme(
           centerTitle: true,
           backgroundColor: Colors.transparent,

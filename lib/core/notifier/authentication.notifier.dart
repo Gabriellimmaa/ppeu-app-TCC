@@ -14,8 +14,10 @@ class AuthenticationNotifier extends ChangeNotifier {
   String _firstName = '';
   String _lastName = '';
   String _taxId = '';
+  List<HospitalUnitModel> _hospitalUnits = [];
   String? get type => _type;
   HospitalUnitModel? get hospitalUnit => _hospitalUnit;
+  List<HospitalUnitModel> get hospitalUnits => _hospitalUnits;
   String get firstName => _firstName;
   String get lastName => _lastName;
   String get taxId => _taxId;
@@ -44,15 +46,19 @@ class AuthenticationNotifier extends ChangeNotifier {
     required String firstName,
     required String lastName,
     required String taxId,
+    required List<HospitalUnitModel> hospitalUnits,
   }) {
     _firstName = firstName;
     _lastName = lastName;
     _taxId = taxId;
+    _hospitalUnits = hospitalUnits;
 
     SharedPreferences.getInstance().then((prefs) {
       prefs.setString('firstName', firstName);
       prefs.setString('lastName', lastName);
       prefs.setString('taxId', taxId);
+      prefs.setStringList(
+          'hospitalUnits', hospitalUnits.map((e) => e.toJsonString()).toList());
     });
 
     notifyListeners();
@@ -65,6 +71,7 @@ class AuthenticationNotifier extends ChangeNotifier {
     required String firstName,
     required String lastName,
     required String taxId,
+    required List<HospitalUnitModel> hospitalUnits,
   }) async {
     var response = await _authenticationService.singup(
         context: context,
@@ -72,7 +79,8 @@ class AuthenticationNotifier extends ChangeNotifier {
         password: password,
         firstName: firstName,
         lastName: lastName,
-        taxId: taxId);
+        taxId: taxId,
+        hospitalUnits: hospitalUnits);
 
     if (response.error == null) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -103,10 +111,17 @@ class AuthenticationNotifier extends ChangeNotifier {
         context: context, email: email, password: password);
 
     if (response.error == null) {
+      List<dynamic> hospitalUnits =
+          response.data!.user!.userMetadata['hospitalUnits'];
+      List<HospitalUnitModel> hospitalUnitsList = [];
+      for (var hospitalUnit in hospitalUnits) {
+        hospitalUnitsList.add(HospitalUnitModel.fromJson(hospitalUnit));
+      }
       setUserMetadata(
         firstName: response.data!.user!.userMetadata['firstName'],
         lastName: response.data!.user!.userMetadata['lastName'],
         taxId: response.data!.user!.userMetadata['taxId'],
+        hospitalUnits: hospitalUnitsList,
       );
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(

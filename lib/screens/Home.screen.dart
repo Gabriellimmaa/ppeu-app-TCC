@@ -217,7 +217,10 @@ class _HomeScreenState extends State<HomeScreen> {
                             Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (context) => SearchPPScreen()));
+                                    builder: (context) => SearchPPScreen(
+                                          hospitalUnit: authenticationNotifier
+                                              .hospitalUnit!,
+                                        )));
                           },
                           child: Stack(
                             children: const [

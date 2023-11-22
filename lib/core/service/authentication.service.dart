@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:ppeu/models/HospitalUnit.model.dart';
 import 'package:supabase/supabase.dart';
 import 'package:ppeu/credentials/supabase.credentials.dart';
 
@@ -10,6 +11,7 @@ class AuthenticationService {
     required String firstName,
     required String lastName,
     required String taxId,
+    required List<HospitalUnitModel> hospitalUnits,
   }) async {
     GotrueSessionResponse response =
         await SupabaseCredentials.supabaseClient.auth.signUp(
@@ -19,6 +21,7 @@ class AuthenticationService {
         'firstName': firstName,
         'lastName': lastName,
         'taxId': taxId,
+        'hospitalUnits': hospitalUnits,
       },
     );
     return response;

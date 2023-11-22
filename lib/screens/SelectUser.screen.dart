@@ -2,7 +2,6 @@
 import 'package:flutter/material.dart';
 import 'package:ppeu/constants/constants.dart';
 import 'package:ppeu/core/notifier/authentication.notifier.dart';
-import 'package:ppeu/core/notifier/hospitalUnit.notifier.dart';
 import 'package:ppeu/models/HospitalUnit.model.dart';
 import 'package:ppeu/widgets/CustomPageContainer.widget.dart';
 import 'package:ppeu/widgets/CustomScaffold.widget.dart';
@@ -28,13 +27,14 @@ class _SelectUserScreenState extends State<SelectUserScreen> {
   ];
 
   Future<void> fetchMobileUnits(BuildContext context) async {
-    HospitalUnitNotifier databaseHospital =
-        Provider.of<HospitalUnitNotifier>(context, listen: false);
-
-    var data = await databaseHospital.fetchAll();
+    AuthenticationNotifier authenticationNotifier =
+        Provider.of<AuthenticationNotifier>(
+      context,
+      listen: false,
+    );
 
     setState(() {
-      for (var element in data) {
+      for (var element in authenticationNotifier.hospitalUnits) {
         _mobileUnitData.add(DropdownMenuItem(
           value: element.toJsonString(),
           child: Text(element.name.toString()),
@@ -114,12 +114,22 @@ class _SelectUserScreenState extends State<SelectUserScreen> {
                                     width: double.infinity,
                                     child: GradientButton(
                                       onPressed: () {
-                                        print(selectedMobileUnit);
+                                        if (selectedMobileUnit == '') {
+                                          ScaffoldMessenger.of(context)
+                                              .showSnackBar(
+                                            SnackBar(
+                                              content: Text(
+                                                'Selecione uma unidade hospitalar',
+                                              ),
+                                              backgroundColor: Colors.red,
+                                            ),
+                                          );
+                                          return;
+                                        }
 
                                         HospitalUnitModel hospitalUnit =
                                             HospitalUnitModel.fromJsonString(
                                                 selectedMobileUnit);
-                                        print(hospitalUnit);
                                         userNotifier.setUser(
                                             type: UserType.MOBILE_UNIT,
                                             hospitalUnit: hospitalUnit,
@@ -133,10 +143,20 @@ class _SelectUserScreenState extends State<SelectUserScreen> {
                                     width: double.infinity,
                                     child: GradientButton(
                                       onPressed: () async {
+                                        if (selectedMobileUnit == '') {
+                                          ScaffoldMessenger.of(context)
+                                              .showSnackBar(
+                                            SnackBar(
+                                              content: Text(
+                                                  'Selecione uma unidade hospitalar'),
+                                              backgroundColor: Colors.red,
+                                            ),
+                                          );
+                                          return;
+                                        }
                                         HospitalUnitModel hospitalUnit =
-                                            HospitalUnitModel.fromJson(
-                                                selectedMobileUnit
-                                                    as Map<String, dynamic>);
+                                            HospitalUnitModel.fromJsonString(
+                                                selectedMobileUnit);
                                         userNotifier.setUser(
                                             type: UserType.HOSPITAL_UNIT,
                                             hospitalUnit: hospitalUnit,

@@ -188,7 +188,7 @@ class _SignupScreenState extends State<SignupScreen> {
                                               _hospitalUnitList[index])
                                           ? Colors.blue
                                           : Colors.grey,
-                                      width: 2.0,
+                                      width: 1.0,
                                     ),
                                     borderRadius: BorderRadius.circular(8.0),
                                   ),

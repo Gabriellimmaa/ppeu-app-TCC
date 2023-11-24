@@ -105,6 +105,7 @@ class DatabaseService {
     }
 
     var response = await query.execute();
+
     return response.data;
   }
 

@@ -6,6 +6,7 @@ import 'package:ppeu/models/PP/Dor.model.dart';
 import 'package:ppeu/models/PP/DrenoTorax.model.dart';
 import 'package:ppeu/models/PP/Intubacao.model.dart';
 import 'package:ppeu/models/PP/Oxigenio.model.dart';
+import 'package:ppeu/models/PP/PupilaFotoreacao.model.dart';
 import 'package:ppeu/utils/validation/FormValidators.validation.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
@@ -65,8 +66,11 @@ class _NewPP_AState extends State<NewPP_A> {
   double _rm = 1.0;
   String? _avdi;
   String? _pupilas;
-  double? _pupilasTamanho;
+  double _pupilasTamanhoDireita = 1.0;
+  double _pupilasTamanhoEsquerda = 1.0;
   String? _pupilasAnisocoricas;
+  bool _selectedPupilasFotoreacao = false;
+  String? _selectedPupilasFotoreacaoOption;
 
   final _intubacaoHorarioController = TextEditingController();
   final _intubacaoNumeroTuboController = TextEditingController();
@@ -116,6 +120,7 @@ class _NewPP_AState extends State<NewPP_A> {
   final _cateterVesicalProfissionalFocusNode = FocusNode();
 
   final _pcrCiclosController = TextEditingController();
+  final _pcrTempoCompressaoToracicaController = TextEditingController();
   final _pcrMedicacoesController = TextEditingController();
   final _pcrMedicacoesHorariosController = TextEditingController();
   bool _selectedPCRCardioversaoDesfribilacao = false;
@@ -125,7 +130,7 @@ class _NewPP_AState extends State<NewPP_A> {
   final _ecgController = TextEditingController();
   final _ecgFocusNode = FocusNode();
   final _outrasAnotacoesController = TextEditingController();
-  final _avaliacaoTraumasController = TextEditingController();
+  // final _avaliacaoTraumasController = TextEditingController();
 
   @override
   void initState() {
@@ -144,6 +149,8 @@ class _NewPP_AState extends State<NewPP_A> {
       bool hasCateterVesical = data!.avaliacao.cateterVesical != null;
       bool hasPCR = data!.avaliacao.pcr != null;
       bool hasECG = data!.avaliacao.ecg != null;
+      bool hasPupilasFotoreacao =
+          data!.avaliacao.pupilasFotoreacao() is! String;
       bool hasAcessoCentral = data!.avaliacao.acesso.central != null;
       bool hasAcessoPeriferico = data!.avaliacao.acesso.periferico != null;
       bool hasAcessoIntraosseo = data!.avaliacao.acesso.intraosseo != null;
@@ -159,8 +166,19 @@ class _NewPP_AState extends State<NewPP_A> {
       _rm = data!.avaliacao.rm;
       _avdi = data!.avaliacao.avdi;
       _pupilas = data!.avaliacao.pupilas;
-      _pupilasTamanho = data!.avaliacao.pupilasTamanho;
       _pupilasAnisocoricas = data!.avaliacao.pupilasAnisocoricas;
+
+      if (hasPupilasFotoreacao) {
+        _selectedPupilasFotoreacao = true;
+        PupilasFotoreacaoModel? pupilasFotoreacao =
+            data!.avaliacao.pupilasFotoreacao();
+
+        _pupilasTamanhoDireita = pupilasFotoreacao!.tamanhoDireita;
+        _pupilasTamanhoEsquerda = pupilasFotoreacao.tamanhoEsquerda;
+      } else {
+        _selectedPupilasFotoreacao = false;
+        _selectedPupilasFotoreacaoOption = data!.avaliacao.pupilasFotoreacao();
+      }
 
       if (hasAcessoCentral) {
         _selectedAcessoCentral = hasAcessoCentral ? true : false;
@@ -230,6 +248,8 @@ class _NewPP_AState extends State<NewPP_A> {
 
       if (hasPCR) {
         _pcrCiclosController.text = data!.avaliacao.pcr!.ciclos;
+        _pcrTempoCompressaoToracicaController.text =
+            data!.avaliacao.pcr!.tempoCompressaoToracicaMinutos;
         _listPCRMedicacoes.addAll(data!.avaliacao.pcr!.medicacoes);
         _selectedPCRCardioversaoDesfribilacao =
             data!.avaliacao.pcr!.cardioversaoOuDesfribilacao;
@@ -245,7 +265,7 @@ class _NewPP_AState extends State<NewPP_A> {
       }
 
       _ecgController.text = data!.avaliacao.ecg ?? '';
-      _avaliacaoTraumasController.text = data!.avaliacao.avaliacaoTraumas;
+      // _avaliacaoTraumasController.text = data!.avaliacao.avaliacaoTraumas;
       _outrasAnotacoesController.text = data!.avaliacao.outrasAnotacoes;
 
       _selectedDor = hasDor ? true : false;
@@ -399,6 +419,8 @@ class _NewPP_AState extends State<NewPP_A> {
         pcr: hasPCR
             ? PCRModel(
                 ciclos: _pcrCiclosController.text,
+                tempoCompressaoToracicaMinutos:
+                    _pcrTempoCompressaoToracicaController.text,
                 medicacoes: _listPCRMedicacoes,
                 cardioversaoOuDesfribilacao:
                     _selectedPCRCardioversaoDesfribilacao,
@@ -407,7 +429,7 @@ class _NewPP_AState extends State<NewPP_A> {
               )
             : null,
         outrasAnotacoes: _outrasAnotacoesController.text,
-        avaliacaoTraumas: _avaliacaoTraumasController.text,
+        // avaliacaoTraumas: _avaliacaoTraumasController.text,
         fc: _fcController.text,
         fr: _frController.text,
         sp02: _sp02Controller.text,
@@ -418,7 +440,12 @@ class _NewPP_AState extends State<NewPP_A> {
         ao: _ao,
         avdi: _avdi ?? '',
         pupilas: _pupilas ?? '',
-        pupilasTamanho: _pupilasTamanho,
+        pupilasFotoreacao: _selectedPupilasFotoreacao == true
+            ? PupilasFotoreacaoModel(
+                tamanhoDireita: _pupilasTamanhoDireita,
+                tamanhoEsquerda: _pupilasTamanhoEsquerda,
+              )
+            : _selectedPupilasFotoreacaoOption,
         pupilasAnisocoricas: _pupilasAnisocoricas,
         nomeMedicacao: _nomeMedicacaoController.text == ''
             ? null
@@ -430,6 +457,8 @@ class _NewPP_AState extends State<NewPP_A> {
               )
             : null,
       );
+
+      print(newPPNotifier.avaliacao.toJsonString());
     }
 
     return SingleChildScrollView(
@@ -746,7 +775,7 @@ class _NewPP_AState extends State<NewPP_A> {
                           spacingColumn,
                           Expanded(
                             child: Text(
-                              'Resultado: ${_rm.toInt() + _rv.toInt() + _ao.toInt()}/15',
+                              'ECG: ${_rm.toInt() + _rv.toInt() + _ao.toInt()}/15',
                               textAlign: TextAlign.center,
                               style: TextStyle(
                                 fontSize: 16,
@@ -801,7 +830,6 @@ class _NewPP_AState extends State<NewPP_A> {
                               },
                         validator: FormValidators.required,
                       ),
-                      spacingRow,
                       if (_pupilas == 'Anisocóricas') ...[
                         spacingRow,
                         DropdownButtonFormField(
@@ -828,33 +856,113 @@ class _NewPP_AState extends State<NewPP_A> {
                           validator: (value) => FormValidators.required(value,
                               condition: _pupilas == 'Anisocóricas'),
                         ),
-                        spacingRow,
                       ],
-                      if (_pupilas == 'Fotorreagente') ...[
+                      spacingRow,
+                      Row(children: [
+                        Expanded(
+                          child: Text('Fotoreação:',
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold, fontSize: 16)),
+                        ),
+                        Expanded(
+                          child: RadioListTile<bool>(
+                            title: const Text('Sim'),
+                            value: true,
+                            groupValue: _selectedPupilasFotoreacao,
+                            onChanged: (value) {
+                              if (data != null) {
+                                return;
+                              }
+                              setState(() {
+                                _selectedPupilasFotoreacao = value as bool;
+                              });
+                            },
+                          ),
+                        ),
+                        Expanded(
+                          child: RadioListTile<bool>(
+                            title: const Text('Não'),
+                            value: false,
+                            groupValue: _selectedPupilasFotoreacao,
+                            onChanged: (value) {
+                              if (data != null) {
+                                return;
+                              }
+                              setState(() {
+                                _selectedPupilasFotoreacao = value as bool;
+                              });
+                            },
+                          ),
+                        ),
+                      ]),
+                      if (_selectedPupilasFotoreacao) ...[
                         spacingRow,
                         Column(children: [
-                          Text('Tamanho das pupilas em mm'),
+                          Text('Tamanho da pupila DIREITA em mm'),
                           Slider(
-                              value: _pupilasTamanho ?? 1.0,
+                              value: _pupilasTamanhoDireita,
                               min: 1.0,
                               max: 9.0,
                               divisions: 8,
-                              label: _pupilasTamanho?.toInt().toString() ?? '1',
+                              label: _pupilasTamanhoDireita.toInt().toString(),
                               onChanged: (value) {
                                 if (data != null) {
                                   return;
                                 }
                                 setState(() {
-                                  _pupilasTamanho = value;
+                                  _pupilasTamanhoDireita = value;
+                                });
+                              }),
+                          Text('Tamanho da pupila ESQUERDA em mm'),
+                          Slider(
+                              value: _pupilasTamanhoEsquerda,
+                              min: 1.0,
+                              max: 9.0,
+                              divisions: 8,
+                              label: _pupilasTamanhoEsquerda.toInt().toString(),
+                              onChanged: (value) {
+                                if (data != null) {
+                                  return;
+                                }
+                                setState(() {
+                                  _pupilasTamanhoEsquerda = value;
                                 });
                               })
                         ]),
-                        spacingRow,
                       ],
+                      if (!_selectedPupilasFotoreacao) ...[
+                        spacingRow,
+                        DropdownButtonFormField(
+                          value: _selectedPupilasFotoreacaoOption,
+                          decoration: InputDecoration(labelText: 'Fotoreação'),
+                          items: optionsPupilasFotoreacao
+                              .map((e) => DropdownMenuItem(
+                                    value: e,
+                                    child: Text(e,
+                                        style: TextStyle(
+                                          color: Colors.black,
+                                        )),
+                                  ))
+                              .toList(),
+                          onChanged: data != null
+                              ? null
+                              : (value) {
+                                  setState(() {
+                                    checkValidFields();
+                                    _selectedPupilasFotoreacaoOption =
+                                        value as String;
+                                  });
+                                },
+                          validator: (value) => FormValidators.required(value,
+                              condition: !_selectedPupilasFotoreacao),
+                        ),
+                      ],
+                      spacingRow,
                     ]),
                   ),
                   Text(
-                    'INTUBAÇÃO',
+                    'INTUBAÇÃO OROTRAQUEAL / MÁSCARA LARÍNGEA',
                     textAlign: TextAlign.center,
                     style: TextStyle(fontSize: 16),
                   ),
@@ -906,14 +1014,6 @@ class _NewPP_AState extends State<NewPP_A> {
                             Row(
                               children: [
                                 Expanded(
-                                    // child: TextFormField(
-                                    //   readOnly: data != null,
-                                    //   controller: _intubacaoHorarioController,
-                                    //   decoration: InputDecoration(
-                                    //     labelText: 'Horário',
-                                    //   ),
-                                    //   keyboardType: TextInputType.datetime,
-                                    // ),
                                     child: TimePickerTextField(
                                   labelText: 'Horário',
                                   controller: _intubacaoHorarioController,
@@ -934,7 +1034,7 @@ class _NewPP_AState extends State<NewPP_A> {
                                     controller: _intubacaoNumeroTuboController,
                                     focusNode: _intubacaoNumeroTuboFocusNode,
                                     decoration: InputDecoration(
-                                      labelText: 'Nº do tubo',
+                                      labelText: 'Nº',
                                     ),
                                     keyboardType: TextInputType.number,
                                     textInputAction: TextInputAction.next,
@@ -1791,6 +1891,21 @@ class _NewPP_AState extends State<NewPP_A> {
                           onChanged: (_) => checkValidFields(),
                         ),
                         spacingRow,
+                        TextFormField(
+                          readOnly: data != null,
+                          controller: _pcrTempoCompressaoToracicaController,
+                          decoration: InputDecoration(
+                            labelText:
+                                'Tempo de compressão toráxica em minutos',
+                          ),
+                          keyboardType: TextInputType.number,
+                          validator: (value) => FormValidators.required(
+                            value,
+                            condition: _selectedPCR,
+                          ),
+                          onChanged: (_) => checkValidFields(),
+                        ),
+                        spacingRow,
                         Row(
                           children: [
                             Expanded(
@@ -2028,30 +2143,30 @@ class _NewPP_AState extends State<NewPP_A> {
                       ]
                     ]),
                   ),
-                  Text(
-                    'AVALIAÇÃO DE TRAUMAS',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(fontSize: 16),
-                  ),
-                  Divider(
-                    height: 10,
-                    thickness: 2,
-                    color: Colors.green,
-                  ),
-                  spacingRow,
-                  Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 16),
-                    child: TextFormField(
-                      readOnly: data != null,
-                      controller: _avaliacaoTraumasController,
-                      decoration: InputDecoration(
-                        labelText: 'Avaliação de traumas',
-                      ),
-                      maxLines: null,
-                      textInputAction: TextInputAction.done,
-                    ),
-                  ),
-                  spacingRow,
+                  // Text(
+                  //   'AVALIAÇÃO DE TRAUMAS',
+                  //   textAlign: TextAlign.center,
+                  //   style: TextStyle(fontSize: 16),
+                  // ),
+                  // Divider(
+                  //   height: 10,
+                  //   thickness: 2,
+                  //   color: Colors.green,
+                  // ),
+                  // spacingRow,
+                  // Padding(
+                  //   padding: EdgeInsets.symmetric(horizontal: 16),
+                  //   child: TextFormField(
+                  //     readOnly: data != null,
+                  //     controller: _avaliacaoTraumasController,
+                  //     decoration: InputDecoration(
+                  //       labelText: 'Avaliação de traumas',
+                  //     ),
+                  //     maxLines: null,
+                  //     textInputAction: TextInputAction.done,
+                  //   ),
+                  // ),
+                  // spacingRow,
                   Text(
                     'OUTROS',
                     textAlign: TextAlign.center,

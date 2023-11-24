@@ -7,6 +7,7 @@ import 'package:ppeu/models/PP/Gestante.model.dart';
 import 'package:ppeu/models/PP/Intubacao.model.dart';
 import 'package:ppeu/models/PP/Oxigenio.model.dart';
 import 'package:ppeu/models/PP/Pertences.model.dart';
+import 'package:ppeu/models/PP/PupilaFotoreacao.model.dart';
 import 'package:ppeu/models/PP/ResponsavelRecebimento.model.dart';
 import 'package:ppeu/models/PP/Sintomas.model.dart';
 
@@ -45,13 +46,13 @@ List<String> optionsAVDI = [
   'Sem alteração'
 ];
 List<String> optionsPupilas = [
-  'Fotorreagente',
   'Isocóricas',
-  'Mitióticas',
+  'Mióticas',
   'Midriáticas',
   'Anisocóricas'
 ];
 List<String> optionsPupilasAnisocoricas = ['D > E', 'E > D'];
+List<String> optionsPupilasFotoreacao = ['D', 'E', 'Nenhuma'];
 List<String> optionsAcidenteTransito = [
   'Atropelamento',
   'Auto -> Auto',
@@ -69,7 +70,14 @@ List<String> optionsAcessoIntraosseo = [
   'Úmero E'
 ];
 List<String> optionsOxigenio = ['MAF', 'Catéter', 'Não'];
-List<String> optionsAcessoCentralLocal = ['JE', 'JD', 'SCD', 'SCE', 'RID'];
+List<String> optionsAcessoCentralLocal = [
+  'JE',
+  'JD',
+  'SCD',
+  'SCE',
+  'RID',
+  'RIE'
+];
 List<String> optionsDrenoToraxLocal = ['HTD', 'HTE', 'HTD e HTE'];
 List<String> optionsPrecaucoes = ['Gotículas', 'Aerossóis', 'Contato'];
 List<String> optionsGestacao = ['Primigesta', 'Multigesta'];
@@ -130,7 +138,8 @@ PPModel examplePP = PPModel(
     rm: 2,
     avdi: "Inconciente",
     pupilas: "Midriáticas",
-    pupilasTamanho: null,
+    pupilasFotoreacao:
+        PupilasFotoreacaoModel(tamanhoDireita: 2.0, tamanhoEsquerda: 5.0),
     pupilasAnisocoricas: null,
     intubacao: IntubacaoModel(
       horario: "12:00",
@@ -160,7 +169,7 @@ PPModel examplePP = PPModel(
         tamanho: 16.0, horario: '23:30', profissional: 'Gabriel Lima'),
     pcr: null,
     ecg: "Normal",
-    avaliacaoTraumas: "Nenhuma",
+    // avaliacaoTraumas: "Nenhuma",
     outrasAnotacoes: "Paciente alérgico a amoxicilina.",
   ),
   recomendacoes: RecomendacoesModel(

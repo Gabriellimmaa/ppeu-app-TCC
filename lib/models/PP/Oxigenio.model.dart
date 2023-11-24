@@ -7,7 +7,7 @@ class OxigenioModel {
   OxigenioModel({
     required this.tipo,
     required this.litrosMinuto,
-  }) : assert(tipo == 'MAF' || tipo == 'Catater');
+  }) : assert(tipo == 'MAF' || tipo == 'Catéter');
 
   factory OxigenioModel.fromJson(Map<String, dynamic>? json) {
     if (json == null) {

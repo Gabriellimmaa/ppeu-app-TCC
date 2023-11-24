@@ -9,6 +9,7 @@ import 'package:ppeu/models/PP/Intubacao.model.dart';
 import 'package:ppeu/models/PP/Oxigenio.model.dart';
 import 'package:ppeu/models/PP/PCR.model.dart';
 import 'package:ppeu/models/PP/Pertences.model.dart';
+import 'package:ppeu/models/PP/PupilaFotoreacao.model.dart';
 import 'package:ppeu/models/PP/ResponsavelRecebimento.model.dart';
 import 'package:ppeu/models/PP/Sintomas.model.dart';
 
@@ -240,7 +241,7 @@ class AvaliacaoModel {
   final double rm;
   final String avdi;
   final String pupilas;
-  final double? pupilasTamanho;
+  final dynamic pupilasFotoreacao;
   final String? pupilasAnisocoricas;
   final IntubacaoModel? intubacao;
   final OxigenioModel? oxigenio;
@@ -251,7 +252,7 @@ class AvaliacaoModel {
   final CateterVesicalModel? cateterVesical;
   final PCRModel? pcr;
   final String? ecg;
-  final String avaliacaoTraumas;
+  // final String avaliacaoTraumas;
   final String outrasAnotacoes;
 
   AvaliacaoModel({
@@ -267,7 +268,7 @@ class AvaliacaoModel {
     required this.rm,
     required this.avdi,
     required this.pupilas,
-    required this.pupilasTamanho,
+    required this.pupilasFotoreacao,
     required this.pupilasAnisocoricas,
     required this.intubacao,
     required this.oxigenio,
@@ -278,7 +279,7 @@ class AvaliacaoModel {
     required this.cateterVesical,
     required this.pcr,
     required this.ecg,
-    required this.avaliacaoTraumas,
+    // required this.avaliacaoTraumas,
     required this.outrasAnotacoes,
   });
 
@@ -296,7 +297,13 @@ class AvaliacaoModel {
       rm: json['rm'],
       avdi: json['avdi'],
       pupilas: json['pupilas'],
-      pupilasTamanho: json['pupilasTamanho'],
+      pupilasFotoreacao: () {
+        try {
+          return PupilasFotoreacaoModel.fromJson(json['pupilasFotoreacao']);
+        } catch (e) {
+          return json['pupilasFotoreacao'];
+        }
+      },
       pupilasAnisocoricas: json['pupilasAnisocoricas'],
       intubacao: json['intubacao'] == null
           ? null
@@ -315,9 +322,9 @@ class AvaliacaoModel {
       cateterVesical: json['cateterVesical'] == null
           ? null
           : CateterVesicalModel.fromJson(json['cateterVesical']),
-      pcr: PCRModel.fromJson(json['pcr']),
+      pcr: json['pcr'] == null ? null : PCRModel.fromJson(json['pcr']),
       ecg: json['ecg'],
-      avaliacaoTraumas: json['avaliacaoTraumas'],
+      // avaliacaoTraumas: json['avaliacaoTraumas'],
       outrasAnotacoes: json['outrasAnotacoes'],
     );
   }
@@ -336,7 +343,9 @@ class AvaliacaoModel {
       'rm': rm,
       'avdi': avdi,
       'pupilas': pupilas,
-      'pupilasTamanho': pupilasTamanho,
+      'pupilasFotoreacao': pupilasFotoreacao is String
+          ? pupilasFotoreacao
+          : pupilasFotoreacao?.toJson(),
       'pupilasAnisocoricas': pupilasAnisocoricas,
       'intubacao': intubacao?.toJson(),
       'oxigenio': oxigenio?.toJson(),
@@ -347,7 +356,7 @@ class AvaliacaoModel {
       'cateterVesical': cateterVesical?.toJson(),
       'pcr': pcr?.toJson(),
       'ecg': ecg,
-      'avaliacaoTraumas': avaliacaoTraumas,
+      // 'avaliacaoTraumas': avaliacaoTraumas,
       'outrasAnotacoes': outrasAnotacoes,
     };
   }

@@ -3,13 +3,16 @@ import 'package:intl/intl.dart';
 import 'package:ppeu/core/notifier/authentication.notifier.dart';
 import 'package:ppeu/core/notifier/database.notifier.dart';
 import 'package:ppeu/core/notifier/hospitalUnit.notifier.dart';
+import 'package:ppeu/models/PP.model.dart';
+import 'package:ppeu/models/PPStatus.model.dart';
 import 'package:ppeu/screens/ManagePP/ManagePP.screen.dart';
 import 'package:ppeu/screens/NewPP/NewPP.screen.dart';
 import 'package:ppeu/screens/Report/Report.screen.dart';
 import 'package:ppeu/screens/SearchPP/SearchPP.screen.dart';
 import 'package:ppeu/widgets/CustomScaffold.widget.dart';
 import 'package:ppeu/widgets/GradientButton.widget.dart';
-import 'package:provider/provider.dart';
+import 'package:provider/provider.dart' as provider;
+import 'package:supabase/supabase.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -21,17 +24,32 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   bool isLoading = true;
   List<ListTile> data = [];
+  RealtimeSubscription? subscription;
+  int notificationCount = 0;
 
   Future fetchData() async {
     HospitalUnitNotifier hospitalUnitNotifier =
-        Provider.of<HospitalUnitNotifier>(
+        provider.Provider.of<HospitalUnitNotifier>(
       context,
       listen: false,
     );
-    DatabaseNotifier databaseNotifier = Provider.of<DatabaseNotifier>(
+    DatabaseNotifier databaseNotifier = provider.Provider.of<DatabaseNotifier>(
       context,
       listen: false,
     );
+
+    var responsePPWainting = await databaseNotifier.filterPP(
+      nome: null,
+      responsavelRecebimentoCpf: null,
+      hospitalUnit: null,
+      startDate: null,
+      endDate: null,
+      status: PPStatus.WAITING_CONFIRMATION,
+    );
+
+    setState(() {
+      notificationCount = responsePPWainting.length;
+    });
 
     var responseHospitalUnit = await hospitalUnitNotifier.fetchAll();
 
@@ -69,7 +87,28 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
+    DatabaseNotifier databaseNotifier = provider.Provider.of<DatabaseNotifier>(
+      context,
+      listen: false,
+    );
+
+    subscription = databaseNotifier.openRealtimeInsert(
+      onNotificationReceived: (PPModel? pp) {
+        setState(() {
+          if (pp != null) {
+            notificationCount++;
+          }
+        });
+      },
+    );
+
     fetchData();
+  }
+
+  @override
+  void dispose() {
+    subscription?.unsubscribe();
+    super.dispose();
   }
 
   @override
@@ -79,7 +118,7 @@ class _HomeScreenState extends State<HomeScreen> {
     String formattedTime = DateFormat('HH:mm').format(now);
 
     AuthenticationNotifier authenticationNotifier =
-        Provider.of<AuthenticationNotifier>(
+        provider.Provider.of<AuthenticationNotifier>(
       context,
       listen: false,
     );
@@ -178,6 +217,9 @@ class _HomeScreenState extends State<HomeScreen> {
                     child: Column(
                       children: [
                         GradientButton(
+                          notificationCount: authenticationNotifier.isMovel
+                              ? 0
+                              : notificationCount,
                           onPressed: () {
                             authenticationNotifier.isMovel
                                 ? Navigator.push(
@@ -189,6 +231,10 @@ class _HomeScreenState extends State<HomeScreen> {
                                     MaterialPageRoute(
                                         builder: (context) =>
                                             ManagePPScreen()));
+
+                            setState(() {
+                              notificationCount = 0;
+                            });
                           },
                           child: Stack(
                             children: [

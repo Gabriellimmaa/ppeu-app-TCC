@@ -13,6 +13,20 @@ class DatabaseService {
     return response.data;
   }
 
+  RealtimeSubscription openRealtimeInsert({
+    required void Function(PPModel?) onNotificationReceived,
+  }) {
+    var response = SupabaseCredentials.supabaseClient
+        .from('pp')
+        .on(SupabaseEventTypes.insert, (payload) {
+      dynamic data = payload.newRecord;
+      PPModel response = PPModel.fromJson(data);
+      onNotificationReceived(response);
+    }).subscribe();
+
+    return response;
+  }
+
   Future<PostgrestResponse> addPP({
     required BuildContext context,
     required PPModel data,

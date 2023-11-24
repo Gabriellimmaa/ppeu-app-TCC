@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:ppeu/core/service/database.service.dart';
 import 'package:ppeu/models/PP.model.dart';
+import 'package:supabase/supabase.dart';
 
 class DatabaseNotifier extends ChangeNotifier {
   final DatabaseService _databaseService = DatabaseService();
@@ -31,6 +32,15 @@ class DatabaseNotifier extends ChangeNotifier {
     }
   }
 
+  RealtimeSubscription? openRealtimeInsert({
+    required void Function(PPModel?) onNotificationReceived,
+  }) {
+    var data = _databaseService.openRealtimeInsert(
+      onNotificationReceived: onNotificationReceived,
+    );
+    return data;
+  }
+
   Future<List<PPModel>> filterPP({
     String? nome,
     String? responsavelRecebimentoCpf,
@@ -52,8 +62,6 @@ class DatabaseNotifier extends ChangeNotifier {
     List<Map<String, dynamic>> data = List<Map<String, dynamic>>.from(rawData);
 
     List<PPModel> response = data.map((e) => PPModel.fromJson(e)).toList();
-    print('response');
-    print(response);
     return response;
   }
 

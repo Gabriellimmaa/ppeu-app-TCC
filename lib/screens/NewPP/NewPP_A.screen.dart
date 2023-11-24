@@ -149,7 +149,8 @@ class _NewPP_AState extends State<NewPP_A> {
       bool hasCateterVesical = data!.avaliacao.cateterVesical != null;
       bool hasPCR = data!.avaliacao.pcr != null;
       bool hasECG = data!.avaliacao.ecg != null;
-      bool hasPupilasFotoreacao = data!.avaliacao.pupilasFotoreacao is! String;
+      bool hasPupilasFotoreacao =
+          data!.avaliacao.pupilasFotoreacao() is! String;
       bool hasAcessoCentral = data!.avaliacao.acesso.central != null;
       bool hasAcessoPeriferico = data!.avaliacao.acesso.periferico != null;
       bool hasAcessoIntraosseo = data!.avaliacao.acesso.intraosseo != null;
@@ -169,13 +170,14 @@ class _NewPP_AState extends State<NewPP_A> {
 
       if (hasPupilasFotoreacao) {
         _selectedPupilasFotoreacao = true;
-        _pupilasTamanhoDireita =
-            data!.avaliacao.pupilasFotoreacao!.tamanhoDireita;
-        _pupilasTamanhoEsquerda =
-            data!.avaliacao.pupilasFotoreacao!.tamanhoEsquerda;
+        PupilasFotoreacaoModel? pupilasFotoreacao =
+            data!.avaliacao.pupilasFotoreacao();
+
+        _pupilasTamanhoDireita = pupilasFotoreacao!.tamanhoDireita;
+        _pupilasTamanhoEsquerda = pupilasFotoreacao.tamanhoEsquerda;
       } else {
         _selectedPupilasFotoreacao = false;
-        _selectedPupilasFotoreacaoOption = data!.avaliacao.pupilasFotoreacao;
+        _selectedPupilasFotoreacaoOption = data!.avaliacao.pupilasFotoreacao();
       }
 
       if (hasAcessoCentral) {
@@ -247,7 +249,7 @@ class _NewPP_AState extends State<NewPP_A> {
       if (hasPCR) {
         _pcrCiclosController.text = data!.avaliacao.pcr!.ciclos;
         _pcrTempoCompressaoToracicaController.text =
-            data!.avaliacao.pcr!.tempoCompressaoToracicaMniutos;
+            data!.avaliacao.pcr!.tempoCompressaoToracicaMinutos;
         _listPCRMedicacoes.addAll(data!.avaliacao.pcr!.medicacoes);
         _selectedPCRCardioversaoDesfribilacao =
             data!.avaliacao.pcr!.cardioversaoOuDesfribilacao;
@@ -417,7 +419,7 @@ class _NewPP_AState extends State<NewPP_A> {
         pcr: hasPCR
             ? PCRModel(
                 ciclos: _pcrCiclosController.text,
-                tempoCompressaoToracicaMniutos:
+                tempoCompressaoToracicaMinutos:
                     _pcrTempoCompressaoToracicaController.text,
                 medicacoes: _listPCRMedicacoes,
                 cardioversaoOuDesfribilacao:

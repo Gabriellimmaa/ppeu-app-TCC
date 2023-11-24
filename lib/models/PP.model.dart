@@ -322,7 +322,7 @@ class AvaliacaoModel {
       cateterVesical: json['cateterVesical'] == null
           ? null
           : CateterVesicalModel.fromJson(json['cateterVesical']),
-      pcr: PCRModel.fromJson(json['pcr']),
+      pcr: json['pcr'] == null ? null : PCRModel.fromJson(json['pcr']),
       ecg: json['ecg'],
       // avaliacaoTraumas: json['avaliacaoTraumas'],
       outrasAnotacoes: json['outrasAnotacoes'],

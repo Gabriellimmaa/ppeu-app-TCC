@@ -27,21 +27,13 @@ class _HomeScreenState extends State<HomeScreen> {
   RealtimeSubscription? subscription;
   int notificationCount = 0;
 
-  Future fetchData() async {
-    HospitalUnitNotifier hospitalUnitNotifier =
-        provider.Provider.of<HospitalUnitNotifier>(
-      context,
-      listen: false,
-    );
-    DatabaseNotifier databaseNotifier = provider.Provider.of<DatabaseNotifier>(
-      context,
-      listen: false,
-    );
-
+  Future fetchNotification(
+      {required AuthenticationNotifier authenticationNotifier,
+      required DatabaseNotifier databaseNotifier}) async {
     var responsePPWainting = await databaseNotifier.filterPP(
       nome: null,
       responsavelRecebimentoCpf: null,
-      hospitalUnit: null,
+      hospitalUnit: authenticationNotifier.hospitalUnit!.name,
       startDate: null,
       endDate: null,
       status: PPStatus.WAITING_CONFIRMATION,
@@ -50,6 +42,14 @@ class _HomeScreenState extends State<HomeScreen> {
     setState(() {
       notificationCount = responsePPWainting.length;
     });
+  }
+
+  Future fetchData({required DatabaseNotifier databaseNotifier}) async {
+    HospitalUnitNotifier hospitalUnitNotifier =
+        provider.Provider.of<HospitalUnitNotifier>(
+      context,
+      listen: false,
+    );
 
     var responseHospitalUnit = await hospitalUnitNotifier.fetchAll();
 
@@ -92,17 +92,32 @@ class _HomeScreenState extends State<HomeScreen> {
       listen: false,
     );
 
+    AuthenticationNotifier authenticationNotifier =
+        provider.Provider.of<AuthenticationNotifier>(
+      context,
+      listen: false,
+    );
+
+    fetchNotification(
+        authenticationNotifier: authenticationNotifier,
+        databaseNotifier: databaseNotifier);
+
     subscription = databaseNotifier.openRealtimeInsert(
       onNotificationReceived: (PPModel? pp) {
         setState(() {
           if (pp != null) {
-            notificationCount++;
+            if (pp.recomendacoes.encaminhamento ==
+                authenticationNotifier.hospitalUnit!.name) {
+              notificationCount++;
+            }
           }
         });
       },
     );
 
-    fetchData();
+    fetchData(
+      databaseNotifier: databaseNotifier,
+    );
   }
 
   @override
@@ -119,6 +134,11 @@ class _HomeScreenState extends State<HomeScreen> {
 
     AuthenticationNotifier authenticationNotifier =
         provider.Provider.of<AuthenticationNotifier>(
+      context,
+      listen: false,
+    );
+
+    DatabaseNotifier databaseNotifier = provider.Provider.of<DatabaseNotifier>(
       context,
       listen: false,
     );
@@ -229,12 +249,15 @@ class _HomeScreenState extends State<HomeScreen> {
                                 : Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                        builder: (context) =>
-                                            ManagePPScreen()));
-
-                            setState(() {
-                              notificationCount = 0;
-                            });
+                                        builder: (context) => ManagePPScreen(
+                                              onClose: (p0) => {
+                                                fetchNotification(
+                                                    authenticationNotifier:
+                                                        authenticationNotifier,
+                                                    databaseNotifier:
+                                                        databaseNotifier)
+                                              },
+                                            )));
                           },
                           child: Stack(
                             children: [

@@ -10,7 +10,8 @@ import 'package:provider/provider.dart';
 import 'dart:async';
 
 class ManagePPScreen extends StatefulWidget {
-  const ManagePPScreen({Key? key}) : super(key: key);
+  final Function(bool) onClose;
+  const ManagePPScreen({Key? key, required this.onClose}) : super(key: key);
 
   @override
   State<ManagePPScreen> createState() => _ManagePPScreenState();
@@ -71,7 +72,7 @@ class _ManagePPScreenState extends State<ManagePPScreen> {
       listen: false,
     );
 
-    _onSearchChanged() {
+    onSearchChanged() {
       if (_debounce?.isActive ?? false) _debounce?.cancel();
       isLoading = true;
       _debounce = Timer(const Duration(milliseconds: 500), () async {
@@ -147,6 +148,13 @@ class _ManagePPScreenState extends State<ManagePPScreen> {
           centerTitle: true,
           backgroundColor: Colors.transparent,
           elevation: 0,
+          leading: IconButton(
+            onPressed: () {
+              widget.onClose(true);
+              Navigator.pop(context);
+            },
+            icon: Icon(Icons.arrow_back),
+          ),
         ),
         extendBodyBehindAppBar: true,
         body: gradientContainer(
@@ -165,7 +173,7 @@ class _ManagePPScreenState extends State<ManagePPScreen> {
                     Expanded(
                       child: TextField(
                         controller: _nameController,
-                        onChanged: (data) => _onSearchChanged(),
+                        onChanged: (data) => onSearchChanged(),
                         decoration: InputDecoration(
                           filled: true,
                           fillColor: Colors.white.withOpacity(0.5),
@@ -191,7 +199,7 @@ class _ManagePPScreenState extends State<ManagePPScreen> {
                         if (date != null) {
                           _dateController.text =
                               DateFormat('yyyy-MM-dd').format(date);
-                          _onSearchChanged();
+                          onSearchChanged();
                         }
                       },
                       icon: Stack(
@@ -209,7 +217,7 @@ class _ManagePPScreenState extends State<ManagePPScreen> {
                               child: GestureDetector(
                                 onTap: () {
                                   _dateController.text = "";
-                                  _onSearchChanged();
+                                  onSearchChanged();
                                 },
                                 child: Container(
                                   padding: EdgeInsets.all(4),

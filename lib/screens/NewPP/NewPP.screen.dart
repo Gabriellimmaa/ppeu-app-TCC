@@ -101,7 +101,7 @@ class _NewPPScreenState extends State<NewPPScreen> {
           IconButton(
             icon: Icon(Icons.arrow_forward_ios),
             onPressed: () {
-              // _onTabTapped('next');
+              _onTabTapped('next');
               List<GlobalKey<FormState>> formKeys = [];
               formKeys.add(newPPNotifier.formKeyIdentificacao);
               formKeys.add(newPPNotifier.formKeySituacao);

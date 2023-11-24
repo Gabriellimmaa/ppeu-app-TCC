@@ -52,7 +52,8 @@ class DatabaseNotifier extends ChangeNotifier {
     List<Map<String, dynamic>> data = List<Map<String, dynamic>>.from(rawData);
 
     List<PPModel> response = data.map((e) => PPModel.fromJson(e)).toList();
-
+    print('response');
+    print(response);
     return response;
   }
 

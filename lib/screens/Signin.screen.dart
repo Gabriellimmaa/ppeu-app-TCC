@@ -85,7 +85,7 @@ class SigninScreenState extends State<SigninScreen> {
                 width: double.infinity,
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    primary:
+                    backgroundColor:
                         Colors.transparent, // Define o background transparente
                     elevation: 0, // Remove a sombra
                   ),

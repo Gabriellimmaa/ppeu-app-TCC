@@ -27,6 +27,10 @@ class MobileUnitModel {
     );
   }
 
+  factory MobileUnitModel.fromJsonString(String jsonString) {
+    return MobileUnitModel.fromJson(jsonDecode(jsonString));
+  }
+
   String toJsonString() {
     return jsonEncode(toJson());
   }

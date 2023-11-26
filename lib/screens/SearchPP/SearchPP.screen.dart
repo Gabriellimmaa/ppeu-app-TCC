@@ -1,15 +1,15 @@
 // ignore_for_file: use_build_context_synchronously
-
 import 'package:flutter/material.dart';
 import 'package:ppeu/constants/constants.dart';
 import 'package:ppeu/core/notifier/authentication.notifier.dart';
 import 'package:ppeu/core/notifier/database.notifier.dart';
 import 'package:ppeu/core/notifier/hospitalUnit.notifier.dart';
+import 'package:ppeu/core/notifier/mobileUnit.notifier.dart';
 import 'package:ppeu/core/notifier/user.notifier.dart';
 import 'package:ppeu/models/HospitalUnit.model.dart';
+import 'package:ppeu/models/MobileUnit.model.dart';
 import 'package:ppeu/screens/SearchPP/SearchPP_List.screen.dart';
 import 'package:ppeu/utils/formater/LimitCharacters.util.dart';
-import 'package:ppeu/utils/validation/FormValidators.validation.dart';
 import 'package:ppeu/widgets/CustomPageContainer.widget.dart';
 import 'package:ppeu/widgets/CustomScaffold.widget.dart';
 import 'package:ppeu/widgets/GradientButton.widget.dart';
@@ -17,8 +17,9 @@ import 'package:ppeu/widgets/inputs/DatePickerTextField.widget.dart';
 import 'package:provider/provider.dart';
 
 class SearchPPScreen extends StatefulWidget {
-  final HospitalUnitModel hospitalUnit;
-  const SearchPPScreen({Key? key, required this.hospitalUnit})
+  final HospitalUnitModel? hospitalUnit;
+  final MobileUnitModel? mobileUnit;
+  const SearchPPScreen({Key? key, this.hospitalUnit, this.mobileUnit})
       : super(key: key);
 
   @override
@@ -29,12 +30,14 @@ class _SearchPPScreenState extends State<SearchPPScreen> {
   bool isLoading = true;
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   DateTime selectedDate = DateTime.now();
-  String? _selectedHospital;
+  int? _selectedHospitalUnit;
+  String? _selectedMobileUnit;
   String? _selectedResponsavel;
   String buttonText = 'Selecione';
   DateTime? _selectedDate;
   final TextEditingController _nameController = TextEditingController();
-  List<DropdownMenuItem<String>> _hospitalUnitDropdownItems = [];
+  List<DropdownMenuItem<int>> _hospitalUnitDropdownItems = [];
+  List<DropdownMenuItem<String>> _mobileUnitDropdownItems = [];
   List<DropdownMenuItem<String>> _usersDropdownItems = [];
 
   @override
@@ -67,13 +70,12 @@ class _SearchPPScreenState extends State<SearchPPScreen> {
         Provider.of<AuthenticationNotifier>(context, listen: false);
     HospitalUnitNotifier hospitalUnitNotifier =
         Provider.of<HospitalUnitNotifier>(context, listen: false);
-    List<dynamic> data = await hospitalUnitNotifier.fetchAll();
+    var data = await hospitalUnitNotifier.fetchAll();
 
     setState(() {
       _hospitalUnitDropdownItems = data.map((element) {
-        return DropdownMenuItem<String>(
-          value:
-              '${element.id.toString()}::${element.name}::${element.surname}',
+        return DropdownMenuItem<int>(
+          value: element.id,
           child: Text(
             limitCharacters(element.name, 30),
             style: TextStyle(
@@ -82,28 +84,77 @@ class _SearchPPScreenState extends State<SearchPPScreen> {
           ),
         );
       }).toList();
-      _selectedHospital =
-          '${user.hospitalUnit!.id.toString()}::${user.hospitalUnit!.name}::${user.hospitalUnit!.surname}';
-    }); // Força o rebuild do widget
+      if (user.hospitalUnit != null) {
+        print(user.hospitalUnit!.toJsonString());
+        _selectedHospitalUnit = user.hospitalUnit!.id;
+      }
+    });
+  }
+
+  Future<void> fetchMobileUnitsAndBuildDropdown(BuildContext context) async {
+    AuthenticationNotifier user =
+        Provider.of<AuthenticationNotifier>(context, listen: false);
+    MobileUnitNotifier mobileUnitNotifier =
+        Provider.of<MobileUnitNotifier>(context, listen: false);
+    var data = await mobileUnitNotifier.fetchAll();
+
+    setState(() {
+      _mobileUnitDropdownItems = data.map((element) {
+        return DropdownMenuItem<String>(
+          value: element.name,
+          child: Text(
+            limitCharacters(element.name, 30),
+            style: TextStyle(
+              color: Colors.black,
+            ),
+          ),
+        );
+      }).toList();
+      if (user.mobileUnit != null) {
+        _selectedMobileUnit = user.mobileUnit!.name;
+      }
+    });
   }
 
   Future<void> fetchUsersAndBuildDropdown(BuildContext context) async {
     UserNotifier userNotifier =
         Provider.of<UserNotifier>(context, listen: false);
-    // List<dynamic> data = await userNotifier.fetchAll();
-    List<dynamic> data =
-        await userNotifier.filterByHospitalUnit(id: widget.hospitalUnit.id);
-    _usersDropdownItems = data.map((element) {
-      return DropdownMenuItem<String>(
-        value: element.taxId.toString(),
-        child: Text(
-          limitCharacters(element.name, 30),
-          style: TextStyle(
-            color: Colors.black,
-          ),
-        ),
-      );
-    }).toList();
+
+    int? id = (widget.hospitalUnit != null
+        ? widget.hospitalUnit!.id
+        : _selectedHospitalUnit);
+
+    if (id != null) {
+      List<dynamic> data = await userNotifier.filterByHospitalUnit(id: id);
+      setState(() {
+        _usersDropdownItems = data.map((element) {
+          return DropdownMenuItem<String>(
+            value: element.taxId.toString(),
+            child: Text(
+              limitCharacters(element.name, 30),
+              style: TextStyle(
+                color: Colors.black,
+              ),
+            ),
+          );
+        }).toList();
+      });
+    } else {
+      List<dynamic> data = await userNotifier.fetchAll();
+      setState(() {
+        _usersDropdownItems = data.map((element) {
+          return DropdownMenuItem<String>(
+            value: element.taxId.toString(),
+            child: Text(
+              limitCharacters(element.name, 30),
+              style: TextStyle(
+                color: Colors.black,
+              ),
+            ),
+          );
+        }).toList();
+      });
+    }
 
     setState(() {
       isLoading = false;
@@ -114,7 +165,8 @@ class _SearchPPScreenState extends State<SearchPPScreen> {
   void initState() {
     super.initState();
 
-    // fetchHospitalUnitsAndBuildDropdown(context);
+    fetchHospitalUnitsAndBuildDropdown(context);
+    fetchMobileUnitsAndBuildDropdown(context);
     fetchUsersAndBuildDropdown(context);
   }
 
@@ -123,6 +175,8 @@ class _SearchPPScreenState extends State<SearchPPScreen> {
         Provider.of<DatabaseNotifier>(context, listen: false);
     UserNotifier userNotifier =
         Provider.of<UserNotifier>(context, listen: false);
+    AuthenticationNotifier authNotifier =
+        Provider.of<AuthenticationNotifier>(context, listen: false);
 
     void updateUsersDropdown(id) async {
       List<dynamic> data = await userNotifier.filterByHospitalUnit(id: id);
@@ -163,24 +217,34 @@ class _SearchPPScreenState extends State<SearchPPScreen> {
                     child: Column(
                       children: [
                         SizedBox(height: 25),
-                        DropdownButtonFormField(
+                        DropdownButtonFormField<int>(
+                            decoration: InputDecoration(
+                                labelText: 'Unidade hospitalar'),
+                            items: _hospitalUnitDropdownItems,
+                            value: _selectedHospitalUnit,
+                            onChanged: authNotifier.hospitalUnit != null
+                                ? null
+                                : (value) {
+                                    updateUsersDropdown(value);
+                                    setState(() {
+                                      _selectedHospitalUnit = value;
+                                    });
+                                    checkValidFields();
+                                  }),
+                        spacingRow,
+                        DropdownButtonFormField<String>(
                           decoration:
-                              InputDecoration(labelText: 'Unidade hospitalar'),
-                          items: _hospitalUnitDropdownItems,
-                          onChanged: null,
-                          disabledHint: Text(widget.hospitalUnit.surname),
-                          style: TextStyle(
-                            color: Colors.black,
-                          ),
-                          // value: _selectedHospital,
-                          // onChanged: (value) {
-                          //   updateUsersDropdown(int.parse(
-                          //       value.toString().split('::')[0].toString()));
-                          //   setState(() {
-                          //     _selectedHospital = value as String?;
-                          //   });
-                          //   checkValidFields();
-                          // },
+                              InputDecoration(labelText: 'Unidade móvel'),
+                          items: _mobileUnitDropdownItems,
+                          value: _selectedMobileUnit,
+                          onChanged: authNotifier.mobileUnit != null
+                              ? null
+                              : (value) {
+                                  setState(() {
+                                    _selectedMobileUnit = value;
+                                  });
+                                  checkValidFields();
+                                },
                         ),
                         spacingRow,
                         DropdownButtonFormField(
@@ -239,7 +303,8 @@ class _SearchPPScreenState extends State<SearchPPScreen> {
                               var response = await databaseNotifier.filterPP(
                                 nome: _nameController.text,
                                 responsavelRecebimentoCpf: _selectedResponsavel,
-                                hospitalUnit: widget.hospitalUnit.name,
+                                hospitalUnit: _selectedHospitalUnit,
+                                mobileUnit: _selectedMobileUnit,
                                 startDate: _selectedDate,
                                 endDate: _selectedDate?.add(Duration(days: 1)),
                               );
@@ -275,7 +340,7 @@ class _SearchPPScreenState extends State<SearchPPScreen> {
                                     builder: (context) => SearchPPListScreen(
                                         ppModels: response,
                                         hospitalUnit:
-                                            widget.hospitalUnit.surname),
+                                            widget.hospitalUnit?.surname ?? ''),
                                   ),
                                 );
                               }

@@ -32,11 +32,11 @@ class TableUHState extends State<TableUH> {
               element.recomendacoes.encaminhamento] ==
           null) {
         somasPorDataEUnidade[element.createdAt!]![
-            element.recomendacoes.encaminhamento] = 0;
+            element.recomendacoes.encaminhamento.name] = 0;
       }
       somasPorDataEUnidade[element.createdAt!]![
-          element.recomendacoes.encaminhamento] = somasPorDataEUnidade[
-              element.createdAt!]![element.recomendacoes.encaminhamento]! +
+          element.recomendacoes.encaminhamento.name] = somasPorDataEUnidade[
+              element.createdAt!]![element.recomendacoes.encaminhamento.name]! +
           1;
     }
 

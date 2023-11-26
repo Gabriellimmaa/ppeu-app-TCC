@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:ppeu/constants/constants.dart';
 import 'package:ppeu/core/notifier/authentication.notifier.dart';
 import 'package:ppeu/models/HospitalUnit.model.dart';
+import 'package:ppeu/models/MobileUnit.model.dart';
 import 'package:ppeu/widgets/CustomPageContainer.widget.dart';
 import 'package:ppeu/widgets/CustomScaffold.widget.dart';
 import 'package:ppeu/widgets/GradientButton.widget.dart';
@@ -19,6 +20,12 @@ class _SelectUserScreenState extends State<SelectUserScreen> {
   bool isLoading = true;
   String selectedMobileUnit = '';
 
+  final List<DropdownMenuItem<String>> _hospitalUnitData = [
+    DropdownMenuItem(
+      value: '',
+      child: Text('Selecione'),
+    )
+  ];
   final List<DropdownMenuItem<String>> _mobileUnitData = [
     DropdownMenuItem(
       value: '',
@@ -34,11 +41,21 @@ class _SelectUserScreenState extends State<SelectUserScreen> {
     );
 
     setState(() {
-      for (var element in authenticationNotifier.hospitalUnits) {
-        _mobileUnitData.add(DropdownMenuItem(
-          value: element.toJsonString(),
-          child: Text(element.name.toString()),
-        ));
+      if (authenticationNotifier.hospitalUnits != null) {
+        for (var element in authenticationNotifier.hospitalUnits!) {
+          _hospitalUnitData.add(DropdownMenuItem(
+            value: element.toJsonString(),
+            child: Text(element.name.toString()),
+          ));
+        }
+      }
+      if (authenticationNotifier.mobileUnits != null) {
+        for (var element in authenticationNotifier.mobileUnits!) {
+          _mobileUnitData.add(DropdownMenuItem(
+            value: element.toJsonString(),
+            child: Text(element.name.toString()),
+          ));
+        }
       }
       isLoading = false;
     });
@@ -52,6 +69,8 @@ class _SelectUserScreenState extends State<SelectUserScreen> {
 
   @override
   Widget build(BuildContext context) {
+    bool hasMobileUnit = _mobileUnitData.length > 1;
+
     AuthenticationNotifier authenticationNotifier =
         Provider.of<AuthenticationNotifier>(
       context,
@@ -91,16 +110,19 @@ class _SelectUserScreenState extends State<SelectUserScreen> {
                       children: [
                           Column(
                             children: [
-                              Text('Estabelecimento de Saúde'),
+                              Text(hasMobileUnit
+                                  ? 'Unidade Móvel'
+                                  : 'Unidade Hospitalar'),
                               SizedBox(
                                 height: 10,
                               ),
                               DropdownButton(
                                   value: selectedMobileUnit,
-                                  items: _mobileUnitData,
+                                  items: hasMobileUnit
+                                      ? _mobileUnitData
+                                      : _hospitalUnitData,
                                   onChanged: (value) {
                                     setState(() {
-                                      print(value);
                                       selectedMobileUnit = value as String;
                                     });
                                   }),
@@ -119,52 +141,35 @@ class _SelectUserScreenState extends State<SelectUserScreen> {
                                               .showSnackBar(
                                             SnackBar(
                                               content: Text(
-                                                'Selecione uma unidade hospitalar',
+                                                'Selecione uma unidade ${hasMobileUnit ? "móvel" : "hospitalar"}',
                                               ),
                                               backgroundColor: Colors.red,
                                             ),
                                           );
                                           return;
                                         }
-
-                                        HospitalUnitModel hospitalUnit =
-                                            HospitalUnitModel.fromJsonString(
-                                                selectedMobileUnit);
-                                        userNotifier.setUser(
-                                            type: UserType.MOBILE_UNIT,
-                                            hospitalUnit: hospitalUnit,
-                                            context: context);
+                                        if (hasMobileUnit) {
+                                          MobileUnitModel mobileUnit =
+                                              MobileUnitModel.fromJsonString(
+                                                  selectedMobileUnit);
+                                          userNotifier.setUser(
+                                              type: UserType.MOBILE_UNIT,
+                                              mobileUnit: mobileUnit,
+                                              context: context);
+                                        } else {
+                                          HospitalUnitModel hospitalUnit =
+                                              HospitalUnitModel.fromJsonString(
+                                                  selectedMobileUnit);
+                                          userNotifier.setUser(
+                                              type: UserType.HOSPITAL_UNIT,
+                                              hospitalUnit: hospitalUnit,
+                                              context: context);
+                                        }
                                       },
-                                      text: 'Entrar como unidade móvel',
+                                      text:
+                                          'Entrar como unidade ${hasMobileUnit ? "móvel" : "hospitalar"}',
                                     ),
                                   ),
-                                  spacingRow,
-                                  SizedBox(
-                                    width: double.infinity,
-                                    child: GradientButton(
-                                      onPressed: () async {
-                                        if (selectedMobileUnit == '') {
-                                          ScaffoldMessenger.of(context)
-                                              .showSnackBar(
-                                            SnackBar(
-                                              content: Text(
-                                                  'Selecione uma unidade hospitalar'),
-                                              backgroundColor: Colors.red,
-                                            ),
-                                          );
-                                          return;
-                                        }
-                                        HospitalUnitModel hospitalUnit =
-                                            HospitalUnitModel.fromJsonString(
-                                                selectedMobileUnit);
-                                        userNotifier.setUser(
-                                            type: UserType.HOSPITAL_UNIT,
-                                            hospitalUnit: hospitalUnit,
-                                            context: context);
-                                      },
-                                      text: 'Entrar como unidade hospitalar',
-                                    ),
-                                  )
                                 ],
                               ))
                         ]),

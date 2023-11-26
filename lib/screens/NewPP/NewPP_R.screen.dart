@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:ppeu/constants/constants.dart';
 import 'package:ppeu/core/notifier/hospitalUnit.notifier.dart';
 import 'package:ppeu/core/notifier/user.notifier.dart';
+import 'package:ppeu/models/HospitalUnit.model.dart';
 import 'package:ppeu/models/PP.model.dart';
 import 'package:ppeu/models/PP/Pertences.model.dart';
 import 'package:ppeu/models/PP/ResponsavelRecebimento.model.dart';
-import 'package:ppeu/screens/NewPP/widgets/ModalAddEncaminhamento.widget.dart';
 import 'package:ppeu/screens/NewPP/widgets/ModalAddFamiliarAdmissao.widget.dart';
 import 'package:ppeu/screens/NewPP/widgets/ModalAddResponsavelRecebimento.widget.dart';
 import 'package:ppeu/core/notifier/newPP.notifier.dart';
@@ -25,11 +25,11 @@ class _NewPP_RState extends State<NewPP_R> {
   PPModel? data;
 
   late GlobalKey<FormState> _formKey;
-  String? _selectedEncaminhamento;
+  HospitalUnitModel? _selectedEncaminhamento;
 
   List<dynamic> _listFamiliarPresente = [];
   String? _responsavelRecebimento;
-  List<DropdownMenuItem<String>> _hospitalUnitDropdownItems = [];
+  List<DropdownMenuItem<HospitalUnitModel>> _hospitalUnitDropdownItems = [];
   List<DropdownMenuItem<String>> _usersDropdownItems = [];
   final _pertencesNomeController = TextEditingController();
   final _pertencesParentescoController = TextEditingController();
@@ -41,8 +41,8 @@ class _NewPP_RState extends State<NewPP_R> {
 
     List<dynamic> data = await hospitalUnitNotifier.fetchAll();
     _hospitalUnitDropdownItems = data.map((element) {
-      return DropdownMenuItem<String>(
-        value: '${element.id.toString()}::${element.name}',
+      return DropdownMenuItem<HospitalUnitModel>(
+        value: element,
         child: Text(
           limitCharacters(element.name, 30),
           style: TextStyle(
@@ -88,7 +88,7 @@ class _NewPP_RState extends State<NewPP_R> {
 
       _hospitalUnitDropdownItems.add(DropdownMenuItem(
           value: data!.recomendacoes.encaminhamento,
-          child: Text(data!.recomendacoes.encaminhamento,
+          child: Text(data!.recomendacoes.encaminhamento.surname,
               style: TextStyle(
                 color: Colors.black,
               ))));
@@ -99,8 +99,7 @@ class _NewPP_RState extends State<NewPP_R> {
       _usersDropdownItems.add(DropdownMenuItem(
           value:
               '${data!.recomendacoes.responsavelRecebimento.nome}::${data!.recomendacoes.responsavelRecebimento.cargo}::${data!.recomendacoes.responsavelRecebimento.cpf}',
-          child: Text(
-              '${data!.recomendacoes.responsavelRecebimento.nome} - ${data!.recomendacoes.responsavelRecebimento.cargo}',
+          child: Text(data!.recomendacoes.responsavelRecebimento.nome,
               style: TextStyle(
                 color: Colors.black,
               ))));
@@ -135,18 +134,20 @@ class _NewPP_RState extends State<NewPP_R> {
 
     void updateFormData() {
       var parsedResponsavelRecebimento = _responsavelRecebimento!.split('::');
-      newPPNotifier.recomendacoes = RecomendacoesModel(
-          encaminhamento: _selectedEncaminhamento!.split('::')[1],
-          familiarPresente: _listFamiliarPresente,
-          pertences: _pertencesNomeController.text.isNotEmpty
-              ? PertencesModel(
-                  nome: _pertencesNomeController.text,
-                  parentesco: _pertencesParentescoController.text)
-              : null,
-          responsavelRecebimento: ResponsavelRecebimentoModel(
-              nome: parsedResponsavelRecebimento[0],
-              cargo: parsedResponsavelRecebimento[1],
-              cpf: parsedResponsavelRecebimento[2]));
+      if (_selectedEncaminhamento != null) {
+        newPPNotifier.recomendacoes = RecomendacoesModel(
+            encaminhamento: _selectedEncaminhamento as HospitalUnitModel,
+            familiarPresente: _listFamiliarPresente,
+            pertences: _pertencesNomeController.text.isNotEmpty
+                ? PertencesModel(
+                    nome: _pertencesNomeController.text,
+                    parentesco: _pertencesParentescoController.text)
+                : null,
+            responsavelRecebimento: ResponsavelRecebimentoModel(
+                nome: parsedResponsavelRecebimento[0],
+                cargo: parsedResponsavelRecebimento[1],
+                cpf: parsedResponsavelRecebimento[2]));
+      }
     }
 
     void checkValidFields() {
@@ -221,14 +222,11 @@ class _NewPP_RState extends State<NewPP_R> {
                           items: _hospitalUnitDropdownItems,
                           onChanged: data != null
                               ? null
-                              : (value) {
+                              : <HospitalUnitModel>(value) {
                                   checkValidFields();
-                                  updateUsersDropdown(int.parse(value
-                                      .toString()
-                                      .split('::')[0]
-                                      .toString()));
+                                  updateUsersDropdown(value!.id);
                                   setState(() {
-                                    _selectedEncaminhamento = value as String?;
+                                    _selectedEncaminhamento = value;
                                   });
                                 },
                           validator: FormValidators.required,
@@ -249,25 +247,25 @@ class _NewPP_RState extends State<NewPP_R> {
                               return;
                             }
 
-                            showDialog(
-                              context: context,
-                              builder: (context) => ModalAddEncaminhamento(
-                                onChanged: (value) {
-                                  setState(() {
-                                    _hospitalUnitDropdownItems.add(
-                                      DropdownMenuItem(
-                                          value: value,
-                                          child: Text(value,
-                                              style: TextStyle(
-                                                color: Colors.black,
-                                              ))),
-                                    );
-                                    _selectedEncaminhamento = value;
-                                    checkValidFields();
-                                  });
-                                },
-                              ),
-                            );
+                            // showDialog(
+                            //   context: context,
+                            //   builder: (context) => ModalAddEncaminhamento(
+                            //     onChanged: (value) {
+                            //       setState(() {
+                            //         _hospitalUnitDropdownItems.add(
+                            //           DropdownMenuItem(
+                            //               value: value,
+                            //               child: Text(value,
+                            //                   style: TextStyle(
+                            //                     color: Colors.black,
+                            //                   ))),
+                            //         );
+                            //         _selectedEncaminhamento = value;
+                            //         checkValidFields();
+                            //       });
+                            //     },
+                            //   ),
+                            // );
                           },
                           icon: Icon(
                             Icons.add,

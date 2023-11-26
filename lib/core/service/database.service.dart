@@ -39,14 +39,14 @@ class DatabaseService {
     final responseQueryHospital = await SupabaseCredentials.supabaseClient
         .from('hospital-unit')
         .select('amount')
-        .eq('name', data.recomendacoes.encaminhamento)
+        .eq('name', data.recomendacoes.encaminhamento.name)
         .single()
         .execute();
 
     await SupabaseCredentials.supabaseClient
         .from('hospital-unit')
         .update({'amount': responseQueryHospital.data['amount'] + 1})
-        .eq('name', data.recomendacoes.encaminhamento)
+        .eq('name', data.recomendacoes.encaminhamento.name)
         .execute();
 
     final responseQueryMobile = await SupabaseCredentials.supabaseClient
@@ -81,7 +81,7 @@ class DatabaseService {
   Future filterPP({
     String? nome,
     String? responsavelRecebimentoCpf,
-    String? hospitalUnit,
+    int? hospitalUnit,
     String? mobileUnit,
     String? status,
     DateTime? startDate,
@@ -114,8 +114,8 @@ class DatabaseService {
           responsavelRecebimentoCpf);
     }
 
-    if (hospitalUnit != null && hospitalUnit != '') {
-      query = query.eq('recomendacoes->>encaminhamento', hospitalUnit);
+    if (hospitalUnit != null) {
+      query = query.eq('recomendacoes->encaminhamento->>id', hospitalUnit);
     }
 
     var response = await query.execute();
@@ -127,11 +127,11 @@ class DatabaseService {
       {required String status,
       required String name,
       required String date,
-      required String hospitalUnit}) async {
+      required int hospitalUnit}) async {
     var query = SupabaseCredentials.supabaseClient
         .from('pp')
         .select()
-        .eq('recomendacoes->>encaminhamento', hospitalUnit);
+        .eq('recomendacoes->encaminhamento->>id', hospitalUnit);
 
     if (status != 'all') {
       query = query.eq('status', status);

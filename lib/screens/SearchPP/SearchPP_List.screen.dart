@@ -61,78 +61,137 @@ class _SearchPPListScreenState extends State<SearchPPListScreen> {
                     ),
                   );
                 },
-                child: SizedBox(
-                  child: Column(
-                    children: [
-                      ListTile(
-                        contentPadding:
-                            EdgeInsets.symmetric(vertical: 20, horizontal: 16),
-                        // leading: Image.network(
-                        //   item.imageUrl,
-                        //   width: 50,
-                        //   height: 50,
-                        //   fit: BoxFit.cover,
-                        // ),
-                        trailing: Column(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Icon(Icons.list_alt),
-                            if (item.status == PPStatus.CONFIRMED)
-                              Icon(Icons.check_box, color: Colors.green),
-                            if (item.status == PPStatus.WAITING_CONFIRMATION)
-                              Icon(Icons.access_time_filled,
-                                  color: Colors.yellow.shade900),
-                          ],
+                child: Column(
+                  children: [
+                    Row(
+                      children: [
+                        SizedBox(
+                          width: 50,
+                          child: Column(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Image.network(
+                                  item.recomendacoes.encaminhamento.image,
+                                  width: 35,
+                                  height: 35,
+                                  fit: BoxFit.cover,
+                                ),
+                                if (item.status == PPStatus.CONFIRMED)
+                                  Icon(Icons.arrow_circle_down,
+                                      color: Colors.green),
+                                if (item.status ==
+                                    PPStatus.WAITING_CONFIRMATION)
+                                  Icon(Icons.arrow_circle_down,
+                                      color: Colors.yellow.shade900),
+                                Image.network(
+                                  item.recomendacoes.encaminhamento.image,
+                                  width: 35,
+                                  height: 35,
+                                  fit: BoxFit.cover,
+                                )
+                              ]),
                         ),
-                        title: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              item.identificacao.nome,
-                              style: TextStyle(fontWeight: FontWeight.bold),
+                        Expanded(
+                          child: ListTile(
+                            contentPadding: EdgeInsets.symmetric(
+                                vertical: 20, horizontal: 16),
+                            title: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  item.identificacao.nome,
+                                  style: TextStyle(fontWeight: FontWeight.bold),
+                                ),
+                                Text(
+                                  item.createdAt.toString(),
+                                  style: TextStyle(fontSize: 14),
+                                ),
+                              ],
                             ),
-                            Text(
-                              item.createdAt.toString(),
-                              style: TextStyle(fontSize: 14),
-                            ),
-                          ],
-                        ),
-                        subtitle: Column(children: [
-                          SizedBox(height: 5),
-                          Row(
-                            children: [
-                              Text('DN: ${item.identificacao.dataNascimento}'),
-                              Text(' - Sexo: ${item.identificacao.sexo}'),
-                            ],
-                          ),
-                          Row(
-                            children: [
-                              Text('UH: $hospitalUnit'),
-                              Text(
-                                  ' - UM: ${item.identificacao.formaEncaminhamento}'),
-                            ],
-                          ),
-                          Row(
-                            children: [
-                              Text(
-                                'Resp. Enc: ${item.situacao.enfermeiroResponsavelTransferencia}',
+                            subtitle: Column(children: [
+                              SizedBox(height: 8),
+                              Row(
+                                children: [
+                                  Flexible(
+                                      child: Text(
+                                    'DN: ${item.identificacao.dataNascimento}',
+                                    overflow: TextOverflow.ellipsis,
+                                  )),
+                                  Flexible(
+                                      child: Text(
+                                    ' - Sexo: ${item.identificacao.sexo}',
+                                    overflow: TextOverflow.ellipsis,
+                                  ))
+                                ],
                               ),
+                              Row(
+                                children: [
+                                  Flexible(
+                                    child: Text(
+                                      'UH: ${item.recomendacoes.encaminhamento.surname}',
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ),
+                                  Flexible(
+                                    child: Text(
+                                      ' - UM: ${item.identificacao.formaEncaminhamento}',
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              Row(
+                                children: [
+                                  Flexible(
+                                    child: Text(
+                                      'Resp. UH: ${item.recomendacoes.responsavelRecebimento.nome}',
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  )
+                                ],
+                              ),
+                              Row(
+                                children: [
+                                  Flexible(
+                                    child: Text(
+                                      'Resp. UM: ${item.situacao.enfermeiroResponsavelTransferencia}',
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  )
+                                ],
+                              ),
+                            ]),
+                          ),
+                        ),
+                        Padding(
+                          padding: EdgeInsets.only(right: 10),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Icon(Icons.list_alt, size: 24),
+                              if (item.status == PPStatus.CONFIRMED)
+                                Icon(Icons.check_box,
+                                    color: Colors.green, size: 24),
+                              if (item.status == PPStatus.WAITING_CONFIRMATION)
+                                Icon(Icons.access_time_filled,
+                                    color: Colors.yellow.shade900, size: 24),
                             ],
                           ),
-                        ]),
-                      ),
-                      Container(
-                        decoration: BoxDecoration(
-                          border: Border(
-                            bottom: BorderSide(
-                              color: Colors.grey,
-                              width: 1.0,
-                            ),
+                        ),
+                      ],
+                    ),
+                    Container(
+                      decoration: BoxDecoration(
+                        border: Border(
+                          bottom: BorderSide(
+                            color: Colors.grey,
+                            width: 1.0,
                           ),
                         ),
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               );
             },

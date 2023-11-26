@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:ppeu/core/notifier/authentication.notifier.dart';
 import 'package:ppeu/core/notifier/database.notifier.dart';
 import 'package:ppeu/models/PP.model.dart';
 import 'package:ppeu/models/PPStatus.model.dart';
@@ -8,7 +9,9 @@ import 'package:provider/provider.dart';
 
 class Nominal extends StatefulWidget {
   final ReportFilters? filter;
-  const Nominal({Key? key, required this.filter}) : super(key: key);
+  final AuthenticationNotifier authentication;
+  const Nominal({Key? key, required this.filter, required this.authentication})
+      : super(key: key);
 
   @override
   NominalState createState() => NominalState();
@@ -31,6 +34,10 @@ class NominalState extends State<Nominal> {
       endDate: widget.filter?.endDate ?? DateTime.now().add(Duration(days: 1)),
       hospitalUnit: widget.filter?.hospitalUnit,
       mobileUnit: widget.filter?.mobileUnit,
+      hospitalUnitsOptions:
+          widget.authentication.hospitalUnits?.map((e) => e.id).toList(),
+      mobileUnitsOptions:
+          widget.authentication.mobileUnits?.map((e) => e.name).toList(),
       status: widget.filter?.status,
     );
 
@@ -98,9 +105,6 @@ class NominalState extends State<Nominal> {
                       );
                     },
                     child: Column(children: [
-                      SizedBox(
-                        height: 8,
-                      ),
                       Row(
                         children: [
                           SizedBox(
@@ -111,7 +115,7 @@ class NominalState extends State<Nominal> {
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
                                   Image.network(
-                                    'https://cdn.discordapp.com/attachments/825790215556825099/1120708884374507630/924e5ac2f7dee4f2c6cf0b2db36f389e.jpg',
+                                    item.recomendacoes.encaminhamento.image,
                                     width: 35,
                                     height: 35,
                                     fit: BoxFit.cover,
@@ -124,7 +128,7 @@ class NominalState extends State<Nominal> {
                                     Icon(Icons.arrow_circle_down,
                                         color: Colors.yellow.shade900),
                                   Image.network(
-                                    'https://cdn.discordapp.com/attachments/825790215556825099/1120708884663894107/b4c80f34cc40fa34545eaecc86ac992c.png',
+                                    item.recomendacoes.encaminhamento.image,
                                     width: 35,
                                     height: 35,
                                     fit: BoxFit.cover,
@@ -132,86 +136,79 @@ class NominalState extends State<Nominal> {
                                 ]),
                           ),
                           Expanded(
-                              child: Column(
-                            children: [
-                              ListTile(
-                                title: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
+                            child: ListTile(
+                              contentPadding: EdgeInsets.symmetric(
+                                  vertical: 16, horizontal: 16),
+                              title: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(
+                                    item.identificacao.nome,
+                                    style:
+                                        TextStyle(fontWeight: FontWeight.bold),
+                                  ),
+                                  Text(
+                                    item.createdAt.toString().substring(0, 10),
+                                    style: TextStyle(fontSize: 14),
+                                  ),
+                                ],
+                              ),
+                              subtitle: Column(children: [
+                                SizedBox(height: 8),
+                                Row(
                                   children: [
-                                    Text(
-                                      item.identificacao.nome,
-                                      style: TextStyle(
-                                          fontWeight: FontWeight.bold),
+                                    Flexible(
+                                        child: Text(
+                                      'DN: ${item.identificacao.dataNascimento}',
+                                      overflow: TextOverflow.ellipsis,
+                                    )),
+                                    Flexible(
+                                        child: Text(
+                                      ' - Sexo: ${item.identificacao.sexo}',
+                                      overflow: TextOverflow.ellipsis,
+                                    ))
+                                  ],
+                                ),
+                                Row(
+                                  children: [
+                                    Flexible(
+                                      child: Text(
+                                        'UH: ${item.recomendacoes.encaminhamento.surname}',
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
                                     ),
-                                    Text(
-                                      item.createdAt
-                                          .toString()
-                                          .substring(0, 10),
-                                      style: TextStyle(fontSize: 14),
+                                    Flexible(
+                                      child: Text(
+                                        ' - UM: ${item.identificacao.formaEncaminhamento}',
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
                                     ),
                                   ],
                                 ),
-                                subtitle: Column(children: [
-                                  SizedBox(height: 8),
-                                  Row(
-                                    children: [
-                                      Flexible(
-                                          child: Text(
-                                        'DN: ${item.identificacao.dataNascimento}',
+                                Row(
+                                  children: [
+                                    Flexible(
+                                      child: Text(
+                                        'Resp. UH: ${item.recomendacoes.responsavelRecebimento.nome}',
                                         overflow: TextOverflow.ellipsis,
-                                      )),
-                                      Flexible(
-                                          child: Text(
-                                        ' Sexo: ${item.identificacao.sexo}',
+                                      ),
+                                    )
+                                  ],
+                                ),
+                                Row(
+                                  children: [
+                                    Flexible(
+                                      child: Text(
+                                        'Resp. UM: ${item.situacao.enfermeiroResponsavelTransferencia}',
                                         overflow: TextOverflow.ellipsis,
-                                      ))
-                                    ],
-                                  ),
-                                  Row(
-                                    children: [
-                                      Flexible(
-                                        child: Text(
-                                          'UM: ${item.identificacao.formaEncaminhamento}',
-                                          overflow: TextOverflow.ellipsis,
-                                        ),
                                       ),
-                                    ],
-                                  ),
-                                  Row(
-                                    children: [
-                                      Flexible(
-                                        child: Text(
-                                          'UH: ${item.recomendacoes.encaminhamento}',
-                                          overflow: TextOverflow.ellipsis,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                  Row(
-                                    children: [
-                                      Flexible(
-                                        child: Text(
-                                          'Resp. UM: ${item.situacao.enfermeiroResponsavelTransferencia}',
-                                          overflow: TextOverflow.ellipsis,
-                                        ),
-                                      )
-                                    ],
-                                  ),
-                                  Row(
-                                    children: [
-                                      Flexible(
-                                        child: Text(
-                                          'Resp. UH: ${item.recomendacoes.responsavelRecebimento.nome}',
-                                          overflow: TextOverflow.ellipsis,
-                                        ),
-                                      )
-                                    ],
-                                  ),
-                                ]),
-                              ),
-                            ],
-                          )),
+                                    )
+                                  ],
+                                ),
+                              ]),
+                            ),
+                          ),
                           IconButton(
                             onPressed: () {
                               Navigator.push(
@@ -228,9 +225,6 @@ class NominalState extends State<Nominal> {
                             ),
                           )
                         ],
-                      ),
-                      SizedBox(
-                        height: 8,
                       ),
                       Container(
                         decoration: BoxDecoration(

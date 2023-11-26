@@ -21,16 +21,17 @@ class _ReportScreenState extends State<ReportScreen> {
   String buttonText = 'Selecione';
   int _selectedButtonIndex = 0;
 
-  Future<void> fetchHospitalUnits(BuildContext context) async {
+  Future<void> setInitialFilters(BuildContext context) async {
     AuthenticationNotifier authentication =
         Provider.of<AuthenticationNotifier>(context, listen: false);
+
     setState(() {
       _selectedFilters = ReportFilters(
         endDate: null,
         startDate: null,
-        mobileUnit: null,
+        mobileUnit: authentication.mobileUnit?.name,
         status: null,
-        hospitalUnit: authentication.hospitalUnits[0].name,
+        hospitalUnit: authentication.hospitalUnit?.id,
       );
     });
   }
@@ -38,11 +39,14 @@ class _ReportScreenState extends State<ReportScreen> {
   @override
   void initState() {
     super.initState();
-    fetchHospitalUnits(context);
+    setInitialFilters(context);
   }
 
   @override
   Widget build(BuildContext context) {
+    AuthenticationNotifier authentication =
+        Provider.of<AuthenticationNotifier>(context, listen: false);
+
     return Scaffold(
         appBar: AppBar(
           title: Text(
@@ -192,6 +196,7 @@ class _ReportScreenState extends State<ReportScreen> {
                   child: _selectedButtonIndex == 0
                       ? Nominal(
                           filter: _selectedFilters,
+                          authentication: authentication,
                         )
                       : _selectedButtonIndex == 1
                           ? TableNumeric(

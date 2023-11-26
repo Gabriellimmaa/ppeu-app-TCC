@@ -44,8 +44,10 @@ class DatabaseNotifier extends ChangeNotifier {
   Future<List<PPModel>> filterPP({
     String? nome,
     String? responsavelRecebimentoCpf,
-    String? hospitalUnit,
+    int? hospitalUnit,
+    List<int>? hospitalUnitsOptions,
     String? mobileUnit,
+    List<String>? mobileUnitsOptions,
     DateTime? startDate,
     DateTime? endDate,
     String? status,
@@ -60,8 +62,19 @@ class DatabaseNotifier extends ChangeNotifier {
         status: status);
 
     List<Map<String, dynamic>> data = List<Map<String, dynamic>>.from(rawData);
+    List<PPModel> response = data
+        .map((e) => PPModel.fromJson(e))
+        .where((element) =>
+            (hospitalUnitsOptions == null ||
+                hospitalUnitsOptions.isEmpty ||
+                hospitalUnitsOptions
+                    .contains(element.recomendacoes.encaminhamento.id)) &&
+            (mobileUnitsOptions == null ||
+                mobileUnitsOptions.isEmpty ||
+                mobileUnitsOptions
+                    .contains(element.identificacao.formaEncaminhamento)))
+        .toList();
 
-    List<PPModel> response = data.map((e) => PPModel.fromJson(e)).toList();
     return response;
   }
 
@@ -69,7 +82,7 @@ class DatabaseNotifier extends ChangeNotifier {
     required String status,
     required String name,
     required String date,
-    required String hospitalUnit,
+    required int hospitalUnit,
   }) async {
     var data = await _databaseService.filterByStatus(
       status: status,

@@ -33,7 +33,7 @@ class _HomeScreenState extends State<HomeScreen> {
     var responsePPWainting = await databaseNotifier.filterPP(
       nome: null,
       responsavelRecebimentoCpf: null,
-      hospitalUnit: authenticationNotifier.hospitalUnit!.name,
+      hospitalUnit: authenticationNotifier.hospitalUnit?.id,
       startDate: null,
       endDate: null,
       status: PPStatus.WAITING_CONFIRMATION,
@@ -57,7 +57,7 @@ class _HomeScreenState extends State<HomeScreen> {
       var response = await databaseNotifier.filterPP(
         nome: null,
         responsavelRecebimentoCpf: null,
-        hospitalUnit: element.name,
+        hospitalUnit: element.id,
         startDate: DateTime.now(),
         endDate: DateTime.now().add(Duration(days: 1)),
       );
@@ -87,33 +87,34 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
-    DatabaseNotifier databaseNotifier = provider.Provider.of<DatabaseNotifier>(
-      context,
-      listen: false,
-    );
-
     AuthenticationNotifier authenticationNotifier =
         provider.Provider.of<AuthenticationNotifier>(
       context,
       listen: false,
     );
-
-    fetchNotification(
-        authenticationNotifier: authenticationNotifier,
-        databaseNotifier: databaseNotifier);
-
-    subscription = databaseNotifier.openRealtimeInsert(
-      onNotificationReceived: (PPModel? pp) {
-        setState(() {
-          if (pp != null) {
-            if (pp.recomendacoes.encaminhamento ==
-                authenticationNotifier.hospitalUnit!.name) {
-              notificationCount++;
-            }
-          }
-        });
-      },
+    DatabaseNotifier databaseNotifier = provider.Provider.of<DatabaseNotifier>(
+      context,
+      listen: false,
     );
+
+    if (authenticationNotifier.type == UserType.HOSPITAL_UNIT) {
+      fetchNotification(
+          authenticationNotifier: authenticationNotifier,
+          databaseNotifier: databaseNotifier);
+
+      subscription = databaseNotifier.openRealtimeInsert(
+        onNotificationReceived: (PPModel? pp) {
+          setState(() {
+            if (pp != null) {
+              if (pp.recomendacoes.encaminhamento ==
+                  authenticationNotifier.hospitalUnit!.name) {
+                notificationCount++;
+              }
+            }
+          });
+        },
+      );
+    }
 
     fetchData(
       databaseNotifier: databaseNotifier,
@@ -175,7 +176,8 @@ class _HomeScreenState extends State<HomeScreen> {
                     style: TextStyle(fontSize: 18, color: Colors.white),
                   ),
                   Text(
-                    authenticationNotifier.hospitalUnit!.name,
+                    authenticationNotifier.hospitalUnit?.name ??
+                        authenticationNotifier.mobileUnit!.name,
                     style: TextStyle(
                       fontSize: 20,
                       color: Colors.white,
@@ -288,7 +290,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                 MaterialPageRoute(
                                     builder: (context) => SearchPPScreen(
                                           hospitalUnit: authenticationNotifier
-                                              .hospitalUnit!,
+                                              .hospitalUnit,
+                                          mobileUnit:
+                                              authenticationNotifier.mobileUnit,
                                         )));
                           },
                           child: Stack(

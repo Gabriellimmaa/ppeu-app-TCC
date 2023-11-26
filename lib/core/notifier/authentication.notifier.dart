@@ -1,7 +1,10 @@
 // ignore_for_file: use_build_context_synchronously
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:ppeu/core/service/authentication.service.dart';
 import 'package:ppeu/models/HospitalUnit.model.dart';
+import 'package:ppeu/models/MobileUnit.model.dart';
 import 'package:ppeu/routes/app.routes.dart';
 import 'package:ppeu/screens/Home.screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -11,13 +14,20 @@ class AuthenticationNotifier extends ChangeNotifier {
 
   String? _type;
   HospitalUnitModel? _hospitalUnit;
+  MobileUnitModel? _mobileUnit;
   String _firstName = '';
   String _lastName = '';
   String _taxId = '';
-  List<HospitalUnitModel> _hospitalUnits = [];
   String? get type => _type;
+
+  List<MobileUnitModel>? _mobileUnits;
+  MobileUnitModel? get mobileUnit => _mobileUnit;
+  List<MobileUnitModel>? get mobileUnits => _mobileUnits;
+
+  List<HospitalUnitModel>? _hospitalUnits;
   HospitalUnitModel? get hospitalUnit => _hospitalUnit;
-  List<HospitalUnitModel> get hospitalUnits => _hospitalUnits;
+  List<HospitalUnitModel>? get hospitalUnits => _hospitalUnits;
+
   String get firstName => _firstName;
   String get lastName => _lastName;
   String get taxId => _taxId;
@@ -26,16 +36,13 @@ class AuthenticationNotifier extends ChangeNotifier {
 
   void setUser({
     required String type,
-    required HospitalUnitModel hospitalUnit,
+    HospitalUnitModel? hospitalUnit,
+    MobileUnitModel? mobileUnit,
     required BuildContext context,
   }) {
     _type = type;
     _hospitalUnit = hospitalUnit;
-
-    SharedPreferences.getInstance().then((prefs) {
-      prefs.setString('type', type);
-      prefs.setString('hospitalUnit', hospitalUnit.toJsonString());
-    });
+    _mobileUnit = mobileUnit;
 
     notifyListeners();
     Navigator.push(
@@ -46,41 +53,46 @@ class AuthenticationNotifier extends ChangeNotifier {
     required String firstName,
     required String lastName,
     required String taxId,
-    required List<HospitalUnitModel> hospitalUnits,
+    List<HospitalUnitModel>? hospitalUnits,
+    List<MobileUnitModel>? mobileUnits,
   }) {
     _firstName = firstName;
     _lastName = lastName;
     _taxId = taxId;
     _hospitalUnits = hospitalUnits;
-
-    SharedPreferences.getInstance().then((prefs) {
-      prefs.setString('firstName', firstName);
-      prefs.setString('lastName', lastName);
-      prefs.setString('taxId', taxId);
-      prefs.setStringList(
-          'hospitalUnits', hospitalUnits.map((e) => e.toJsonString()).toList());
-    });
+    _mobileUnits = mobileUnits;
 
     notifyListeners();
   }
 
-  Future<String?> singup({
+  Future singup({
     required BuildContext context,
     required String email,
     required String password,
     required String firstName,
     required String lastName,
     required String taxId,
-    required List<HospitalUnitModel> hospitalUnits,
+    List<HospitalUnitModel>? hospitalUnits,
+    List<MobileUnitModel>? mobileUnits,
   }) async {
+    if (hospitalUnits == null && mobileUnits == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Selecione pelo menos uma unidade'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return null;
+    }
+
     var response = await _authenticationService.singup(
-        context: context,
         email: email,
         password: password,
         firstName: firstName,
         lastName: lastName,
         taxId: taxId,
-        hospitalUnits: hospitalUnits);
+        hospitalUnits: hospitalUnits,
+        mobileUnits: mobileUnits);
 
     if (response.error == null) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -98,8 +110,6 @@ class AuthenticationNotifier extends ChangeNotifier {
         ),
       );
     }
-
-    return null;
   }
 
   Future<String?> login({
@@ -107,21 +117,33 @@ class AuthenticationNotifier extends ChangeNotifier {
     required String email,
     required String password,
   }) async {
-    var response = await _authenticationService.login(
-        context: context, email: email, password: password);
+    var response =
+        await _authenticationService.login(email: email, password: password);
 
     if (response.error == null) {
-      List<dynamic> hospitalUnits =
+      List<dynamic>? hospitalUnits =
           response.data!.user!.userMetadata['hospitalUnits'];
+      List<dynamic>? mobileUnits =
+          response.data!.user!.userMetadata['mobileUnits'];
+
       List<HospitalUnitModel> hospitalUnitsList = [];
-      for (var hospitalUnit in hospitalUnits) {
+      List<MobileUnitModel> mobileUnitsList = [];
+      for (var hospitalUnit in hospitalUnits!) {
         hospitalUnitsList.add(HospitalUnitModel.fromJson(hospitalUnit));
+      }
+      for (var mobileUnit in mobileUnits!) {
+        var data = MobileUnitModel.fromJson(mobileUnit);
+        mobileUnitsList.add(MobileUnitModel(
+            id: data.id,
+            name: utf8.decode(latin1.encode(data.name)),
+            amount: data.amount));
       }
       setUserMetadata(
         firstName: response.data!.user!.userMetadata['firstName'],
         lastName: response.data!.user!.userMetadata['lastName'],
         taxId: response.data!.user!.userMetadata['taxId'],
-        hospitalUnits: hospitalUnitsList,
+        hospitalUnits: hospitalUnitsList.isNotEmpty ? hospitalUnitsList : null,
+        mobileUnits: mobileUnitsList.isNotEmpty ? mobileUnitsList : null,
       );
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -149,7 +171,7 @@ class AuthenticationNotifier extends ChangeNotifier {
   Future logout({
     required BuildContext context,
   }) async {
-    var response = await _authenticationService.logout(context: context);
+    var response = await _authenticationService.logout();
     if (response.error == null) {
       Navigator.pushNamedAndRemoveUntil(
         context,

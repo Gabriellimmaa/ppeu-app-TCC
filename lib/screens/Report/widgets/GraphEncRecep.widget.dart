@@ -90,10 +90,12 @@ class _ReportGraphEncRecepState extends State<ReportGraphEncRecep> {
       }
       if (sumData[element.createdAt!]![element.recomendacoes.encaminhamento] ==
           null) {
-        sumData[element.createdAt!]![element.recomendacoes.encaminhamento] = 0;
+        sumData[element.createdAt!]![
+            element.recomendacoes.encaminhamento.name] = 0;
       }
-      sumData[element.createdAt!]![element.recomendacoes.encaminhamento] =
-          sumData[element.createdAt!]![element.recomendacoes.encaminhamento]! +
+      sumData[element.createdAt!]![element.recomendacoes.encaminhamento.name] =
+          sumData[element.createdAt!]![
+                  element.recomendacoes.encaminhamento.name]! +
               1;
     }
 

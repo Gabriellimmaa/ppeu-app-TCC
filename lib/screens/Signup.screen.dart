@@ -3,9 +3,12 @@ import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 import 'package:ppeu/constants/constants.dart';
 import 'package:ppeu/core/notifier/authentication.notifier.dart';
 import 'package:ppeu/core/notifier/hospitalUnit.notifier.dart';
+import 'package:ppeu/core/notifier/mobileUnit.notifier.dart';
 import 'package:ppeu/models/HospitalUnit.model.dart';
+import 'package:ppeu/models/MobileUnit.model.dart';
 import 'package:ppeu/screens/Signin.screen.dart';
 import 'package:ppeu/utils/inputMask/cpf.mask.dart';
+import 'package:ppeu/utils/validation/FormValidators.validation.dart';
 import 'package:ppeu/utils/validation/cpf.validation.dart';
 import 'package:ppeu/utils/validation/email.validation.dart';
 import 'package:ppeu/widgets/CustomPageContainer.widget.dart';
@@ -31,6 +34,9 @@ class _SignupScreenState extends State<SignupScreen> {
   final _passwordConfirmController = TextEditingController();
   List<HospitalUnitModel> _hospitalUnitList = [];
   List<HospitalUnitModel> selectedHospitalUnits = [];
+  List<MobileUnitModel> _mobileUnitList = [];
+  List<MobileUnitModel> selectedMobileUnits = [];
+  String? _typeUnit;
 
   final FocusNode _emailFocusNode = FocusNode();
   final FocusNode _passwordFocusNode = FocusNode();
@@ -44,9 +50,14 @@ class _SignupScreenState extends State<SignupScreen> {
   Future<void> fetchData() async {
     HospitalUnitNotifier hospitalUnitNotifier =
         Provider.of<HospitalUnitNotifier>(context, listen: false);
-    List<HospitalUnitModel> data = await hospitalUnitNotifier.fetchAll();
+    MobileUnitNotifier mobileUnitNotifier =
+        Provider.of<MobileUnitNotifier>(context, listen: false);
+    List<HospitalUnitModel> hospitalData =
+        await hospitalUnitNotifier.fetchAll();
+    List<MobileUnitModel> mobileData = await mobileUnitNotifier.fetchAll();
     setState(() {
-      _hospitalUnitList = data;
+      _hospitalUnitList = hospitalData;
+      _mobileUnitList = mobileData;
       isLoading = false;
     });
   }
@@ -157,56 +168,141 @@ class _SignupScreenState extends State<SignupScreen> {
                             },
                           ),
                           spacingRow,
-                          Text(
-                            'Selecione o hospital que você trabalha:',
-                            style: TextStyle(
-                                fontSize: 16.0, fontWeight: FontWeight.bold),
-                          ),
-                          spacingRow,
-                          Wrap(
-                            spacing: 8.0,
-                            runSpacing: 8.0,
-                            children: List.generate(_hospitalUnitList.length,
-                                (index) {
-                              return GestureDetector(
-                                onTap: () {
-                                  setState(() {
-                                    if (selectedHospitalUnits
-                                        .contains(_hospitalUnitList[index])) {
-                                      selectedHospitalUnits
-                                          .remove(_hospitalUnitList[index]);
-                                    } else {
-                                      selectedHospitalUnits
-                                          .add(_hospitalUnitList[index]);
-                                    }
-                                  });
-                                },
-                                child: Container(
-                                  decoration: BoxDecoration(
-                                    border: Border.all(
-                                      color: selectedHospitalUnits.contains(
-                                              _hospitalUnitList[index])
-                                          ? Colors.blue
-                                          : Colors.grey,
-                                      width: 1.0,
-                                    ),
-                                    borderRadius: BorderRadius.circular(8.0),
-                                  ),
-                                  padding: EdgeInsets.all(8.0),
-                                  child: Text(
-                                    _hospitalUnitList[index].surname,
+                          DropdownButtonFormField(
+                            value: _typeUnit == '' ? null : _typeUnit,
+                            decoration: InputDecoration(
+                                labelText: 'Unidade em que trabalha'),
+                            items: const [
+                              DropdownMenuItem(
+                                value: 'hospital',
+                                child: Text('Hospitalar',
                                     style: TextStyle(
-                                      fontSize: 16.0,
-                                      color: selectedHospitalUnits.contains(
-                                              _hospitalUnitList[index])
-                                          ? Colors.blue
-                                          : Colors.black,
+                                      color: Colors.black,
+                                    )),
+                              ),
+                              DropdownMenuItem(
+                                value: 'movel',
+                                child: Text('Móvel',
+                                    style: TextStyle(
+                                      color: Colors.black,
+                                    )),
+                              )
+                            ],
+                            onChanged: (value) {
+                              setState(() {
+                                _typeUnit = value as String;
+                              });
+                            },
+                            validator: FormValidators.required,
+                          ),
+                          if (_typeUnit == 'hospital') ...[
+                            spacingRow,
+                            Text(
+                              'Selecione os hospitais em que trabalha:',
+                              style: TextStyle(
+                                  fontSize: 16.0, fontWeight: FontWeight.bold),
+                            ),
+                            spacingRow,
+                            Wrap(
+                              spacing: 8.0,
+                              runSpacing: 8.0,
+                              alignment: WrapAlignment.center,
+                              children: List.generate(_hospitalUnitList.length,
+                                  (index) {
+                                return GestureDetector(
+                                  onTap: () {
+                                    setState(() {
+                                      if (selectedHospitalUnits
+                                          .contains(_hospitalUnitList[index])) {
+                                        selectedHospitalUnits
+                                            .remove(_hospitalUnitList[index]);
+                                      } else {
+                                        selectedHospitalUnits
+                                            .add(_hospitalUnitList[index]);
+                                      }
+                                    });
+                                  },
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                      border: Border.all(
+                                        color: selectedHospitalUnits.contains(
+                                                _hospitalUnitList[index])
+                                            ? Colors.blue
+                                            : Colors.grey,
+                                        width: 1.0,
+                                      ),
+                                      borderRadius: BorderRadius.circular(8.0),
+                                    ),
+                                    padding: EdgeInsets.all(8.0),
+                                    child: Text(
+                                      _hospitalUnitList[index].surname,
+                                      style: TextStyle(
+                                        fontSize: 16.0,
+                                        color: selectedHospitalUnits.contains(
+                                                _hospitalUnitList[index])
+                                            ? Colors.blue
+                                            : Colors.black,
+                                      ),
                                     ),
                                   ),
-                                ),
-                              );
-                            }),
-                          ),
+                                );
+                              }),
+                            ),
+                          ],
+                          if (_typeUnit == 'movel') ...[
+                            spacingRow,
+                            Text(
+                              'Selecione as unidades móveis em que trabalha:',
+                              style: TextStyle(
+                                  fontSize: 16.0, fontWeight: FontWeight.bold),
+                            ),
+                            spacingRow,
+                            Wrap(
+                              spacing: 8.0,
+                              runSpacing: 8.0,
+                              alignment: WrapAlignment.center,
+                              children: List.generate(_mobileUnitList.length,
+                                  (index) {
+                                return GestureDetector(
+                                  onTap: () {
+                                    setState(() {
+                                      if (selectedMobileUnits
+                                          .contains(_mobileUnitList[index])) {
+                                        selectedMobileUnits
+                                            .remove(_mobileUnitList[index]);
+                                      } else {
+                                        selectedMobileUnits
+                                            .add(_mobileUnitList[index]);
+                                      }
+                                    });
+                                  },
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                      border: Border.all(
+                                        color: selectedMobileUnits.contains(
+                                                _mobileUnitList[index])
+                                            ? Colors.blue
+                                            : Colors.grey,
+                                        width: 1.0,
+                                      ),
+                                      borderRadius: BorderRadius.circular(8.0),
+                                    ),
+                                    padding: EdgeInsets.all(8.0),
+                                    child: Text(
+                                      _mobileUnitList[index].name,
+                                      style: TextStyle(
+                                        fontSize: 16.0,
+                                        color: selectedMobileUnits.contains(
+                                                _mobileUnitList[index])
+                                            ? Colors.blue
+                                            : Colors.black,
+                                      ),
+                                    ),
+                                  ),
+                                );
+                              }),
+                            ),
+                          ],
                           spacingRow,
                           TextFormField(
                             controller: _passwordController,
@@ -273,6 +369,9 @@ class _SignupScreenState extends State<SignupScreen> {
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
                     SizedBox(
+                      height: 20,
+                    ),
+                    SizedBox(
                       width: double.infinity,
                       child: GradientButton(
                         text: 'Confirmar cadastro',
@@ -288,7 +387,8 @@ class _SignupScreenState extends State<SignupScreen> {
                                 firstName: _firstNameController.text,
                                 lastName: _lastNameController.text,
                                 taxId: _cpfController.text,
-                                hospitalUnits: selectedHospitalUnits);
+                                hospitalUnits: selectedHospitalUnits,
+                                mobileUnits: selectedMobileUnits);
                           }
                         },
                       ),

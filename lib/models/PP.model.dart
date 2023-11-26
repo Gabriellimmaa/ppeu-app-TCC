@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:ppeu/models/HospitalUnit.model.dart';
 import 'package:ppeu/models/PP/Acesso.model.dart';
 import 'package:ppeu/models/PP/CateterGastrico.model.dart';
 import 'package:ppeu/models/PP/CateterVesical.model.dart';
@@ -367,7 +368,7 @@ class AvaliacaoModel {
 }
 
 class RecomendacoesModel {
-  final String encaminhamento;
+  final HospitalUnitModel encaminhamento;
   final ResponsavelRecebimentoModel responsavelRecebimento;
   final List<dynamic> familiarPresente;
   final PertencesModel? pertences;
@@ -381,7 +382,7 @@ class RecomendacoesModel {
 
   factory RecomendacoesModel.fromJson(Map<String, dynamic> json) {
     return RecomendacoesModel(
-      encaminhamento: json['encaminhamento'],
+      encaminhamento: HospitalUnitModel.fromJson(json['encaminhamento']),
       responsavelRecebimento:
           ResponsavelRecebimentoModel.fromJson(json['responsavelRecebimento']),
       familiarPresente: json['familiarPresente'],
@@ -393,7 +394,7 @@ class RecomendacoesModel {
 
   Map<String, dynamic> toJson() {
     return {
-      'encaminhamento': encaminhamento,
+      'encaminhamento': encaminhamento.toJson(),
       'responsavelRecebimento': {
         'nome': responsavelRecebimento.nome,
         'cpf': responsavelRecebimento.cpf,

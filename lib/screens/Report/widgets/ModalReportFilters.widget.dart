@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:ppeu/constants/constants.dart';
 import 'package:ppeu/core/notifier/authentication.notifier.dart';
+import 'package:ppeu/core/notifier/hospitalUnit.notifier.dart';
 import 'package:ppeu/core/notifier/mobileUnit.notifier.dart';
 import 'package:ppeu/models/PPStatus.model.dart';
 import 'package:ppeu/widgets/GradientButton.widget.dart';
@@ -11,7 +12,7 @@ class ReportFilters {
   DateTime? startDate;
   DateTime? endDate;
   String? mobileUnit;
-  String? hospitalUnit;
+  int? hospitalUnit;
   String? status;
 
   ReportFilters({
@@ -59,44 +60,75 @@ class _ModalReportFiltersState extends State<ModalReportFilters> {
       child: Text('Todos'),
     ),
   ];
-  final List<DropdownMenuItem<String>> _hospitalUnitList = [];
+  final List<DropdownMenuItem<int>> _hospitalUnitList = [
+    DropdownMenuItem(
+      value: null,
+      child: Text('Todos'),
+    ),
+  ];
   DateTime? _endDateSelected;
   DateTime? _startDateSelected;
   String _unMovel = '';
-  String _unEnc = '';
+  int? _unEnc;
   String _stRecep = '';
 
-  Future<void> fetchMobileUnits(BuildContext context) async {
-    MobileUnitNotifier mobileUnitNotifier =
-        Provider.of<MobileUnitNotifier>(context, listen: false);
-    var data = await mobileUnitNotifier.fetchAll();
-    for (var element in data) {
-      _mobileUnitList.add(DropdownMenuItem(
-        value: element.name,
-        child: Text(element.name),
-      ));
+  Future<void> fetchMobileUnits(AuthenticationNotifier authentication) async {
+    if (authentication.type == UserType.MOBILE_UNIT) {
+      for (var element in authentication.mobileUnits ?? []) {
+        _mobileUnitList.add(DropdownMenuItem(
+          value: element.name,
+          child: Text(element.name),
+        ));
+      }
+    } else {
+      MobileUnitNotifier mobileUnitNotifier =
+          Provider.of<MobileUnitNotifier>(context, listen: false);
+      var data = await mobileUnitNotifier.fetchAll();
+      for (var element in data) {
+        _mobileUnitList.add(DropdownMenuItem(
+          value: element.name,
+          child: Text(element.name),
+        ));
+      }
     }
+
+    setState(() {
+      _unMovel =
+          widget.filters?.mobileUnit ?? authentication.mobileUnit?.name ?? '';
+    });
   }
 
-  Future<void> fetchHospitalUnits(BuildContext context) async {
-    AuthenticationNotifier authentication =
-        Provider.of<AuthenticationNotifier>(context, listen: false);
-    for (var element in authentication.hospitalUnits) {
-      _hospitalUnitList.add(DropdownMenuItem(
-        value: element.name,
-        child: Text(element.surname),
-      ));
+  Future<void> fetchHospitalUnits(AuthenticationNotifier authentication) async {
+    if (authentication.type == UserType.HOSPITAL_UNIT) {
+      for (var element in authentication.hospitalUnits ?? []) {
+        _hospitalUnitList.add(DropdownMenuItem(
+          value: element.id,
+          child: Text(element.surname),
+        ));
+      }
+    } else {
+      HospitalUnitNotifier hospitalUnitNotifier =
+          Provider.of<HospitalUnitNotifier>(context, listen: false);
+      var data = await hospitalUnitNotifier.fetchAll();
+      for (var element in data) {
+        _hospitalUnitList.add(DropdownMenuItem(
+          value: element.id,
+          child: Text(element.surname),
+        ));
+      }
     }
+
     setState(() {
-      _unEnc =
-          widget.filters?.hospitalUnit ?? authentication.hospitalUnit!.name;
+      _unEnc = widget.filters?.hospitalUnit ?? authentication.hospitalUnit?.id;
     });
   }
 
   Future<void> fetchData(BuildContext context) async {
+    AuthenticationNotifier authentication =
+        Provider.of<AuthenticationNotifier>(context, listen: false);
     await Future.wait([
-      fetchMobileUnits(context),
-      fetchHospitalUnits(context),
+      fetchMobileUnits(authentication),
+      fetchHospitalUnits(authentication),
     ]);
 
     setState(() {
@@ -247,11 +279,11 @@ class _ModalReportFiltersState extends State<ModalReportFilters> {
                                                     .size
                                                     .width *
                                                 0.4,
-                                            child: DropdownButton<String>(
+                                            child: DropdownButton<int>(
                                               isExpanded: true,
                                               onChanged: (value) {
                                                 setState(() {
-                                                  _unEnc = value.toString();
+                                                  _unEnc = value;
                                                 });
                                               },
                                               value: _unEnc,

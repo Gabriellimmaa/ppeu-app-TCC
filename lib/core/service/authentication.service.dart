@@ -1,17 +1,17 @@
-import 'package:flutter/material.dart';
 import 'package:ppeu/models/HospitalUnit.model.dart';
+import 'package:ppeu/models/MobileUnit.model.dart';
 import 'package:supabase/supabase.dart';
 import 'package:ppeu/credentials/supabase.credentials.dart';
 
 class AuthenticationService {
   Future<GotrueSessionResponse> singup({
-    required BuildContext context,
     required String email,
     required String password,
     required String firstName,
     required String lastName,
     required String taxId,
-    required List<HospitalUnitModel> hospitalUnits,
+    List<HospitalUnitModel>? hospitalUnits,
+    List<MobileUnitModel>? mobileUnits,
   }) async {
     GotrueSessionResponse response =
         await SupabaseCredentials.supabaseClient.auth.signUp(
@@ -22,13 +22,13 @@ class AuthenticationService {
         'lastName': lastName,
         'taxId': taxId,
         'hospitalUnits': hospitalUnits,
+        'mobileUnits': mobileUnits,
       },
     );
     return response;
   }
 
   Future<GotrueSessionResponse> login({
-    required BuildContext context,
     required String email,
     required String password,
   }) async {
@@ -39,9 +39,7 @@ class AuthenticationService {
     return response;
   }
 
-  Future<GotrueResponse> logout({
-    required BuildContext context,
-  }) async {
+  Future<GotrueResponse> logout() async {
     GotrueResponse response =
         await SupabaseCredentials.supabaseClient.auth.signOut();
 

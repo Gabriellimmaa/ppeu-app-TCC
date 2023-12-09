@@ -76,6 +76,12 @@ class _SignupScreenState extends State<SignupScreen> {
     super.dispose();
   }
 
+  void checkValidFields() {
+    if (_formKey.currentState!.validate()) {
+      _formKey.currentState!.validate();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return CustomScaffold(
@@ -114,6 +120,7 @@ class _SignupScreenState extends State<SignupScreen> {
                   child: SingleChildScrollView(
                     child: Form(
                       key: _formKey,
+                      autovalidateMode: AutovalidateMode.onUserInteraction,
                       child: Column(
                         children: [
                           spacingRow,
@@ -191,6 +198,8 @@ class _SignupScreenState extends State<SignupScreen> {
                             onChanged: (value) {
                               setState(() {
                                 _typeUnit = value as String;
+                                selectedHospitalUnits.clear();
+                                selectedMobileUnits.clear();
                               });
                             },
                             validator: FormValidators.required,
@@ -248,6 +257,16 @@ class _SignupScreenState extends State<SignupScreen> {
                                 );
                               }),
                             ),
+                            if (selectedHospitalUnits.isEmpty) ...[
+                              spacingRow,
+                              Text(
+                                'Selecione pelo menos um hospital',
+                                style: TextStyle(
+                                  color: Theme.of(context).colorScheme.error,
+                                  fontSize: 12.0,
+                                ),
+                              )
+                            ]
                           ],
                           if (_typeUnit == 'movel') ...[
                             spacingRow,
@@ -302,6 +321,16 @@ class _SignupScreenState extends State<SignupScreen> {
                                 );
                               }),
                             ),
+                            if (selectedMobileUnits.isEmpty) ...[
+                              spacingRow,
+                              Text(
+                                'Selecione pelo menos uma unidade móvel',
+                                style: TextStyle(
+                                  color: Theme.of(context).colorScheme.error,
+                                  fontSize: 12.0,
+                                ),
+                              )
+                            ]
                           ],
                           spacingRow,
                           TextFormField(
@@ -377,6 +406,28 @@ class _SignupScreenState extends State<SignupScreen> {
                         text: 'Confirmar cadastro',
                         onPressed: () async {
                           if (_formKey.currentState!.validate()) {
+                            if (_typeUnit == 'hospital' &&
+                                selectedHospitalUnits.isEmpty) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content:
+                                      Text('Selecione pelo menos um hospital.'),
+                                  backgroundColor: Colors.red,
+                                ),
+                              );
+                              return;
+                            } else if (_typeUnit == 'movel' &&
+                                selectedMobileUnits.isEmpty) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text(
+                                      'Selecione pelo menos uma unidade móvel'),
+                                  backgroundColor: Colors.red,
+                                ),
+                              );
+                              return;
+                            }
+
                             String email = _emailController.text;
                             String password = _passwordController.text;
 

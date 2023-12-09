@@ -34,6 +34,7 @@ class _ModalAddFamiliarAdmissaoState extends State<ModalAddFamiliarAdmissao> {
               padding: EdgeInsets.all(16),
               child: Form(
                 key: _formKey,
+                autovalidateMode: AutovalidateMode.onUserInteraction,
                 child: Column(
                     mainAxisSize: MainAxisSize.min,
                     mainAxisAlignment: MainAxisAlignment.center,

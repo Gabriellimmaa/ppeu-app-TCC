@@ -129,12 +129,6 @@ class _NewPP_IState extends State<NewPP_I> {
       );
     }
 
-    void checkValidFields() {
-      if (_formKey.currentState!.validate()) {
-        _formKey.currentState!.validate();
-      }
-    }
-
     return isLoading
         ? Center(child: CircularProgressIndicator())
         : SingleChildScrollView(
@@ -154,6 +148,7 @@ class _NewPP_IState extends State<NewPP_I> {
                   padding: EdgeInsets.symmetric(horizontal: 16),
                   child: Form(
                     key: _formKey,
+                    autovalidateMode: AutovalidateMode.onUserInteraction,
                     child: Column(
                       children: [
                         TextFormField(
@@ -161,7 +156,6 @@ class _NewPP_IState extends State<NewPP_I> {
                           readOnly: data != null,
                           decoration: InputDecoration(labelText: 'Nome'),
                           validator: FormValidators.required,
-                          onChanged: (_) => checkValidFields(),
                           textInputAction: TextInputAction.next,
                           onFieldSubmitted: (_) {
                             FocusScope.of(context)
@@ -176,7 +170,6 @@ class _NewPP_IState extends State<NewPP_I> {
                           readOnly: data != null,
                           decoration: InputDecoration(labelText: 'Idade'),
                           validator: FormValidators.required,
-                          onChanged: (_) => checkValidFields(),
                           textInputAction: TextInputAction.next,
                         ),
                         spacingRow,
@@ -187,7 +180,6 @@ class _NewPP_IState extends State<NewPP_I> {
                           decoration:
                               InputDecoration(labelText: 'Data de nascimento'),
                           validator: FormValidators.required,
-                          onChanged: (_) => checkValidFields(),
                           textInputAction: TextInputAction.next,
                           onTap: () async {
                             DateTime? date = await showDatePicker(
@@ -202,7 +194,6 @@ class _NewPP_IState extends State<NewPP_I> {
                                 date,
                                 format: FormatDate.diaMesAno,
                               );
-                              checkValidFields();
                             }
                           },
                           onFieldSubmitted: (_) {
@@ -217,7 +208,6 @@ class _NewPP_IState extends State<NewPP_I> {
                           readOnly: data != null,
                           decoration: InputDecoration(labelText: 'Nome da mãe'),
                           validator: FormValidators.required,
-                          onChanged: (_) => checkValidFields(),
                           textInputAction: TextInputAction.done,
                         ),
                         spacingRow,

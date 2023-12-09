@@ -214,6 +214,7 @@ class _SearchPPScreenState extends State<SearchPPScreen> {
                     child: SingleChildScrollView(
                   child: Form(
                     key: _formKey,
+                    autovalidateMode: AutovalidateMode.onUserInteraction,
                     child: Column(
                       children: [
                         SizedBox(height: 25),

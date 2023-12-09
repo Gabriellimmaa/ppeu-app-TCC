@@ -169,6 +169,7 @@ class _ModalReportFiltersState extends State<ModalReportFilters> {
                   ? Center(child: CircularProgressIndicator())
                   : Form(
                       key: _formKey,
+                      autovalidateMode: AutovalidateMode.onUserInteraction,
                       child: Column(
                           mainAxisSize: MainAxisSize.min,
                           mainAxisAlignment: MainAxisAlignment.center,

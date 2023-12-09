@@ -148,12 +148,6 @@ class _NewPP_SState extends State<NewPP_S> {
       );
     }
 
-    void checkValidFields() {
-      if (_formKey.currentState!.validate()) {
-        _formKey.currentState!.validate();
-      }
-    }
-
     return SingleChildScrollView(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -177,6 +171,7 @@ class _NewPP_SState extends State<NewPP_S> {
               )),
           Form(
               key: _formKey,
+              autovalidateMode: AutovalidateMode.onUserInteraction,
               child: Column(
                 children: [
                   Text(
@@ -216,7 +211,6 @@ class _NewPP_SState extends State<NewPP_S> {
                         onChanged: data != null
                             ? null
                             : (value) {
-                                checkValidFields();
                                 setState(() {
                                   _selectedOrigem = value as String?;
                                   _showTransferField = value == 'Transferência';
@@ -253,7 +247,6 @@ class _NewPP_SState extends State<NewPP_S> {
                           readOnly: data != null,
                           labelText: 'Horário (início dos sintomas)',
                           validator: FormValidators.required,
-                          onChanged: (_) => checkValidFields(),
                         ),
                         spacingRow,
                         DropdownButtonFormField(
@@ -286,7 +279,6 @@ class _NewPP_SState extends State<NewPP_S> {
                           onChanged: data != null
                               ? null
                               : (value) {
-                                  checkValidFields();
                                   setState(() {
                                     _sintomasDorToracica = value as bool?;
                                   });
@@ -323,7 +315,6 @@ class _NewPP_SState extends State<NewPP_S> {
                           onChanged: data != null
                               ? null
                               : (value) {
-                                  checkValidFields();
                                   setState(() {
                                     _sintomasDeficitMotor = value as bool?;
                                   });
@@ -446,7 +437,6 @@ class _NewPP_SState extends State<NewPP_S> {
                                           value as String?;
                                       _showTraumaField = value == 'Outros' ||
                                           value == 'Queimadura';
-                                      checkValidFields();
                                     });
                                   },
                           ),
@@ -474,7 +464,6 @@ class _NewPP_SState extends State<NewPP_S> {
                                   ? null
                                   : (value) {
                                       setState(() {
-                                        checkValidFields();
                                         _selectedCausasExternasDescricao =
                                             value as String;
                                       });
@@ -493,7 +482,6 @@ class _NewPP_SState extends State<NewPP_S> {
                                   ? TextInputType.text
                                   : TextInputType.number,
                               onChanged: (value) {
-                                checkValidFields();
                                 _selectedCausasExternasDescricao = value;
                               },
                               validator: (value) => FormValidators.required(
@@ -575,7 +563,6 @@ class _NewPP_SState extends State<NewPP_S> {
                               onChanged: data != null
                                   ? null
                                   : (value) {
-                                      checkValidFields();
                                       setState(() {
                                         _gestanteTipoGestacao =
                                             value as String?;
@@ -613,7 +600,6 @@ class _NewPP_SState extends State<NewPP_S> {
                               onChanged: data != null
                                   ? null
                                   : (value) {
-                                      checkValidFields();
                                       setState(() {
                                         _gestantePerdasVW = value as bool?;
                                       });
@@ -634,7 +620,6 @@ class _NewPP_SState extends State<NewPP_S> {
                               validator: (value) => FormValidators.required(
                                   value,
                                   condition: _selectedGestante == true),
-                              onChanged: (_) => checkValidFields(),
                               textInputAction: TextInputAction.next,
                             ),
                             spacingRow,
@@ -650,7 +635,6 @@ class _NewPP_SState extends State<NewPP_S> {
                               validator: (value) => FormValidators.required(
                                   value,
                                   condition: _selectedGestante == true),
-                              onChanged: (_) => checkValidFields(),
                               onFieldSubmitted: (_) {
                                 FocusScope.of(context).requestFocus(
                                     _hipoteseDiagnosticoFocusNode);
@@ -680,7 +664,6 @@ class _NewPP_SState extends State<NewPP_S> {
                       decoration: InputDecoration(labelText: 'Preencher'),
                       textInputAction: TextInputAction.next,
                       validator: FormValidators.required,
-                      onChanged: (_) => checkValidFields(),
                       onFieldSubmitted: (_) {
                         FocusScope.of(context).requestFocus(
                             _enfermeiroResponsavelTransferenciaFocusNode);
@@ -706,7 +689,6 @@ class _NewPP_SState extends State<NewPP_S> {
                       focusNode: _enfermeiroResponsavelTransferenciaFocusNode,
                       readOnly: data != null,
                       validator: FormValidators.required,
-                      onChanged: (_) => checkValidFields(),
                       decoration: InputDecoration(labelText: 'Preencher'),
                     ),
                   ),

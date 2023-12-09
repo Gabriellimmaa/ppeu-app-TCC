@@ -332,12 +332,6 @@ class _NewPP_AState extends State<NewPP_A> {
     super.dispose();
   }
 
-  void checkValidFields() {
-    if (_formKey.currentState!.validate()) {
-      _formKey.currentState!.validate();
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     NewPPNotifier newPPNotifier =
@@ -488,6 +482,7 @@ class _NewPP_AState extends State<NewPP_A> {
               )),
           Form(
               key: _formKey,
+              autovalidateMode: AutovalidateMode.onUserInteraction,
               child: Column(
                 children: [
                   Text(
@@ -556,7 +551,6 @@ class _NewPP_AState extends State<NewPP_A> {
                           ),
                           validator: (value) => FormValidators.required(value,
                               condition: _selectedDor == true),
-                          onChanged: (_) => checkValidFields(),
                         ),
                         spacingRow,
                         Text('Intensidade da dor:',
@@ -599,7 +593,6 @@ class _NewPP_AState extends State<NewPP_A> {
                                   updateFormData();
                                 },
                                 validator: FormValidators.required,
-                                onChanged: (_) => checkValidFields(),
                               ),
                             ),
                             spacingColumn,
@@ -615,7 +608,6 @@ class _NewPP_AState extends State<NewPP_A> {
                                 onEditingComplete: () => FocusScope.of(context)
                                     .requestFocus(_frFocusNode),
                                 validator: FormValidators.required,
-                                onChanged: (_) => checkValidFields(),
                               ),
                             ),
                           ],
@@ -635,7 +627,6 @@ class _NewPP_AState extends State<NewPP_A> {
                                 onEditingComplete: () => FocusScope.of(context)
                                     .requestFocus(_fcFocusNode),
                                 validator: FormValidators.required,
-                                onChanged: (_) => checkValidFields(),
                               ),
                             ),
                             spacingColumn,
@@ -651,7 +642,6 @@ class _NewPP_AState extends State<NewPP_A> {
                                 onEditingComplete: () => FocusScope.of(context)
                                     .requestFocus(_glicemiaFocusNode),
                                 validator: FormValidators.required,
-                                onChanged: (_) => checkValidFields(),
                               ),
                             ),
                           ],
@@ -671,7 +661,6 @@ class _NewPP_AState extends State<NewPP_A> {
                                 onEditingComplete: () => FocusScope.of(context)
                                     .requestFocus(_sp02FocusNode),
                                 validator: FormValidators.required,
-                                onChanged: (_) => checkValidFields(),
                               ),
                             ),
                             spacingColumn,
@@ -684,7 +673,6 @@ class _NewPP_AState extends State<NewPP_A> {
                                   labelText: 'SP02',
                                 ),
                                 validator: FormValidators.required,
-                                onChanged: (_) => checkValidFields(),
                               ),
                             ),
                           ],
@@ -801,7 +789,6 @@ class _NewPP_AState extends State<NewPP_A> {
                             ? null
                             : (value) {
                                 setState(() {
-                                  checkValidFields();
                                   _avdi = value as String;
                                 });
                               },
@@ -824,7 +811,6 @@ class _NewPP_AState extends State<NewPP_A> {
                             ? null
                             : (value) {
                                 setState(() {
-                                  checkValidFields();
                                   _pupilas = value as String;
                                 });
                               },
@@ -849,7 +835,6 @@ class _NewPP_AState extends State<NewPP_A> {
                               ? null
                               : (value) {
                                   setState(() {
-                                    checkValidFields();
                                     _pupilasAnisocoricas = value as String;
                                   });
                                 },
@@ -949,7 +934,6 @@ class _NewPP_AState extends State<NewPP_A> {
                               ? null
                               : (value) {
                                   setState(() {
-                                    checkValidFields();
                                     _selectedPupilasFotoreacaoOption =
                                         value as String;
                                   });
@@ -1019,7 +1003,6 @@ class _NewPP_AState extends State<NewPP_A> {
                                   controller: _intubacaoHorarioController,
                                   readOnly: data != null,
                                   onChanged: (value) {
-                                    checkValidFields();
                                     FocusScope.of(context).requestFocus(
                                         _intubacaoNumeroTuboFocusNode);
                                   },
@@ -1044,7 +1027,6 @@ class _NewPP_AState extends State<NewPP_A> {
                                     validator: (value) =>
                                         FormValidators.required(value,
                                             condition: _selectedIntubacao),
-                                    onChanged: (_) => checkValidFields(),
                                   ),
                                 )
                               ],
@@ -1060,7 +1042,6 @@ class _NewPP_AState extends State<NewPP_A> {
                               validator: (value) => FormValidators.required(
                                   value,
                                   condition: _selectedIntubacao),
-                              onChanged: (_) => checkValidFields(),
                             ),
                             spacingRow,
                           ]),
@@ -1106,7 +1087,6 @@ class _NewPP_AState extends State<NewPP_A> {
 
                                     _selectedOxigenio =
                                         value == 'Não' ? null : value as String;
-                                    checkValidFields();
                                   });
                                 },
                           validator: FormValidators.required),
@@ -1203,7 +1183,6 @@ class _NewPP_AState extends State<NewPP_A> {
                               validator: (value) => FormValidators.required(
                                   value,
                                   condition: _selectecNomeMedicacao),
-                              onChanged: (_) => checkValidFields(),
                             ),
                             spacingRow,
                           ]),
@@ -1282,7 +1261,6 @@ class _NewPP_AState extends State<NewPP_A> {
                               ? null
                               : (value) {
                                   setState(() {
-                                    checkValidFields();
                                     _selectedAcessoCentralLocal =
                                         value as String?;
                                     FocusScope.of(context).requestFocus(
@@ -1305,7 +1283,6 @@ class _NewPP_AState extends State<NewPP_A> {
                               .requestFocus(_acessoCentralHorarioFocusNode),
                           validator: (value) => FormValidators.required(value,
                               condition: _selectedAcessoCentral),
-                          onChanged: (_) => checkValidFields(),
                         ),
                         spacingRow,
                         TimePickerTextField(
@@ -1315,7 +1292,6 @@ class _NewPP_AState extends State<NewPP_A> {
                           labelText: 'Horário',
                           validator: (value) => FormValidators.required(value,
                               condition: _selectedAcessoCentral),
-                          onChanged: (_) => checkValidFields(),
                         ),
                       ]),
                     ),
@@ -1379,7 +1355,6 @@ class _NewPP_AState extends State<NewPP_A> {
                                   _acessoPerifericoProfissionalFocusNode),
                           validator: (value) => FormValidators.required(value,
                               condition: _selectedAcessoPeriferico),
-                          onChanged: (_) => checkValidFields(),
                         ),
                         spacingRow,
                         TextFormField(
@@ -1394,7 +1369,6 @@ class _NewPP_AState extends State<NewPP_A> {
                               .requestFocus(_acessoPerifericoHorarioFocusNode),
                           validator: (value) => FormValidators.required(value,
                               condition: _selectedAcessoPeriferico),
-                          onChanged: (_) => checkValidFields(),
                         ),
                         spacingRow,
                         TimePickerTextField(
@@ -1403,7 +1377,6 @@ class _NewPP_AState extends State<NewPP_A> {
                           readOnly: data != null,
                           labelText: 'Horário',
                           validator: FormValidators.required,
-                          onChanged: (_) => checkValidFields(),
                         ),
                         spacingRow,
                         TextFormField(
@@ -1418,7 +1391,6 @@ class _NewPP_AState extends State<NewPP_A> {
                           keyboardType: TextInputType.number,
                           validator: (value) => FormValidators.required(value,
                               condition: _selectedAcessoPeriferico),
-                          onChanged: (_) => checkValidFields(),
                         ),
                       ]),
                     ),
@@ -1489,7 +1461,6 @@ class _NewPP_AState extends State<NewPP_A> {
                               ? null
                               : (value) {
                                   setState(() {
-                                    checkValidFields();
                                     _acessoIntraosseoLocal = value as String;
                                   });
                                 },
@@ -1509,7 +1480,6 @@ class _NewPP_AState extends State<NewPP_A> {
                               .requestFocus(_acessoIntraosseoHorarioFocusNode),
                           validator: (value) => FormValidators.required(value,
                               condition: _selectedAcessoIntraosseo),
-                          onChanged: (_) => checkValidFields(),
                         ),
                         spacingRow,
                         TimePickerTextField(
@@ -1519,7 +1489,6 @@ class _NewPP_AState extends State<NewPP_A> {
                           labelText: 'Horário',
                           validator: (value) => FormValidators.required(value,
                               condition: _selectedAcessoIntraosseo),
-                          onChanged: (_) => checkValidFields(),
                         ),
                       ]),
                     ),
@@ -1591,7 +1560,6 @@ class _NewPP_AState extends State<NewPP_A> {
                               ? null
                               : (value) {
                                   setState(() {
-                                    checkValidFields();
                                     _selectedDrenoToraxLocal = value as String?;
                                   });
                                   FocusScope.of(context)
@@ -1617,7 +1585,6 @@ class _NewPP_AState extends State<NewPP_A> {
                               validator: (value) => FormValidators.required(
                                   value,
                                   condition: _selectedDrenoTorax),
-                              onChanged: (_) => checkValidFields(),
                             ),
                           ),
                           spacingColumn,
@@ -1638,7 +1605,6 @@ class _NewPP_AState extends State<NewPP_A> {
                               controller: _drenoToraxHorarioController,
                               focusNode: _drenoToraxHorarioFocusNode,
                               onChanged: (_) {
-                                checkValidFields();
                                 FocusScope.of(context).requestFocus(
                                     _drenoToraxProfissionalFocusNode);
                               },
@@ -1658,7 +1624,6 @@ class _NewPP_AState extends State<NewPP_A> {
                           ),
                           validator: (value) => FormValidators.required(value,
                               condition: _selectedDrenoTorax),
-                          onChanged: (_) => checkValidFields(),
                         ),
                         spacingRow,
                       ]),
@@ -1698,7 +1663,6 @@ class _NewPP_AState extends State<NewPP_A> {
                                       return;
                                     }
                                     setState(() {
-                                      checkValidFields();
                                       _selectedCateterGastrico =
                                           value as String?;
                                     });
@@ -1720,7 +1684,6 @@ class _NewPP_AState extends State<NewPP_A> {
                                 condition: _selectedCateterGastrico != 'Não' &&
                                     _selectedCateterGastrico != null,
                               ),
-                              onChanged: (_) => checkValidFields(),
                             ),
                             spacingRow,
                           ]
@@ -1801,7 +1764,6 @@ class _NewPP_AState extends State<NewPP_A> {
                               controller: _cateterVesicalHorarioController,
                               labelText: 'Horário',
                               onChanged: (_) {
-                                checkValidFields();
                                 FocusScope.of(context).requestFocus(
                                     _cateterVesicalProfissionalFocusNode);
                               },
@@ -1824,7 +1786,6 @@ class _NewPP_AState extends State<NewPP_A> {
                             value,
                             condition: _selectedCateterVesical,
                           ),
-                          onChanged: (_) => checkValidFields(),
                         ),
                         spacingRow,
                       ]
@@ -1888,7 +1849,6 @@ class _NewPP_AState extends State<NewPP_A> {
                             value,
                             condition: _selectedPCR,
                           ),
-                          onChanged: (_) => checkValidFields(),
                         ),
                         spacingRow,
                         TextFormField(
@@ -1903,7 +1863,6 @@ class _NewPP_AState extends State<NewPP_A> {
                             value,
                             condition: _selectedPCR,
                           ),
-                          onChanged: (_) => checkValidFields(),
                         ),
                         spacingRow,
                         Row(
@@ -2137,7 +2096,6 @@ class _NewPP_AState extends State<NewPP_A> {
                             value,
                             condition: _selectedECG,
                           ),
-                          onChanged: (_) => checkValidFields(),
                         ),
                         spacingRow,
                       ]

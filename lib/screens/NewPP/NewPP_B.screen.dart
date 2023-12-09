@@ -123,12 +123,6 @@ class _NewPP_BState extends State<NewPP_B> {
     NewPPNotifier newPPNotifier =
         Provider.of<NewPPNotifier>(context, listen: false);
 
-    void checkValidFields() {
-      if (_formKey.currentState!.validate()) {
-        _formKey.currentState!.validate();
-      }
-    }
-
     void updateFormData() {
       newPPNotifier.breveHistorico = BreveHistoricoModel(
         historicaClinica: _historicaClinicaController.text,
@@ -169,6 +163,7 @@ class _NewPP_BState extends State<NewPP_B> {
               )),
           Form(
             key: _formKey,
+            autovalidateMode: AutovalidateMode.onUserInteraction,
             child: Column(
               children: [
                 Text(
@@ -195,7 +190,6 @@ class _NewPP_BState extends State<NewPP_B> {
                       textInputAction: TextInputAction.done,
                       onSaved: (_) => updateFormData(),
                       validator: FormValidators.required,
-                      onChanged: (_) => checkValidFields(),
                     ),
                     spacingRow,
                   ]),
@@ -264,7 +258,6 @@ class _NewPP_BState extends State<NewPP_B> {
                         textInputAction: TextInputAction.done,
                         validator: (value) => FormValidators.required(value,
                             condition: _selectedAlergias == true),
-                        onChanged: (_) => checkValidFields(),
                       ),
                       spacingRow,
                     ]),
@@ -333,7 +326,6 @@ class _NewPP_BState extends State<NewPP_B> {
                         textInputAction: TextInputAction.done,
                         validator: (value) => FormValidators.required(value,
                             condition: _selectedComorbidades == true),
-                        onChanged: (_) => checkValidFields(),
                       ),
                       spacingRow,
                     ]),
@@ -402,7 +394,6 @@ class _NewPP_BState extends State<NewPP_B> {
                         textInputAction: TextInputAction.done,
                         validator: (value) => FormValidators.required(value,
                             condition: _selectedVices == true),
-                        onChanged: (_) => checkValidFields(),
                       ),
                       spacingRow,
                     ]),
@@ -471,7 +462,6 @@ class _NewPP_BState extends State<NewPP_B> {
                         textInputAction: TextInputAction.done,
                         validator: (value) => FormValidators.required(value,
                             condition: _selectedMedicationsInUse == true),
-                        onChanged: (_) => checkValidFields(),
                       ),
                       spacingRow,
                     ]),
@@ -540,7 +530,6 @@ class _NewPP_BState extends State<NewPP_B> {
                         textInputAction: TextInputAction.done,
                         validator: (value) => FormValidators.required(value,
                             condition: _selectedHospitalizationHistory == true),
-                        onChanged: (_) => checkValidFields(),
                       ),
                       spacingRow,
                     ]),
@@ -609,7 +598,6 @@ class _NewPP_BState extends State<NewPP_B> {
                         textInputAction: TextInputAction.done,
                         validator: (value) => FormValidators.required(value,
                             condition: _selectedPreviousSurgery == true),
-                        onChanged: (_) => checkValidFields(),
                       ),
                       spacingRow,
                     ]),
@@ -678,7 +666,6 @@ class _NewPP_BState extends State<NewPP_B> {
                         textInputAction: TextInputAction.done,
                         validator: (value) => FormValidators.required(value,
                             condition: _selectedInjuries == true),
-                        onChanged: (_) => checkValidFields(),
                       ),
                       spacingRow,
                     ]),
@@ -747,7 +734,6 @@ class _NewPP_BState extends State<NewPP_B> {
                         textInputAction: TextInputAction.done,
                         validator: (value) => FormValidators.required(value,
                             condition: _selectedLaboratoryAlterations == true),
-                        onChanged: (_) => checkValidFields(),
                       ),
                       spacingRow,
                     ]),
@@ -818,7 +804,6 @@ class _NewPP_BState extends State<NewPP_B> {
                         onChanged: data != null
                             ? null
                             : (value) {
-                                checkValidFields();
                                 setState(() {
                                   _precaucoes = value as String;
                                 });
@@ -891,7 +876,6 @@ class _NewPP_BState extends State<NewPP_B> {
                         textInputAction: TextInputAction.done,
                         validator: (value) => FormValidators.required(value,
                             condition: _selectedJejum == true),
-                        onChanged: (_) => checkValidFields(),
                       ),
                       spacingRow,
                     ]),

@@ -150,12 +150,6 @@ class _NewPP_RState extends State<NewPP_R> {
       }
     }
 
-    void checkValidFields() {
-      if (_formKey.currentState!.validate()) {
-        _formKey.currentState!.validate();
-      }
-    }
-
     void updateUsersDropdown(id) async {
       List<dynamic> data = await userNotifier.filterByHospitalUnit(id: id);
 
@@ -197,6 +191,7 @@ class _NewPP_RState extends State<NewPP_R> {
               )),
           Form(
             key: _formKey,
+            autovalidateMode: AutovalidateMode.onUserInteraction,
             child: Column(
               children: [
                 Text(
@@ -223,7 +218,6 @@ class _NewPP_RState extends State<NewPP_R> {
                           onChanged: data != null
                               ? null
                               : <HospitalUnitModel>(value) {
-                                  checkValidFields();
                                   updateUsersDropdown(value!.id);
                                   setState(() {
                                     _selectedEncaminhamento = value;
@@ -261,7 +255,6 @@ class _NewPP_RState extends State<NewPP_R> {
                             //                   ))),
                             //         );
                             //         _selectedEncaminhamento = value;
-                            //         checkValidFields();
                             //       });
                             //     },
                             //   ),
@@ -300,7 +293,6 @@ class _NewPP_RState extends State<NewPP_R> {
                           onChanged: data != null
                               ? null
                               : (value) {
-                                  checkValidFields();
                                   setState(() {
                                     var _value = value as String;
                                     var parsedValue = _value.split('::');

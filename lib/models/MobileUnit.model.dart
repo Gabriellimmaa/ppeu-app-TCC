@@ -4,19 +4,17 @@ class MobileUnitModel {
   int id;
   String name;
   int amount;
+  String image;
 
   MobileUnitModel({
     required this.id,
     required this.name,
     required this.amount,
+    required this.image,
   });
 
   Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'name': name,
-      'amount': amount,
-    };
+    return {'id': id, 'name': name, 'amount': amount, 'image': image};
   }
 
   factory MobileUnitModel.fromJson(Map<String, dynamic> json) {
@@ -24,6 +22,7 @@ class MobileUnitModel {
       id: json['id'],
       name: json['name'],
       amount: json['amount'],
+      image: json['image'],
     );
   }
 

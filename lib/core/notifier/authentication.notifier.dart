@@ -7,7 +7,6 @@ import 'package:ppeu/models/HospitalUnit.model.dart';
 import 'package:ppeu/models/MobileUnit.model.dart';
 import 'package:ppeu/routes/app.routes.dart';
 import 'package:ppeu/screens/Home.screen.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthenticationNotifier extends ChangeNotifier {
   final AuthenticationService _authenticationService = AuthenticationService();
@@ -136,7 +135,8 @@ class AuthenticationNotifier extends ChangeNotifier {
         mobileUnitsList.add(MobileUnitModel(
             id: data.id,
             name: utf8.decode(latin1.encode(data.name)),
-            amount: data.amount));
+            amount: data.amount,
+            image: data.image));
       }
       setUserMetadata(
         firstName: response.data!.user!.userMetadata['firstName'],

@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:ppeu/core/notifier/authentication.notifier.dart';
 import 'package:ppeu/core/notifier/database.notifier.dart';
+import 'package:ppeu/core/notifier/mobileUnit.notifier.dart';
+import 'package:ppeu/models/MobileUnit.model.dart';
 import 'package:ppeu/models/PP.model.dart';
 import 'package:ppeu/models/PPStatus.model.dart';
 import 'package:ppeu/screens/ViewPP.screen.dart';
@@ -140,6 +142,9 @@ class _ManagePPScreenState extends State<ManagePPScreen> {
         data = response;
       });
     }
+
+    MobileUnitNotifier mobileUnitNotifier =
+        Provider.of<MobileUnitNotifier>(context, listen: false);
 
     return Scaffold(
         appBar: AppBar(
@@ -373,162 +378,206 @@ class _ManagePPScreenState extends State<ManagePPScreen> {
                             color: Colors.white,
                             width: double.infinity,
                             child: ListView.builder(
-                              padding: EdgeInsets.zero,
-                              itemCount: data.length,
-                              itemBuilder: (BuildContext context, int index) {
-                                PPModel item = data[index];
-                                return GestureDetector(
-                                  onTap: () async {
-                                    await Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) => ViewPPScreen(
-                                          data: item,
-                                          canEditStatus:
-                                              item.status == PPStatus.CONFIRMED
-                                                  ? false
-                                                  : true,
-                                        ),
-                                      ),
-                                    ).then((value) => fetchFilterByStatus(
-                                        _selectedButtonIndex));
-                                  },
-                                  child: Column(
-                                    children: [
-                                      Row(
-                                        children: [
-                                          Expanded(
-                                            child: ListTile(
-                                              contentPadding:
-                                                  EdgeInsets.symmetric(
-                                                      vertical: 16,
-                                                      horizontal: 16),
-                                              title: Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment
-                                                        .spaceBetween,
+                                padding: EdgeInsets.zero,
+                                itemCount: data.length,
+                                itemBuilder: (BuildContext context, int index) {
+                                  PPModel item = data[index];
+
+                                  return FutureBuilder(
+                                    future: mobileUnitNotifier.findByName(
+                                        item.identificacao.formaEncaminhamento),
+                                    builder: (BuildContext context,
+                                        AsyncSnapshot<MobileUnitModel>
+                                            snapshot) {
+                                      if (snapshot.connectionState ==
+                                          ConnectionState.waiting) {
+                                        return Padding(
+                                          padding: EdgeInsets.all(16),
+                                          child: SizedBox(
+                                            height: 50,
+                                            child: Center(
+                                              child:
+                                                  CircularProgressIndicator(),
+                                            ),
+                                          ),
+                                        );
+                                      } else if (snapshot.hasError) {
+                                        return Text('Error: ${snapshot.error}');
+                                      } else {
+                                        MobileUnitModel? mobileUnit =
+                                            snapshot.data;
+
+                                        return GestureDetector(
+                                          onTap: () async {
+                                            await Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder: (context) =>
+                                                    ViewPPScreen(
+                                                  data: item,
+                                                  canEditStatus: item.status ==
+                                                          PPStatus.CONFIRMED
+                                                      ? false
+                                                      : true,
+                                                ),
+                                              ),
+                                            ).then((value) =>
+                                                fetchFilterByStatus(
+                                                    _selectedButtonIndex));
+                                          },
+                                          child: Column(
+                                            children: [
+                                              Row(
                                                 children: [
-                                                  Text(
-                                                    item.identificacao.nome,
-                                                    style: TextStyle(
-                                                        fontWeight:
-                                                            FontWeight.bold),
+                                                  Expanded(
+                                                    child: ListTile(
+                                                      contentPadding:
+                                                          EdgeInsets.symmetric(
+                                                              vertical: 16,
+                                                              horizontal: 16),
+                                                      title: Row(
+                                                        mainAxisAlignment:
+                                                            MainAxisAlignment
+                                                                .spaceBetween,
+                                                        children: [
+                                                          Text(
+                                                            item.identificacao
+                                                                .nome,
+                                                            style: TextStyle(
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .bold),
+                                                          ),
+                                                          Text(
+                                                            item.createdAt
+                                                                .toString(),
+                                                            style: TextStyle(
+                                                                fontSize: 14),
+                                                          ),
+                                                        ],
+                                                      ),
+                                                      leading: Image.network(
+                                                        mobileUnit!.image,
+                                                        width: 60,
+                                                        height: 60,
+                                                        fit: BoxFit.cover,
+                                                      ),
+                                                      subtitle:
+                                                          Column(children: [
+                                                        SizedBox(height: 8),
+                                                        Row(
+                                                          children: [
+                                                            Flexible(
+                                                                child: Text(
+                                                              'DN: ${item.identificacao.dataNascimento}',
+                                                              overflow:
+                                                                  TextOverflow
+                                                                      .ellipsis,
+                                                            )),
+                                                            Flexible(
+                                                                child: Text(
+                                                              ' - Sexo: ${item.identificacao.sexo}',
+                                                              overflow:
+                                                                  TextOverflow
+                                                                      .ellipsis,
+                                                            ))
+                                                          ],
+                                                        ),
+                                                        Row(
+                                                          children: [
+                                                            Flexible(
+                                                              child: Text(
+                                                                'UH: ${item.recomendacoes.encaminhamento.surname}',
+                                                                overflow:
+                                                                    TextOverflow
+                                                                        .ellipsis,
+                                                              ),
+                                                            ),
+                                                            Flexible(
+                                                              child: Text(
+                                                                ' - UM: ${item.identificacao.formaEncaminhamento}',
+                                                                overflow:
+                                                                    TextOverflow
+                                                                        .ellipsis,
+                                                              ),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                        Row(
+                                                          children: [
+                                                            Flexible(
+                                                              child: Text(
+                                                                'Resp. UH: ${item.recomendacoes.responsavelRecebimento.nome}',
+                                                                overflow:
+                                                                    TextOverflow
+                                                                        .ellipsis,
+                                                              ),
+                                                            )
+                                                          ],
+                                                        ),
+                                                        Row(
+                                                          children: [
+                                                            Flexible(
+                                                              child: Text(
+                                                                'Resp. UM: ${item.situacao.enfermeiroResponsavelTransferencia}',
+                                                                overflow:
+                                                                    TextOverflow
+                                                                        .ellipsis,
+                                                              ),
+                                                            )
+                                                          ],
+                                                        ),
+                                                      ]),
+                                                    ),
                                                   ),
-                                                  Text(
-                                                    item.createdAt.toString(),
-                                                    style:
-                                                        TextStyle(fontSize: 14),
+                                                  Padding(
+                                                    padding: EdgeInsets.only(
+                                                        right: 10),
+                                                    child: Column(
+                                                      mainAxisAlignment:
+                                                          MainAxisAlignment
+                                                              .spaceBetween,
+                                                      children: [
+                                                        Icon(Icons.list_alt,
+                                                            size: 24),
+                                                        if (item.status ==
+                                                            PPStatus.CONFIRMED)
+                                                          Icon(Icons.check_box,
+                                                              color:
+                                                                  Colors.green,
+                                                              size: 24),
+                                                        if (item.status ==
+                                                            PPStatus
+                                                                .WAITING_CONFIRMATION)
+                                                          Icon(
+                                                              Icons
+                                                                  .access_time_filled,
+                                                              color: Colors
+                                                                  .yellow
+                                                                  .shade900,
+                                                              size: 24),
+                                                      ],
+                                                    ),
                                                   ),
                                                 ],
                                               ),
-                                              leading: Image.network(
-                                                item.recomendacoes
-                                                    .encaminhamento.image,
-                                                width: 60,
-                                                // height: 50,
-                                                fit: BoxFit.cover,
+                                              Container(
+                                                decoration: BoxDecoration(
+                                                  border: Border(
+                                                    bottom: BorderSide(
+                                                      color: Colors.grey,
+                                                      width: 1.0,
+                                                    ),
+                                                  ),
+                                                ),
                                               ),
-                                              subtitle: Column(children: [
-                                                SizedBox(height: 8),
-                                                Row(
-                                                  children: [
-                                                    Flexible(
-                                                        child: Text(
-                                                      'DN: ${item.identificacao.dataNascimento}',
-                                                      overflow:
-                                                          TextOverflow.ellipsis,
-                                                    )),
-                                                    Flexible(
-                                                        child: Text(
-                                                      ' - Sexo: ${item.identificacao.sexo}',
-                                                      overflow:
-                                                          TextOverflow.ellipsis,
-                                                    ))
-                                                  ],
-                                                ),
-                                                Row(
-                                                  children: [
-                                                    Flexible(
-                                                      child: Text(
-                                                        'UH: ${item.recomendacoes.encaminhamento.surname}',
-                                                        overflow: TextOverflow
-                                                            .ellipsis,
-                                                      ),
-                                                    ),
-                                                    Flexible(
-                                                      child: Text(
-                                                        ' - UM: ${item.identificacao.formaEncaminhamento}',
-                                                        overflow: TextOverflow
-                                                            .ellipsis,
-                                                      ),
-                                                    ),
-                                                  ],
-                                                ),
-                                                Row(
-                                                  children: [
-                                                    Flexible(
-                                                      child: Text(
-                                                        'Resp. UH: ${item.recomendacoes.responsavelRecebimento.nome}',
-                                                        overflow: TextOverflow
-                                                            .ellipsis,
-                                                      ),
-                                                    )
-                                                  ],
-                                                ),
-                                                Row(
-                                                  children: [
-                                                    Flexible(
-                                                      child: Text(
-                                                        'Resp. UM: ${item.situacao.enfermeiroResponsavelTransferencia}',
-                                                        overflow: TextOverflow
-                                                            .ellipsis,
-                                                      ),
-                                                    )
-                                                  ],
-                                                ),
-                                              ]),
-                                            ),
+                                            ],
                                           ),
-                                          Padding(
-                                            padding: EdgeInsets.only(right: 10),
-                                            child: Column(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment
-                                                      .spaceBetween,
-                                              children: [
-                                                Icon(Icons.list_alt, size: 24),
-                                                if (item.status ==
-                                                    PPStatus.CONFIRMED)
-                                                  Icon(Icons.check_box,
-                                                      color: Colors.green,
-                                                      size: 24),
-                                                if (item.status ==
-                                                    PPStatus
-                                                        .WAITING_CONFIRMATION)
-                                                  Icon(Icons.access_time_filled,
-                                                      color: Colors
-                                                          .yellow.shade900,
-                                                      size: 24),
-                                              ],
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                      Container(
-                                        decoration: BoxDecoration(
-                                          border: Border(
-                                            bottom: BorderSide(
-                                              color: Colors.grey,
-                                              width: 1.0,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                );
-                              },
-                            ),
+                                        );
+                                      }
+                                    },
+                                  );
+                                }),
                           ),
                         ),
             ],

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:ppeu/core/notifier/authentication.notifier.dart';
 import 'package:ppeu/core/notifier/database.notifier.dart';
+import 'package:ppeu/core/notifier/mobileUnit.notifier.dart';
+import 'package:ppeu/models/MobileUnit.model.dart';
 import 'package:ppeu/models/PP.model.dart';
 import 'package:ppeu/models/PPStatus.model.dart';
 import 'package:ppeu/screens/Report/widgets/ModalReportFilters.widget.dart';
@@ -68,6 +70,9 @@ class NominalState extends State<Nominal> {
 
   @override
   Widget build(BuildContext context) {
+    MobileUnitNotifier mobileUnitNotifier =
+        Provider.of<MobileUnitNotifier>(context, listen: false);
+
     return isLoading
         ? Center(child: CircularProgressIndicator())
         : data.isEmpty
@@ -95,148 +100,175 @@ class NominalState extends State<Nominal> {
                 itemCount: data.length,
                 itemBuilder: (BuildContext context, int index) {
                   PPModel item = data[index];
-                  return GestureDetector(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => ViewPPScreen(data: item),
-                        ),
-                      );
-                    },
-                    child: Column(children: [
-                      Row(
-                        children: [
-                          SizedBox(
-                            width: 50,
-                            child: Column(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  Image.network(
-                                    item.recomendacoes.encaminhamento.image,
-                                    width: 35,
-                                    height: 35,
-                                    fit: BoxFit.cover,
-                                  ),
-                                  if (item.status == PPStatus.CONFIRMED)
-                                    Icon(Icons.arrow_circle_down,
-                                        color: Colors.green),
-                                  if (item.status ==
-                                      PPStatus.WAITING_CONFIRMATION)
-                                    Icon(Icons.arrow_circle_down,
-                                        color: Colors.yellow.shade900),
-                                  Image.network(
-                                    item.recomendacoes.encaminhamento.image,
-                                    width: 35,
-                                    height: 35,
-                                    fit: BoxFit.cover,
-                                  )
-                                ]),
+
+                  return FutureBuilder(
+                    future: mobileUnitNotifier
+                        .findByName(item.identificacao.formaEncaminhamento),
+                    builder: (BuildContext context,
+                        AsyncSnapshot<MobileUnitModel> snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return Padding(
+                          padding: EdgeInsets.all(16),
+                          child: SizedBox(
+                            height: 50,
+                            child: Center(
+                              child: CircularProgressIndicator(),
+                            ),
                           ),
-                          Expanded(
-                            child: ListTile(
-                              contentPadding: EdgeInsets.symmetric(
-                                  vertical: 16, horizontal: 16),
-                              title: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Text(
-                                    item.identificacao.nome,
-                                    style:
-                                        TextStyle(fontWeight: FontWeight.bold),
-                                  ),
-                                  Text(
-                                    item.createdAt.toString().substring(0, 10),
-                                    style: TextStyle(fontSize: 14),
-                                  ),
-                                ],
+                        );
+                      } else if (snapshot.hasError) {
+                        return Text('Error: ${snapshot.error}');
+                      } else {
+                        MobileUnitModel? mobileUnit = snapshot.data;
+                        return GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => ViewPPScreen(data: item),
                               ),
-                              subtitle: Column(children: [
-                                SizedBox(height: 8),
-                                Row(
-                                  children: [
-                                    Flexible(
-                                        child: Text(
-                                      'DN: ${item.identificacao.dataNascimento}',
-                                      overflow: TextOverflow.ellipsis,
-                                    )),
-                                    Flexible(
-                                        child: Text(
-                                      ' - Sexo: ${item.identificacao.sexo}',
-                                      overflow: TextOverflow.ellipsis,
-                                    ))
-                                  ],
+                            );
+                          },
+                          child: Column(children: [
+                            Row(
+                              children: [
+                                SizedBox(
+                                  width: 50,
+                                  child: Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
+                                      children: [
+                                        Image.network(
+                                          mobileUnit!.image,
+                                          width: 35,
+                                          height: 35,
+                                          fit: BoxFit.cover,
+                                        ),
+                                        if (item.status == PPStatus.CONFIRMED)
+                                          Icon(Icons.arrow_circle_down,
+                                              color: Colors.green),
+                                        if (item.status ==
+                                            PPStatus.WAITING_CONFIRMATION)
+                                          Icon(Icons.arrow_circle_down,
+                                              color: Colors.yellow.shade900),
+                                        Image.network(
+                                          item.recomendacoes.encaminhamento
+                                              .image,
+                                          width: 35,
+                                          height: 35,
+                                          fit: BoxFit.cover,
+                                        )
+                                      ]),
                                 ),
-                                Row(
-                                  children: [
-                                    Flexible(
-                                      child: Text(
-                                        'UH: ${item.recomendacoes.encaminhamento.surname}',
-                                        overflow: TextOverflow.ellipsis,
-                                      ),
+                                Expanded(
+                                  child: ListTile(
+                                    contentPadding: EdgeInsets.symmetric(
+                                        vertical: 16, horizontal: 16),
+                                    title: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text(
+                                          item.identificacao.nome,
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.bold),
+                                        ),
+                                        Text(
+                                          item.createdAt
+                                              .toString()
+                                              .substring(0, 10),
+                                          style: TextStyle(fontSize: 14),
+                                        ),
+                                      ],
                                     ),
-                                    Flexible(
-                                      child: Text(
-                                        ' - UM: ${item.identificacao.formaEncaminhamento}',
-                                        overflow: TextOverflow.ellipsis,
+                                    subtitle: Column(children: [
+                                      SizedBox(height: 8),
+                                      Row(
+                                        children: [
+                                          Flexible(
+                                              child: Text(
+                                            'DN: ${item.identificacao.dataNascimento}',
+                                            overflow: TextOverflow.ellipsis,
+                                          )),
+                                          Flexible(
+                                              child: Text(
+                                            ' - Sexo: ${item.identificacao.sexo}',
+                                            overflow: TextOverflow.ellipsis,
+                                          ))
+                                        ],
                                       ),
-                                    ),
-                                  ],
-                                ),
-                                Row(
-                                  children: [
-                                    Flexible(
-                                      child: Text(
-                                        'Resp. UH: ${item.recomendacoes.responsavelRecebimento.nome}',
-                                        overflow: TextOverflow.ellipsis,
+                                      Row(
+                                        children: [
+                                          Flexible(
+                                            child: Text(
+                                              'UH: ${item.recomendacoes.encaminhamento.surname}',
+                                              overflow: TextOverflow.ellipsis,
+                                            ),
+                                          ),
+                                          Flexible(
+                                            child: Text(
+                                              ' - UM: ${item.identificacao.formaEncaminhamento}',
+                                              overflow: TextOverflow.ellipsis,
+                                            ),
+                                          ),
+                                        ],
                                       ),
-                                    )
-                                  ],
-                                ),
-                                Row(
-                                  children: [
-                                    Flexible(
-                                      child: Text(
-                                        'Resp. UM: ${item.situacao.enfermeiroResponsavelTransferencia}',
-                                        overflow: TextOverflow.ellipsis,
+                                      Row(
+                                        children: [
+                                          Flexible(
+                                            child: Text(
+                                              'Resp. UH: ${item.recomendacoes.responsavelRecebimento.nome}',
+                                              overflow: TextOverflow.ellipsis,
+                                            ),
+                                          )
+                                        ],
                                       ),
-                                    )
-                                  ],
+                                      Row(
+                                        children: [
+                                          Flexible(
+                                            child: Text(
+                                              'Resp. UM: ${item.situacao.enfermeiroResponsavelTransferencia}',
+                                              overflow: TextOverflow.ellipsis,
+                                            ),
+                                          )
+                                        ],
+                                      ),
+                                    ]),
+                                  ),
                                 ),
-                              ]),
+                                IconButton(
+                                  onPressed: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) =>
+                                            ViewPPScreen(data: item),
+                                      ),
+                                    );
+                                  },
+                                  icon: Icon(
+                                    Icons.list_alt,
+                                    size: 32,
+                                  ),
+                                )
+                              ],
                             ),
-                          ),
-                          IconButton(
-                            onPressed: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) =>
-                                      ViewPPScreen(data: item),
+                            Container(
+                              decoration: BoxDecoration(
+                                border: Border(
+                                  bottom: BorderSide(
+                                    color: Colors.grey,
+                                    width: 1.0,
+                                  ),
                                 ),
-                              );
-                            },
-                            icon: Icon(
-                              Icons.list_alt,
-                              size: 32,
+                              ),
                             ),
-                          )
-                        ],
-                      ),
-                      Container(
-                        decoration: BoxDecoration(
-                          border: Border(
-                            bottom: BorderSide(
-                              color: Colors.grey,
-                              width: 1.0,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ]),
+                          ]),
+                        );
+                      }
+                    },
                   );
                 },
               );

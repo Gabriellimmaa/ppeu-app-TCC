@@ -2,9 +2,10 @@
 
 <p align="center">
   <img src="banner.png" height="auto" width="700" alt="banner">
+  <img src="gif.gif" height="auto" width="184" alt="gif">
 </p>
 
-Este aplicativo foi desenvolvido em meu TCC como um caso de uso aplicado. *link do artigo em breve*
+Este aplicativo foi desenvolvido em meu TCC como um caso de uso aplicado. * *link do artigo em breve* *
 
 ## O que é a passagem de plantão de enfermeiros de urgência
 Passagens de plantão de enfermeiros de urgência são breves trocas de informações críticas entre enfermeiros que ocorrem durante mudanças de turno em unidades de atendimento de emergência. Durante essa passagem, detalhes sobre pacientes em estado crítico, tratamentos urgentes, medicamentos administrados e quaisquer mudanças súbitas na condição dos pacientes são comunicados para garantir uma transição suave e segura entre os turnos, assegurando a continuidade do cuidado urgente.
@@ -23,15 +24,17 @@ Dentre os fluxos do aplicativo podemos citar:
 6. **Consultar relatórios da unidade móvel/hospitalar:** Podemos consultar todos os relatórios da unidade sendo hospitalar/móvel por sua vez de forma nominal, númerica ou gráfica
 
 ## Resultado avaliação do software
-Optei por utilizar de duas metodologias sendo System Usability Scale (SUS) e Technology Acceptance Model (TAM) que resultou nos seguintes resultados.
+Optei por utilizar duas metodologias sendo System Usability Scale (SUS) e Technology Acceptance Model (TAM) que resultou em:
 
-**System Usability Scale (0-100)** resultou em 83,75 pontos.
+**System Usability Scale (0-100):** 83,75 pontos.
 
-**Technology Acceptance Model** por sua vez é separado em 4 formulários onde tiramos a média
+**Technology Acceptance Model** por sua vez é separado em 4 formulários que resulta em médias de 1 à 5, sendo 1 para ruim e 5 para excelente
   - Facilidade de uso percebida: 4,5
   - Utilidade percebida: 4,2
   - Atitude em relação ao uso: 4,4
-  - Intenção de uso: 4,5 
+  - Intenção de uso: 4,5
+
+Você pode encontrar mais informações referente a avaliação no artigo desenvolvido.
 
 ## Autores
 | [<img src="https://github.com/Gabriellimmaa.png" width=115><br><sub>Gabriel Lima</sub>](https://github.com/Gabriellimmaa) |

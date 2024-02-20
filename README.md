@@ -1,4 +1,4 @@
-# PPUE - Passagem de plantão de enfermeiros de urgência 
+# PPEU - Passagem de plantão de enfermeiros de urgência 
 
 <p align="center">
   <img src="banner.png" height="auto" width="700" alt="banner">

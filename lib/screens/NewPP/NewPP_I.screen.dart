@@ -171,6 +171,7 @@ class _NewPP_IState extends State<NewPP_I> {
                           decoration: InputDecoration(labelText: 'Idade'),
                           validator: FormValidators.required,
                           textInputAction: TextInputAction.next,
+                          keyboardType: TextInputType.number,
                         ),
                         spacingRow,
                         TextFormField(

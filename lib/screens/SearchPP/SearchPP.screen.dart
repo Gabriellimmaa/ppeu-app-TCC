@@ -286,73 +286,79 @@ class _SearchPPScreenState extends State<SearchPPScreen> {
                   children: [
                     SizedBox(
                       width: double.infinity,
-                      child: GradientButton(
-                        text: 'Pesquisar',
-                        onPressed: () async {
-                          if (_formKey.currentState!.validate()) {
-                            showDialog(
-                              context: context,
-                              builder: (BuildContext context) {
-                                return Center(
-                                  child: CircularProgressIndicator(),
-                                );
-                              },
-                              barrierDismissible: false,
-                            );
-
-                            try {
-                              var response = await databaseNotifier.filterPP(
-                                nome: _nameController.text,
-                                responsavelRecebimentoCpf: _selectedResponsavel,
-                                hospitalUnit: _selectedHospitalUnit,
-                                mobileUnit: _selectedMobileUnit,
-                                startDate: _selectedDate,
-                                endDate: _selectedDate?.add(Duration(days: 1)),
+                      child: Padding(
+                        padding: EdgeInsets.only(bottom: 20),
+                        child: GradientButton(
+                          text: 'Pesquisar',
+                          onPressed: () async {
+                            if (_formKey.currentState!.validate()) {
+                              showDialog(
+                                context: context,
+                                builder: (BuildContext context) {
+                                  return Center(
+                                    child: CircularProgressIndicator(),
+                                  );
+                                },
+                                barrierDismissible: false,
                               );
 
-                              if (response.isEmpty) {
-                                Navigator.pop(
-                                    context); // Fecha o diálogo de loading
-                                showDialog(
-                                  context: context,
-                                  builder: (BuildContext context) {
-                                    return AlertDialog(
-                                      title: Text('Nenhuma PP encontrada'),
-                                      content: Text(
-                                          'Não foi encontrado nenhuma passagem de plantão com os dados informados.'),
-                                      actions: [
-                                        TextButton(
-                                          onPressed: () {
-                                            Navigator.pop(context);
-                                          },
-                                          child: Text('OK'),
-                                        ),
-                                      ],
-                                    );
-                                  },
+                              try {
+                                var response = await databaseNotifier.filterPP(
+                                  nome: _nameController.text,
+                                  responsavelRecebimentoCpf:
+                                      _selectedResponsavel,
+                                  hospitalUnit: _selectedHospitalUnit,
+                                  mobileUnit: _selectedMobileUnit,
+                                  startDate: _selectedDate,
+                                  endDate:
+                                      _selectedDate?.add(Duration(days: 1)),
                                 );
-                              } else {
-                                Navigator.pop(
-                                    context); // Fecha o diálogo de loading
 
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => SearchPPListScreen(
-                                        ppModels: response,
-                                        hospitalUnit:
-                                            widget.hospitalUnit?.surname ?? ''),
-                                  ),
-                                );
+                                if (response.isEmpty) {
+                                  Navigator.pop(
+                                      context); // Fecha o diálogo de loading
+                                  showDialog(
+                                    context: context,
+                                    builder: (BuildContext context) {
+                                      return AlertDialog(
+                                        title: Text('Nenhuma PP encontrada'),
+                                        content: Text(
+                                            'Não foi encontrado nenhuma passagem de plantão com os dados informados.'),
+                                        actions: [
+                                          TextButton(
+                                            onPressed: () {
+                                              Navigator.pop(context);
+                                            },
+                                            child: Text('OK'),
+                                          ),
+                                        ],
+                                      );
+                                    },
+                                  );
+                                } else {
+                                  Navigator.pop(
+                                      context); // Fecha o diálogo de loading
+
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => SearchPPListScreen(
+                                          ppModels: response,
+                                          hospitalUnit:
+                                              widget.hospitalUnit?.surname ??
+                                                  ''),
+                                    ),
+                                  );
+                                }
+                              } catch (e) {
+                                Navigator.pop(
+                                    context); // Fecha o diálogo de loading em caso de erro
+                                print(e.toString());
                               }
-                            } catch (e) {
-                              Navigator.pop(
-                                  context); // Fecha o diálogo de loading em caso de erro
-                              print(e.toString());
+                              return;
                             }
-                            return;
-                          }
-                        },
+                          },
+                        ),
                       ),
                     ),
                   ],

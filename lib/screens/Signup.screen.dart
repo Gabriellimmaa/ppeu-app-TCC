@@ -76,12 +76,6 @@ class _SignupScreenState extends State<SignupScreen> {
     super.dispose();
   }
 
-  void checkValidFields() {
-    if (_formKey.currentState!.validate()) {
-      _formKey.currentState!.validate();
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return CustomScaffold(

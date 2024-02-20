@@ -46,7 +46,8 @@ class _ReportScreenState extends State<ReportScreen> {
   Widget build(BuildContext context) {
     AuthenticationNotifier authentication =
         Provider.of<AuthenticationNotifier>(context, listen: false);
-
+    double appBarHeight =
+        MediaQuery.of(context).padding.top + AppBar().preferredSize.height;
     return Scaffold(
         appBar: AppBar(
           title: Text(
@@ -87,7 +88,7 @@ class _ReportScreenState extends State<ReportScreen> {
         body: gradientContainer(
           child: Column(
             children: [
-              SizedBox(height: 90),
+              SizedBox(height: appBarHeight),
               Row(
                 children: [
                   Expanded(

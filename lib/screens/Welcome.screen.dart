@@ -19,7 +19,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
   Widget build(BuildContext context) {
     return CustomScaffold(
       appBar: AppBar(
-        title: Text('PPEU'),
+        title: Text('PPEU', style: TextStyle(color: Colors.white)),
         centerTitle: true,
       ),
       body:

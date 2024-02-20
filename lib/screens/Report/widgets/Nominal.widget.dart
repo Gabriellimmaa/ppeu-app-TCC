@@ -106,17 +106,7 @@ class NominalState extends State<Nominal> {
                         .findByName(item.identificacao.formaEncaminhamento),
                     builder: (BuildContext context,
                         AsyncSnapshot<MobileUnitModel> snapshot) {
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        return Padding(
-                          padding: EdgeInsets.all(16),
-                          child: SizedBox(
-                            height: 50,
-                            child: Center(
-                              child: CircularProgressIndicator(),
-                            ),
-                          ),
-                        );
-                      } else if (snapshot.hasError) {
+                      if (snapshot.hasError) {
                         return Text('Error: ${snapshot.error}');
                       } else {
                         MobileUnitModel? mobileUnit = snapshot.data;
@@ -140,12 +130,14 @@ class NominalState extends State<Nominal> {
                                       crossAxisAlignment:
                                           CrossAxisAlignment.center,
                                       children: [
-                                        Image.network(
-                                          mobileUnit!.image,
-                                          width: 35,
-                                          height: 35,
-                                          fit: BoxFit.cover,
-                                        ),
+                                        mobileUnit?.image != null
+                                            ? Image.network(
+                                                mobileUnit!.image,
+                                                width: 35,
+                                                height: 35,
+                                                fit: BoxFit.cover,
+                                              )
+                                            : CircularProgressIndicator(),
                                         if (item.status == PPStatus.CONFIRMED)
                                           Icon(Icons.arrow_circle_down,
                                               color: Colors.green),

@@ -8,5 +8,6 @@
         "xhash": "cpp",
         "xstring": "cpp",
         "xutility": "cpp"
-    }
+    },
+    "dart.flutterSdkPath": "~/development/flutter"
 }

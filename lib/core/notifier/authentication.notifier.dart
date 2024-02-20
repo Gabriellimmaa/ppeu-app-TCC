@@ -128,7 +128,14 @@ class AuthenticationNotifier extends ChangeNotifier {
       List<HospitalUnitModel> hospitalUnitsList = [];
       List<MobileUnitModel> mobileUnitsList = [];
       for (var hospitalUnit in hospitalUnits!) {
-        hospitalUnitsList.add(HospitalUnitModel.fromJson(hospitalUnit));
+        hospitalUnitsList.add(HospitalUnitModel(
+            id: hospitalUnit['id'],
+            name: utf8.decode(latin1.encode(hospitalUnit['name'])),
+            surname: utf8.decode(latin1.encode(hospitalUnit['surname'])),
+            amount: hospitalUnit['amount'],
+            image: hospitalUnit['image'],
+            address: AddressModel.fromJson(hospitalUnit['address']),
+            status: hospitalUnit['status']));
       }
       for (var mobileUnit in mobileUnits!) {
         var data = MobileUnitModel.fromJson(mobileUnit);

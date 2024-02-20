@@ -146,6 +146,9 @@ class _ManagePPScreenState extends State<ManagePPScreen> {
     MobileUnitNotifier mobileUnitNotifier =
         Provider.of<MobileUnitNotifier>(context, listen: false);
 
+    double appBarHeight =
+        MediaQuery.of(context).padding.top + AppBar().preferredSize.height;
+
     return Scaffold(
         appBar: AppBar(
           title: Text('GERENCIAR PPs',
@@ -165,7 +168,7 @@ class _ManagePPScreenState extends State<ManagePPScreen> {
         body: gradientContainer(
           child: Column(
             children: [
-              SizedBox(height: 75),
+              SizedBox(height: appBarHeight),
               Padding(
                 padding: EdgeInsets.only(
                   left: 16,
@@ -389,19 +392,7 @@ class _ManagePPScreenState extends State<ManagePPScreen> {
                                     builder: (BuildContext context,
                                         AsyncSnapshot<MobileUnitModel>
                                             snapshot) {
-                                      if (snapshot.connectionState ==
-                                          ConnectionState.waiting) {
-                                        return Padding(
-                                          padding: EdgeInsets.all(16),
-                                          child: SizedBox(
-                                            height: 50,
-                                            child: Center(
-                                              child:
-                                                  CircularProgressIndicator(),
-                                            ),
-                                          ),
-                                        );
-                                      } else if (snapshot.hasError) {
+                                      if (snapshot.hasError) {
                                         return Text('Error: ${snapshot.error}');
                                       } else {
                                         MobileUnitModel? mobileUnit =
@@ -456,12 +447,16 @@ class _ManagePPScreenState extends State<ManagePPScreen> {
                                                           ),
                                                         ],
                                                       ),
-                                                      leading: Image.network(
-                                                        mobileUnit!.image,
-                                                        width: 60,
-                                                        height: 60,
-                                                        fit: BoxFit.cover,
-                                                      ),
+                                                      leading: mobileUnit
+                                                                  ?.image !=
+                                                              null
+                                                          ? Image.network(
+                                                              mobileUnit!.image,
+                                                              width: 60,
+                                                              height: 60,
+                                                              fit: BoxFit.cover,
+                                                            )
+                                                          : CircularProgressIndicator(),
                                                       subtitle:
                                                           Column(children: [
                                                         SizedBox(height: 8),

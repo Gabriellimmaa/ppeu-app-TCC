@@ -496,7 +496,7 @@ class _NewPP_AState extends State<NewPP_A> {
                     color: Colors.green,
                   ),
                   Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 16),
+                    padding: EdgeInsets.symmetric(horizontal: 0),
                     child: Row(children: [
                       spacingRow,
                       Expanded(
@@ -507,7 +507,9 @@ class _NewPP_AState extends State<NewPP_A> {
                       ),
                       Expanded(
                         child: RadioListTile<bool>(
-                          title: const Text('Sim'),
+                          title: const Text(
+                            'Sim',
+                          ),
                           value: true,
                           groupValue: _selectedDor,
                           onChanged: (value) {
@@ -605,6 +607,7 @@ class _NewPP_AState extends State<NewPP_A> {
                                   labelText: 'Temperatura',
                                 ),
                                 textInputAction: TextInputAction.next,
+                                keyboardType: TextInputType.number,
                                 onEditingComplete: () => FocusScope.of(context)
                                     .requestFocus(_frFocusNode),
                                 validator: FormValidators.required,
@@ -623,6 +626,7 @@ class _NewPP_AState extends State<NewPP_A> {
                                 decoration: InputDecoration(
                                   labelText: 'FR',
                                 ),
+                                keyboardType: TextInputType.number,
                                 textInputAction: TextInputAction.next,
                                 onEditingComplete: () => FocusScope.of(context)
                                     .requestFocus(_fcFocusNode),
@@ -638,6 +642,7 @@ class _NewPP_AState extends State<NewPP_A> {
                                 decoration: InputDecoration(
                                   labelText: 'FC',
                                 ),
+                                keyboardType: TextInputType.number,
                                 textInputAction: TextInputAction.next,
                                 onEditingComplete: () => FocusScope.of(context)
                                     .requestFocus(_glicemiaFocusNode),
@@ -657,6 +662,7 @@ class _NewPP_AState extends State<NewPP_A> {
                                 decoration: InputDecoration(
                                   labelText: 'Glicemia',
                                 ),
+                                keyboardType: TextInputType.number,
                                 textInputAction: TextInputAction.next,
                                 onEditingComplete: () => FocusScope.of(context)
                                     .requestFocus(_sp02FocusNode),
@@ -672,6 +678,7 @@ class _NewPP_AState extends State<NewPP_A> {
                                 decoration: InputDecoration(
                                   labelText: 'SP02',
                                 ),
+                                keyboardType: TextInputType.number,
                                 validator: FormValidators.required,
                               ),
                             ),
@@ -844,12 +851,10 @@ class _NewPP_AState extends State<NewPP_A> {
                       ],
                       spacingRow,
                       Row(children: [
-                        Expanded(
-                          child: Text('Fotoreação:',
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                  fontWeight: FontWeight.bold, fontSize: 16)),
-                        ),
+                        Text('Fotoreação:',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold, fontSize: 16)),
                         Expanded(
                           child: RadioListTile<bool>(
                             title: const Text('Sim'),
@@ -1200,7 +1205,7 @@ class _NewPP_AState extends State<NewPP_A> {
                     color: Colors.green,
                   ),
                   Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 16),
+                    padding: EdgeInsets.symmetric(horizontal: 0),
                     child: Row(children: [
                       spacingRow,
                       Expanded(
@@ -1296,7 +1301,7 @@ class _NewPP_AState extends State<NewPP_A> {
                       ]),
                     ),
                   Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 16),
+                    padding: EdgeInsets.symmetric(horizontal: 0),
                     child: Row(children: [
                       spacingRow,
                       Expanded(
@@ -1395,7 +1400,7 @@ class _NewPP_AState extends State<NewPP_A> {
                       ]),
                     ),
                   Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 16),
+                    padding: EdgeInsets.symmetric(horizontal: 0),
                     child: Row(children: [
                       spacingRow,
                       Expanded(

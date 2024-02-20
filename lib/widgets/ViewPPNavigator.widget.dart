@@ -48,6 +48,8 @@ class ViewPPNavigator extends StatelessWidget {
       {required DatabaseNotifier databaseNotifier,
       required BuildContext context,
       int? id}) {
+    double bottomSafeAreaHeight = MediaQuery.of(context).padding.bottom;
+
     return CustomScaffold(
       appBar: AppBar(
         title: Text(title),
@@ -58,70 +60,69 @@ class ViewPPNavigator extends StatelessWidget {
         index: currentIndex,
         children: screens,
       )),
-      bottomNavigationBar: BottomAppBar(
-        child: Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              colors: const [
-                Color.fromARGB(255, 2, 189, 189),
-                Color.fromARGB(255, 87, 167, 233),
-              ],
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-            ),
+      bottomNavigationBar: Container(
+        padding: EdgeInsets.only(bottom: bottomSafeAreaHeight),
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: const [
+              Color.fromARGB(255, 2, 189, 189),
+              Color.fromARGB(255, 87, 167, 233),
+            ],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
           ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              if (canEditStatus)
-                InkWell(
-                  onTap: () async {
-                    var response = await databaseNotifier
-                        .changeStatusToConfirmed(context: context, id: id!);
-                    if (response) {
-                      Navigator.of(context).pop();
-                    }
-                  },
-                  child: Container(
-                    padding: EdgeInsets.symmetric(vertical: 8),
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: const [
-                          Color.fromARGB(255, 224, 224, 224),
-                          Color.fromRGBO(168, 255, 176, 1),
-                        ],
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter,
-                      ),
-                      border: Border(
-                        top: BorderSide(color: Colors.grey, width: 0.5),
-                      ),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (canEditStatus)
+              InkWell(
+                onTap: () async {
+                  var response = await databaseNotifier.changeStatusToConfirmed(
+                      context: context, id: id!);
+                  if (response) {
+                    Navigator.of(context).pop();
+                  }
+                },
+                child: Container(
+                  padding: EdgeInsets.symmetric(vertical: 8),
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: const [
+                        Color.fromARGB(255, 224, 224, 224),
+                        Color.fromRGBO(168, 255, 176, 1),
+                      ],
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
                     ),
-                    child: Align(
-                      alignment: Alignment.center,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: const [
-                          Icon(Icons.check_box, color: Colors.green),
-                          SizedBox(width: 8),
-                          Text(
-                            'Recepcionar PP',
-                            style: TextStyle(
-                                color: Colors.black,
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold),
-                          ),
-                        ],
-                      ),
+                    border: Border(
+                      top: BorderSide(color: Colors.grey, width: 0.5),
+                    ),
+                  ),
+                  child: Align(
+                    alignment: Alignment.center,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: const [
+                        Icon(Icons.check_box, color: Colors.green),
+                        SizedBox(width: 8),
+                        Text(
+                          'Recepcionar PP',
+                          style: TextStyle(
+                              color: Colors.black,
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold),
+                        ),
+                      ],
                     ),
                   ),
                 ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [...bottomNavigationBarItems],
               ),
-            ],
-          ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [...bottomNavigationBarItems],
+            ),
+          ],
         ),
       ),
     );

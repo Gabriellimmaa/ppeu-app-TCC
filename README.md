@@ -1,8 +1,8 @@
 # PPEU - Passagem de plantão de enfermeiros de urgência 
 
 <p align="center">
-  <img src="banner.png" height="auto" width="700" alt="banner">
-  <img src="gif.gif" height="auto" width="184" alt="gif">
+  <img src="banner.png" height="auto" width="80%" alt="banner">
+  <img src="gif.gif" height="auto" width="20%" alt="gif">
 </p>
 
 Este aplicativo foi desenvolvido em meu TCC como um caso de uso aplicado. * *link do artigo em breve* *

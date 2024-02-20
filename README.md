@@ -1,7 +1,7 @@
 # PPEU - Passagem de plantão de enfermeiros de urgência 
 
 <p align="center">
-  <img src="banner.png" height="auto" width="80%" alt="banner">
+  <img src="banner.png" height="auto" width="70%" alt="banner">
   <img src="gif.gif" height="auto" width="20%" alt="gif">
 </p>
 

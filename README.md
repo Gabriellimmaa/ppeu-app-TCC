@@ -20,7 +20,7 @@ Dentre os fluxos do aplicativo podemos citar:
 2. **Cadastro:** O cadastro parte das informações do enfermeiro e quais unidades ele atua.
 3. **Criar passagem de plantão:** Neste fluxo o cadastro da passagem de plantão acontece por parte da unidade móvel e seus formulários são separados por um contexto chamado ISBAR (identificação, situação, breve histórico, avaliação e recomendação ).
 4. **Receber passagem de plantão:** A unidade hospitalar por sua vez tem a responsabilidade de analisar a passagem de plantão e receber a mesma.
-5. **Consultar passagem de plantão:** Podemos consultar as passagens de plantão por unidade hopitalar, unidade móvel, responsável, nome do paciente um periodo de tempo.
+5. **Consultar passagem de plantão:** Podemos consultar as passagens de plantão por unidade hopitalar, unidade móvel, responsável, nome do paciente e por periodo de tempo.
 6. **Consultar relatórios da unidade móvel/hospitalar:** Podemos consultar todos os relatórios da unidade sendo hospitalar/móvel por sua vez de forma nominal, númerica ou gráfica
 
 ## Resultado avaliação do software
